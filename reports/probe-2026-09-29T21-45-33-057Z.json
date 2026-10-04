@@ -1,0 +1,405 @@
+{
+  "generatedAt": "2026-09-29T21:45:33.057Z",
+  "provider": {
+    "id": "live-football-api",
+    "displayName": "LiveFootballApi (live-football-api.com)",
+    "baseUrl": "https://live-football-api.com/api/v1",
+    "authStyle": "query",
+    "authHeader": null,
+    "authParam": "api_key",
+    "creditPerCall": 1,
+    "docsUrl": "https://www.live-football-api.com/docs"
+  },
+  "plan": {
+    "label": "LiveFootballApi — audit ciblé (14 étapes, 14 crédits au maximum)",
+    "steps": [
+      {
+        "key": "leagues",
+        "endpoint": "leagues",
+        "question": "L'authentification fonctionne-t-elle, combien de compétitions sont couvertes, et lesquelles sont africaines ?",
+        "cost": 1,
+        "required": true
+      },
+      {
+        "key": "matches_today",
+        "endpoint": "matches",
+        "question": "Les rencontres du jour sont-elles accessibles en un appel, avec score, horaire et statut ? (endpoint de la page « Matchs du jour »)",
+        "cost": 1,
+        "required": true
+      },
+      {
+        "key": "matches_finished",
+        "endpoint": "matches",
+        "question": "Une journée écoulée livre-t-elle les scores terminaux et les scores à la mi-temps ? (base de l'historique)",
+        "cost": 1,
+        "required": true
+      },
+      {
+        "key": "matches_future",
+        "endpoint": "matches",
+        "question": "Le calendrier s'étend-il au-delà du jour même (programmation à l'avance) ?",
+        "cost": 1,
+        "required": false
+      },
+      {
+        "key": "details_active",
+        "endpoint": "live_match_details",
+        "question": "Quelles statistiques de match sont réellement fournies — et contiennent-elles l'expected goals ?",
+        "cost": 1,
+        "required": true
+      },
+      {
+        "key": "details_finished",
+        "endpoint": "live_match_details",
+        "question": "Les statistiques et événements restent-ils disponibles après la fin du match ? (condition de constitution de l'historique)",
+        "cost": 1,
+        "required": false
+      },
+      {
+        "key": "standings",
+        "endpoint": "league_standings",
+        "question": "Le classement est-il complet (points, joués, buts, différence, forme) et quel historique de saisons est réellement conservé ?",
+        "cost": 1,
+        "required": true
+      },
+      {
+        "key": "league_fixtures",
+        "endpoint": "league_fixtures",
+        "question": "Le calendrier complet d'une compétition est-il récupérable en un appel ? (coût d'un import de référence)",
+        "cost": 1,
+        "required": true
+      },
+      {
+        "key": "league_fixtures_old",
+        "endpoint": "league_fixtures",
+        "question": "Une saison antérieure est-elle réellement servie ? (profondeur d'historique)",
+        "cost": 1,
+        "required": false
+      },
+      {
+        "key": "team_matches",
+        "endpoint": "team_matches",
+        "question": "Les rencontres d'une équipe sur une saison sont-elles récupérables (forme, domicile/extérieur, buts pour/contre) ?",
+        "cost": 1,
+        "required": true
+      },
+      {
+        "key": "team_standings",
+        "endpoint": "team_standings",
+        "question": "Le classement filtré sur une équipe est-il disponible ?",
+        "cost": 1,
+        "required": false
+      },
+      {
+        "key": "h2h",
+        "endpoint": "h2h",
+        "question": "Les confrontations directes et la forme récente des deux équipes sont-elles fournies ?",
+        "cost": 1,
+        "required": false
+      },
+      {
+        "key": "african_standings",
+        "endpoint": "league_standings",
+        "question": "Une compétition africaine dispose-t-elle d'un classement réel ? (enjeu direct pour le public de SOLEIL)",
+        "cost": 1,
+        "required": false
+      },
+      {
+        "key": "african_fixtures",
+        "endpoint": "league_fixtures",
+        "question": "Une compétition africaine dispose-t-elle d'un calendrier réel ?",
+        "cost": 1,
+        "required": false
+      }
+    ],
+    "maxCost": 14
+  },
+  "budget": {
+    "declared": 25,
+    "spentBySoleil": 0
+  },
+  "creditVerification": {
+    "callCount": 0,
+    "firstBalance": null,
+    "lastBalance": null,
+    "observedDelta": null,
+    "expectedDelta": 0,
+    "conforms": null
+  },
+  "keysDetected": 18,
+  "context": {
+    "today": "2026-09-29",
+    "yesterday": "2026-09-28",
+    "lastSaturday": "2026-09-26",
+    "nextSaturday": "2026-10-03",
+    "league": 39,
+    "season": 2026,
+    "slots": {}
+  },
+  "steps": [
+    {
+      "key": "leagues",
+      "question": "L'authentification fonctionne-t-elle, combien de compétitions sont couvertes, et lesquelles sont africaines ?",
+      "endpoint": "leagues",
+      "params": {
+        "lang": "en"
+      },
+      "cost": 1,
+      "required": true,
+      "status": "failed",
+      "creditsSpent": 0,
+      "creditsRemaining": null,
+      "fromCache": false,
+      "itemCount": null,
+      "durationMs": 1,
+      "error": "KeyRing non initialisé : appelez load() au préalable.",
+      "answers": [
+        "❌ KeyRing non initialisé : appelez load() au préalable."
+      ]
+    },
+    {
+      "key": "matches_today",
+      "question": "Les rencontres du jour sont-elles accessibles en un appel, avec score, horaire et statut ? (endpoint de la page « Matchs du jour »)",
+      "endpoint": "matches",
+      "params": {
+        "date": "2026-09-29",
+        "lang": "en"
+      },
+      "cost": 1,
+      "required": true,
+      "status": "failed",
+      "creditsSpent": 0,
+      "creditsRemaining": null,
+      "fromCache": false,
+      "itemCount": null,
+      "durationMs": 0,
+      "error": "KeyRing non initialisé : appelez load() au préalable.",
+      "answers": [
+        "❌ KeyRing non initialisé : appelez load() au préalable."
+      ]
+    },
+    {
+      "key": "matches_finished",
+      "question": "Une journée écoulée livre-t-elle les scores terminaux et les scores à la mi-temps ? (base de l'historique)",
+      "endpoint": "matches",
+      "params": {
+        "date": "2026-09-26",
+        "lang": "en"
+      },
+      "cost": 1,
+      "required": true,
+      "status": "failed",
+      "creditsSpent": 0,
+      "creditsRemaining": null,
+      "fromCache": false,
+      "itemCount": null,
+      "durationMs": 0,
+      "error": "KeyRing non initialisé : appelez load() au préalable.",
+      "answers": [
+        "❌ KeyRing non initialisé : appelez load() au préalable."
+      ]
+    },
+    {
+      "key": "matches_future",
+      "question": "Le calendrier s'étend-il au-delà du jour même (programmation à l'avance) ?",
+      "endpoint": "matches",
+      "params": {
+        "date": "2026-10-03",
+        "lang": "en"
+      },
+      "cost": 1,
+      "required": false,
+      "status": "failed",
+      "creditsSpent": 0,
+      "creditsRemaining": null,
+      "fromCache": false,
+      "itemCount": null,
+      "durationMs": 0,
+      "error": "KeyRing non initialisé : appelez load() au préalable.",
+      "answers": [
+        "❌ KeyRing non initialisé : appelez load() au préalable."
+      ]
+    },
+    {
+      "key": "details_active",
+      "question": "Quelles statistiques de match sont réellement fournies — et contiennent-elles l'expected goals ?",
+      "endpoint": "live_match_details",
+      "params": {},
+      "cost": 0,
+      "required": true,
+      "status": "skipped",
+      "creditsSpent": 0,
+      "creditsRemaining": null,
+      "fromCache": false,
+      "itemCount": null,
+      "durationMs": 0,
+      "error": "Aucun identifiant de match disponible.",
+      "answers": [
+        "⏭️  Étape non exécutée — Aucun identifiant de match disponible."
+      ]
+    },
+    {
+      "key": "details_finished",
+      "question": "Les statistiques et événements restent-ils disponibles après la fin du match ? (condition de constitution de l'historique)",
+      "endpoint": "live_match_details",
+      "params": {},
+      "cost": 0,
+      "required": false,
+      "status": "skipped",
+      "creditsSpent": 0,
+      "creditsRemaining": null,
+      "fromCache": false,
+      "itemCount": null,
+      "durationMs": 0,
+      "error": "Aucun match terminé identifié.",
+      "answers": [
+        "⏭️  Étape non exécutée — Aucun match terminé identifié."
+      ]
+    },
+    {
+      "key": "standings",
+      "question": "Le classement est-il complet (points, joués, buts, différence, forme) et quel historique de saisons est réellement conservé ?",
+      "endpoint": "league_standings",
+      "params": {},
+      "cost": 0,
+      "required": true,
+      "status": "skipped",
+      "creditsSpent": 0,
+      "creditsRemaining": null,
+      "fromCache": false,
+      "itemCount": null,
+      "durationMs": 0,
+      "error": "Aucune compétition de référence identifiée.",
+      "answers": [
+        "⏭️  Étape non exécutée — Aucune compétition de référence identifiée."
+      ]
+    },
+    {
+      "key": "league_fixtures",
+      "question": "Le calendrier complet d'une compétition est-il récupérable en un appel ? (coût d'un import de référence)",
+      "endpoint": "league_fixtures",
+      "params": {},
+      "cost": 0,
+      "required": true,
+      "status": "skipped",
+      "creditsSpent": 0,
+      "creditsRemaining": null,
+      "fromCache": false,
+      "itemCount": null,
+      "durationMs": 0,
+      "error": "Aucune compétition de référence identifiée.",
+      "answers": [
+        "⏭️  Étape non exécutée — Aucune compétition de référence identifiée."
+      ]
+    },
+    {
+      "key": "league_fixtures_old",
+      "question": "Une saison antérieure est-elle réellement servie ? (profondeur d'historique)",
+      "endpoint": "league_fixtures",
+      "params": {},
+      "cost": 0,
+      "required": false,
+      "status": "skipped",
+      "creditsSpent": 0,
+      "creditsRemaining": null,
+      "fromCache": false,
+      "itemCount": null,
+      "durationMs": 0,
+      "error": "Aucune compétition de référence identifiée.",
+      "answers": [
+        "⏭️  Étape non exécutée — Aucune compétition de référence identifiée."
+      ]
+    },
+    {
+      "key": "team_matches",
+      "question": "Les rencontres d'une équipe sur une saison sont-elles récupérables (forme, domicile/extérieur, buts pour/contre) ?",
+      "endpoint": "team_matches",
+      "params": {},
+      "cost": 0,
+      "required": true,
+      "status": "skipped",
+      "creditsSpent": 0,
+      "creditsRemaining": null,
+      "fromCache": false,
+      "itemCount": null,
+      "durationMs": 0,
+      "error": "Aucun identifiant d'équipe disponible.",
+      "answers": [
+        "⏭️  Étape non exécutée — Aucun identifiant d'équipe disponible."
+      ]
+    },
+    {
+      "key": "team_standings",
+      "question": "Le classement filtré sur une équipe est-il disponible ?",
+      "endpoint": "team_standings",
+      "params": {},
+      "cost": 0,
+      "required": false,
+      "status": "skipped",
+      "creditsSpent": 0,
+      "creditsRemaining": null,
+      "fromCache": false,
+      "itemCount": null,
+      "durationMs": 0,
+      "error": "Aucun identifiant d'équipe disponible.",
+      "answers": [
+        "⏭️  Étape non exécutée — Aucun identifiant d'équipe disponible."
+      ]
+    },
+    {
+      "key": "h2h",
+      "question": "Les confrontations directes et la forme récente des deux équipes sont-elles fournies ?",
+      "endpoint": "h2h",
+      "params": {},
+      "cost": 0,
+      "required": false,
+      "status": "skipped",
+      "creditsSpent": 0,
+      "creditsRemaining": null,
+      "fromCache": false,
+      "itemCount": null,
+      "durationMs": 0,
+      "error": "Aucun identifiant de match disponible.",
+      "answers": [
+        "⏭️  Étape non exécutée — Aucun identifiant de match disponible."
+      ]
+    },
+    {
+      "key": "african_standings",
+      "question": "Une compétition africaine dispose-t-elle d'un classement réel ? (enjeu direct pour le public de SOLEIL)",
+      "endpoint": "league_standings",
+      "params": {},
+      "cost": 0,
+      "required": false,
+      "status": "skipped",
+      "creditsSpent": 0,
+      "creditsRemaining": null,
+      "fromCache": false,
+      "itemCount": null,
+      "durationMs": 0,
+      "error": "Aucune compétition africaine détectée dans /leagues.",
+      "answers": [
+        "⏭️  Étape non exécutée — Aucune compétition africaine détectée dans /leagues."
+      ]
+    },
+    {
+      "key": "african_fixtures",
+      "question": "Une compétition africaine dispose-t-elle d'un calendrier réel ?",
+      "endpoint": "league_fixtures",
+      "params": {},
+      "cost": 0,
+      "required": false,
+      "status": "skipped",
+      "creditsSpent": 0,
+      "creditsRemaining": null,
+      "fromCache": false,
+      "itemCount": null,
+      "durationMs": 0,
+      "error": "Aucune compétition africaine détectée dans /leagues.",
+      "answers": [
+        "⏭️  Étape non exécutée — Aucune compétition africaine détectée dans /leagues."
+      ]
+    }
+  ],
+  "rawSamples": {}
+}

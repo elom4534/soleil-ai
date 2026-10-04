@@ -1,0 +1,214 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   SOLEIL — Système de design
+   Thème clair/sombre, tokens sémantiques, esthétique premium & minimaliste.
+   ========================================================================== */
+
+@theme {
+  /* --- Typographie --- */
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* --- Rayons --- */
+  --radius-card: 1rem;
+  --radius-pill: 999px;
+
+  /* --- Couleurs de marque SOLEIL (solaire, ambre → orange) --- */
+  --color-soleil-50: #fffbeb;
+  --color-soleil-100: #fef3c7;
+  --color-soleil-200: #fde68a;
+  --color-soleil-300: #fcd34d;
+  --color-soleil-400: #fbbf24;
+  --color-soleil-500: #f59e0b;
+  --color-soleil-600: #d97706;
+  --color-soleil-700: #b45309;
+  --color-soleil-800: #92400e;
+  --color-soleil-900: #78350f;
+
+  /* --- Accent secondaire : bleu nuit technologique --- */
+  --color-astro-50: #eff6ff;
+  --color-astro-100: #dbeafe;
+  --color-astro-200: #bfdbfe;
+  --color-astro-300: #93c5fd;
+  --color-astro-400: #60a5fa;
+  --color-astro-500: #3b82f6;
+  --color-astro-600: #2563eb;
+  --color-astro-700: #1d4ed8;
+
+  /* --- Sémantique résultats --- */
+  --color-win: #10b981;
+  --color-draw: #94a3b8;
+  --color-loss: #ef4444;
+
+  /* --- Animations --- */
+  --animate-shimmer: shimmer 1.6s linear infinite;
+  --animate-fade-in: fade-in 0.32s ease-out both;
+  --animate-rise: rise 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-sun-pulse: sun-pulse 4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes sun-pulse {
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.035); }
+}
+
+/* ==========================================================================
+   Tokens sémantiques — clair par défaut, sombre via .dark
+   ========================================================================== */
+:root {
+  --bg: #fafafa;
+  --bg-elevated: #ffffff;
+  --bg-subtle: #f4f4f5;
+  --bg-inset: #f4f4f5;
+
+  --fg: #09090b;
+  --fg-muted: #71717a;
+  --fg-subtle: #a1a1aa;
+
+  --border: #e4e4e7;
+  --border-strong: #d4d4d8;
+
+  --ring: #f59e0b;
+  --card-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.04), 0 1px 3px 0 rgb(0 0 0 / 0.06);
+  --card-shadow-hover: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+}
+
+.dark {
+  --bg: #09090b;
+  --bg-elevated: #121215;
+  --bg-subtle: #18181b;
+  --bg-inset: #1c1c20;
+
+  --fg: #fafafa;
+  --fg-muted: #a1a1aa;
+  --fg-subtle: #71717a;
+
+  --border: #27272a;
+  --border-strong: #3f3f46;
+
+  --card-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.4);
+  --card-shadow-hover: 0 4px 12px -2px rgb(0 0 0 / 0.5);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-bg-subtle: var(--bg-subtle);
+  --color-bg-inset: var(--bg-inset);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+  --color-border-subtle: var(--border);
+  --color-border-strong: var(--border-strong);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
+  body {
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overscroll-behavior-y: none;
+  }
+  ::selection {
+    background-color: var(--color-soleil-200);
+    color: var(--color-soleil-900);
+  }
+  .dark ::selection {
+    background-color: var(--color-soleil-800);
+    color: var(--color-soleil-100);
+  }
+  /* Scrollbar discrète */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--fg-subtle); }
+}
+
+@layer utilities {
+  /* Effet verre — utilisé pour les barres de navigation */
+  .glass {
+    background-color: color-mix(in oklab, var(--bg-elevated) 78%, transparent);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+  }
+  /* Texte dégradé solaire */
+  .text-solar {
+    background: linear-gradient(100deg, #f59e0b 0%, #fb923c 45%, #f59e0b 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  /* Carte standard SOLEIL */
+  .card {
+    background-color: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    box-shadow: var(--card-shadow);
+  }
+  .card-interactive {
+    transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+  }
+  .card-interactive:hover {
+    box-shadow: var(--card-shadow-hover);
+    border-color: var(--border-strong);
+  }
+  .card-interactive:active {
+    transform: scale(0.995);
+  }
+  /* Squelette de chargement */
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      var(--bg-subtle) 25%,
+      var(--bg-inset) 50%,
+      var(--bg-subtle) 75%
+    );
+    background-size: 200% 100%;
+    animation: var(--animate-shimmer);
+  }
+  /* Barre de progression accessible */
+  .bar-track {
+    background-color: var(--bg-inset);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  /* Safe area iOS pour la nav basse */
+  .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

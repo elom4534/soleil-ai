@@ -1,0 +1,173 @@
+{
+  "generatedAt": "2026-09-29T21:48:43.426Z",
+  "provider": {
+    "id": "live-football-api",
+    "displayName": "LiveFootballApi (live-football-api.com)",
+    "baseUrl": "https://live-football-api.com/api/v1",
+    "authStyle": "query",
+    "authHeader": null,
+    "authParam": "api_key",
+    "creditPerCall": 1,
+    "docsUrl": "https://www.live-football-api.com/docs"
+  },
+  "plan": {
+    "label": "LiveFootballApi — audit ciblé (14 étapes, 14 crédits au maximum)",
+    "steps": [
+      {
+        "key": "league_fixtures",
+        "endpoint": "league_fixtures",
+        "question": "Le calendrier complet d'une compétition est-il récupérable en un appel ? (coût d'un import de référence)",
+        "cost": 1,
+        "required": true
+      }
+    ],
+    "maxCost": 1
+  },
+  "budget": {
+    "declared": 30,
+    "spentBySoleil": 1
+  },
+  "creditVerification": {
+    "callCount": 1,
+    "firstBalance": 476,
+    "lastBalance": 476,
+    "observedDelta": 0,
+    "expectedDelta": 0,
+    "conforms": true
+  },
+  "keysDetected": 18,
+  "context": {
+    "today": "2026-09-29",
+    "yesterday": "2026-09-28",
+    "lastSaturday": "2026-09-26",
+    "nextSaturday": "2026-10-03",
+    "league": 39,
+    "season": 2026,
+    "slots": {
+      "leagueId": "9u9j3f1oplv8p7wevlko5r8by",
+      "oldSeason": "2025/2026"
+    }
+  },
+  "steps": [
+    {
+      "key": "league_fixtures",
+      "question": "Le calendrier complet d'une compétition est-il récupérable en un appel ? (coût d'un import de référence)",
+      "endpoint": "league_fixtures",
+      "params": {
+        "league_id": "9u9j3f1oplv8p7wevlko5r8by",
+        "lang": "en"
+      },
+      "cost": 1,
+      "required": true,
+      "status": "empty",
+      "creditsSpent": 1,
+      "creditsRemaining": 476,
+      "fromCache": false,
+      "itemCount": 0,
+      "durationMs": 1201,
+      "answers": [
+        "Calendrier de la saison courante : 0 rencontre(s) — 0 en direct, 0 terminée(s), 0 à venir.",
+        "Score final présent sur 0 % des rencontres · score à la mi-temps sur 0 %.",
+        "Saisons annoncées par le fournisseur pour cette compétition : 2026/2027, 2025/2026, 2024/2025, 2023/2024, 2022/2023, 2021/2022, 2020/2021, 2019/2020, 2018/2019, 2017/2018, 2016/2017, 2015/2016, 2014/2015, 2013/2014, 2012/2013, 2011/2012, 2010/2011."
+      ],
+      "evidence": {
+        "survey": {
+          "count": 0,
+          "live": 0,
+          "finished": 0,
+          "upcoming": 0,
+          "halftimeFilled": 0,
+          "scoresFilled": 0,
+          "kickoffFilled": 0,
+          "leagueIdFilled": 0,
+          "dates": [],
+          "fieldCoverage": [
+            {
+              "field": "id",
+              "percent": 0
+            },
+            {
+              "field": "league.id",
+              "percent": 0
+            },
+            {
+              "field": "league.country",
+              "percent": 0
+            },
+            {
+              "field": "horaire (kickoff/date)",
+              "percent": 0
+            },
+            {
+              "field": "status.state",
+              "percent": 0
+            },
+            {
+              "field": "home.id",
+              "percent": 0
+            },
+            {
+              "field": "home.name",
+              "percent": 0
+            },
+            {
+              "field": "home.score",
+              "percent": 0
+            },
+            {
+              "field": "halftime.home+away",
+              "percent": 0
+            },
+            {
+              "field": "week / round",
+              "percent": 0
+            }
+          ],
+          "statusLabels": {}
+        },
+        "season": "2026/2027",
+        "availableSeasons": [
+          "2026/2027",
+          "2025/2026",
+          "2024/2025",
+          "2023/2024",
+          "2022/2023",
+          "2021/2022",
+          "2020/2021",
+          "2019/2020",
+          "2018/2019",
+          "2017/2018",
+          "2016/2017",
+          "2015/2016",
+          "2014/2015",
+          "2013/2014",
+          "2012/2013",
+          "2011/2012",
+          "2010/2011"
+        ],
+        "weeks": 0
+      }
+    }
+  ],
+  "rawSamples": {
+    "league_fixtures": {
+      "success": true,
+      "message": "Success",
+      "credits_remaining": 476,
+      "data": {
+        "league_id": "9u9j3f1oplv8p7wevlko5r8by",
+        "league_name": "Ligue 1",
+        "season": "2026/2027",
+        "available_seasons": [
+          "2026/2027",
+          "2025/2026",
+          "2024/2025"
+        ],
+        "timezone": "UTC",
+        "weeks": [],
+        "stale": false
+      },
+      "timestamp": "2026-09-29 21:48:43"
+    }
+  }
+}

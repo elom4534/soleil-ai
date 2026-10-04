@@ -1,0 +1,88 @@
+{
+  "generatedAt": "2026-09-29T22:20:05.889Z",
+  "season": "2025/2026",
+  "creditsSpent": 0,
+  "pairs": [
+    {
+      "code": "E0",
+      "label": "Premier League",
+      "lfaId": "2kwbbcootiqqgmrzs6o5inle5"
+    },
+    {
+      "code": "SP1",
+      "label": "LaLiga",
+      "lfaId": "34pl8szyvrbwcmfkuocjm3r6t"
+    }
+  ],
+  "totals": {
+    "matched": 760,
+    "divergences": 0,
+    "byConfidence": {
+      "exacte": 760,
+      "score": 0
+    }
+  },
+  "divergences": [],
+  "quality": [
+    {
+      "source": "football-data.co.uk",
+      "matches": 380,
+      "completeness": 100,
+      "coherence": 100,
+      "comparables": 3040,
+      "divergences": 0,
+      "freshnessHours": null,
+      "freshnessNote": "Fichier de saison statique : pas d'horodatage de publication fourni",
+      "stability": "Non mesurée — exige deux relevés dans le temps (protocole défini)"
+    },
+    {
+      "source": "LiveFootballApi",
+      "matches": 380,
+      "completeness": 100,
+      "coherence": 100,
+      "comparables": 3040,
+      "divergences": 0,
+      "freshnessHours": null,
+      "freshnessNote": "Réponse horodatée par le fournisseur (`timestamp`) ; champ `stale` exposé",
+      "stability": "Non mesurée — la structure `last_updated` + `stale` permet le suivi"
+    },
+    {
+      "source": "football-data.co.uk",
+      "matches": 380,
+      "completeness": 100,
+      "coherence": 100,
+      "comparables": 3040,
+      "divergences": 0,
+      "freshnessHours": null,
+      "freshnessNote": "Fichier de saison statique : pas d'horodatage de publication fourni",
+      "stability": "Non mesurée — exige deux relevés dans le temps (protocole défini)"
+    },
+    {
+      "source": "LiveFootballApi",
+      "matches": 380,
+      "completeness": 100,
+      "coherence": 100,
+      "comparables": 3040,
+      "divergences": 0,
+      "freshnessHours": null,
+      "freshnessNote": "Réponse horodatée par le fournisseur (`timestamp`) ; champ `stale` exposé",
+      "stability": "Non mesurée — la structure `last_updated` + `stale` permet le suivi"
+    }
+  ],
+  "african": [
+    {
+      "label": "Togo — National Championship",
+      "matches": 182,
+      "completeness": 80,
+      "halfTime": 0,
+      "xg": false
+    },
+    {
+      "label": "Ghana — Premier League",
+      "matches": 306,
+      "completeness": 62.4,
+      "halfTime": 0.7,
+      "xg": false
+    }
+  ]
+}

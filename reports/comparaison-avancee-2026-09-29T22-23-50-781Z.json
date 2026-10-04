@@ -1,0 +1,233 @@
+{
+  "generatedAt": "2026-09-29T22:23:50.782Z",
+  "season": "2025/2026",
+  "samplePerLeague": 4,
+  "creditsSpent": 3,
+  "matchesCompared": 8,
+  "sample": [
+    {
+      "competition": "Premier League",
+      "date": "2025-08-15",
+      "match": "Liverpool - Bournemouth",
+      "scoreA": "4-2",
+      "scoreB": "4-2",
+      "credit": 0
+    },
+    {
+      "competition": "Premier League",
+      "date": "2025-11-30",
+      "match": "Aston Villa - Wolves",
+      "scoreA": "1-0",
+      "scoreB": "1-0",
+      "credit": 0
+    },
+    {
+      "competition": "Premier League",
+      "date": "2026-02-10",
+      "match": "West Ham - Man United",
+      "scoreA": "1-1",
+      "scoreB": "1-1",
+      "credit": 0
+    },
+    {
+      "competition": "Premier League",
+      "date": "2026-05-24",
+      "match": "West Ham - Leeds",
+      "scoreA": "3-0",
+      "scoreB": "3-0",
+      "credit": 0
+    },
+    {
+      "competition": "LaLiga",
+      "date": "2025-08-15",
+      "match": "Girona - Vallecano",
+      "scoreA": "1-3",
+      "scoreB": "1-3",
+      "credit": 0
+    },
+    {
+      "competition": "LaLiga",
+      "date": "2025-11-23",
+      "match": "Betis - Girona",
+      "scoreA": "1-1",
+      "scoreB": "1-1",
+      "credit": 1
+    },
+    {
+      "competition": "LaLiga",
+      "date": "2026-02-28",
+      "match": "Oviedo - Ath Madrid",
+      "scoreA": "0-1",
+      "scoreB": "0-1",
+      "credit": 1
+    },
+    {
+      "competition": "LaLiga",
+      "date": "2026-05-24",
+      "match": "Villarreal - Ath Madrid",
+      "scoreA": "5-1",
+      "scoreB": "5-1",
+      "credit": 1
+    }
+  ],
+  "comparedFamilies": [
+    "Tirs",
+    "Tirs cadrés",
+    "Corners",
+    "Fautes",
+    "Cartons jaunes",
+    "Cartons rouges"
+  ],
+  "totals": {
+    "comparables": 96,
+    "divergences": 0,
+    "coherence": 100,
+    "notComparable": 0
+  },
+  "perStat": [
+    {
+      "stat": "Tirs",
+      "comparables": 16,
+      "divergences": 0,
+      "ecartMoyen": 0,
+      "ecartMax": 0,
+      "coherencePct": 100
+    },
+    {
+      "stat": "Tirs cadrés",
+      "comparables": 16,
+      "divergences": 0,
+      "ecartMoyen": 0,
+      "ecartMax": 0,
+      "coherencePct": 100
+    },
+    {
+      "stat": "Corners",
+      "comparables": 16,
+      "divergences": 0,
+      "ecartMoyen": 0,
+      "ecartMax": 0,
+      "coherencePct": 100
+    },
+    {
+      "stat": "Fautes",
+      "comparables": 16,
+      "divergences": 0,
+      "ecartMoyen": 0,
+      "ecartMax": 0,
+      "coherencePct": 100
+    },
+    {
+      "stat": "Cartons jaunes",
+      "comparables": 16,
+      "divergences": 0,
+      "ecartMoyen": 0,
+      "ecartMax": 0,
+      "coherencePct": 100
+    },
+    {
+      "stat": "Cartons rouges",
+      "comparables": 16,
+      "divergences": 0,
+      "ecartMoyen": 0,
+      "ecartMax": 0,
+      "coherencePct": 100
+    }
+  ],
+  "divergences": [],
+  "lfaOnlyProvided": [
+    {
+      "stat": "xg",
+      "matches": 8
+    },
+    {
+      "stat": "xgSetPieces",
+      "matches": 8
+    },
+    {
+      "stat": "possession",
+      "matches": 8
+    },
+    {
+      "stat": "bigChancesMissed",
+      "matches": 8
+    },
+    {
+      "stat": "shotsOffTarget",
+      "matches": 8
+    },
+    {
+      "stat": "shotsBlocked",
+      "matches": 8
+    },
+    {
+      "stat": "passesTotal",
+      "matches": 8
+    },
+    {
+      "stat": "passesAccurate",
+      "matches": 8
+    },
+    {
+      "stat": "passAccuracy",
+      "matches": 8
+    },
+    {
+      "stat": "crosses",
+      "matches": 8
+    },
+    {
+      "stat": "duelsWon",
+      "matches": 8
+    },
+    {
+      "stat": "aerialDuelsWon",
+      "matches": 8
+    },
+    {
+      "stat": "tacklesWon",
+      "matches": 8
+    },
+    {
+      "stat": "dribblesWon",
+      "matches": 8
+    },
+    {
+      "stat": "clearances",
+      "matches": 8
+    },
+    {
+      "stat": "interceptions",
+      "matches": 8
+    },
+    {
+      "stat": "touchesInBox",
+      "matches": 8
+    },
+    {
+      "stat": "hitWoodwork",
+      "matches": 8
+    },
+    {
+      "stat": "throwIns",
+      "matches": 8
+    },
+    {
+      "stat": "goalKicks",
+      "matches": 8
+    },
+    {
+      "stat": "offsides",
+      "matches": 8
+    },
+    {
+      "stat": "ppdaOppositionPasses",
+      "matches": 8
+    },
+    {
+      "stat": "ppdaDefensiveActions",
+      "matches": 8
+    }
+  ],
+  "notComparable": []
+}

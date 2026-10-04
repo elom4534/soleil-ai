@@ -1,0 +1,1056 @@
+{
+  "generatedAt": "2026-09-29T23:25:57.186Z",
+  "season": "2024/2025",
+  "creditsSpent": 0,
+  "sourceA": "football-data.co.uk",
+  "sourceB": "live-football-api",
+  "families": [
+    "Tirs",
+    "Tirs cadrés",
+    "Corners",
+    "Fautes",
+    "Cartons jaunes",
+    "Cartons rouges"
+  ],
+  "competitions": [
+    {
+      "code": "E0",
+      "label": "Premier League",
+      "matches": 380,
+      "matchedWithPaidDetails": 380,
+      "withoutPaidDetails": 0,
+      "families": [
+        "Tirs",
+        "Tirs cadrés",
+        "Corners",
+        "Fautes",
+        "Cartons jaunes",
+        "Cartons rouges"
+      ]
+    },
+    {
+      "code": "SP1",
+      "label": "LaLiga",
+      "matches": 380,
+      "matchedWithPaidDetails": 80,
+      "withoutPaidDetails": 300,
+      "families": [
+        "Tirs",
+        "Tirs cadrés",
+        "Corners",
+        "Fautes",
+        "Cartons jaunes",
+        "Cartons rouges"
+      ]
+    }
+  ],
+  "totals": {
+    "matchesJoined": 460,
+    "matchesUnjoined": 300,
+    "valuesCompared": 5520,
+    "divergences": 90,
+    "notComparable": [],
+    "scoreMismatches": []
+  },
+  "lfaOnly": [
+    {
+      "key": "possession"
+    },
+    {
+      "key": "xg"
+    },
+    {
+      "key": "xgSetPieces"
+    },
+    {
+      "key": "touchesInBox"
+    },
+    {
+      "key": "shotsTotal"
+    },
+    {
+      "key": "shotsOnTarget"
+    },
+    {
+      "key": "shotsOffTarget"
+    },
+    {
+      "key": "corners"
+    },
+    {
+      "key": "fouls"
+    },
+    {
+      "key": "shotsBlocked"
+    },
+    {
+      "key": "hitWoodwork"
+    },
+    {
+      "key": "bigChancesMissed"
+    },
+    {
+      "key": "throwIns"
+    },
+    {
+      "key": "passesTotal"
+    },
+    {
+      "key": "passesAccurate"
+    },
+    {
+      "key": "crosses"
+    },
+    {
+      "key": "tacklesWon"
+    },
+    {
+      "key": "duelsWon"
+    },
+    {
+      "key": "aerialDuelsWon"
+    },
+    {
+      "key": "dribblesWon"
+    },
+    {
+      "key": "clearances"
+    },
+    {
+      "key": "interceptions"
+    },
+    {
+      "key": "offsides"
+    },
+    {
+      "key": "crossesAccurate"
+    },
+    {
+      "key": "yellowCards"
+    },
+    {
+      "key": "secondYellow"
+    },
+    {
+      "key": "directRed"
+    },
+    {
+      "key": "goalKicks"
+    },
+    {
+      "key": "ppdaOppositionPasses"
+    },
+    {
+      "key": "ppdaDefensiveActions"
+    },
+    {
+      "key": "redCards"
+    },
+    {
+      "key": "passAccuracy"
+    }
+  ],
+  "unmappedLabels": [],
+  "divergenceDetail": [
+    {
+      "competition": "Premier League",
+      "match": "Aston Villa - Arsenal",
+      "date": "2024-08-24",
+      "family": "Fautes",
+      "side": "extérieur",
+      "sourceA": 15,
+      "sourceB": 16
+    },
+    {
+      "competition": "Premier League",
+      "match": "Bournemouth - Newcastle",
+      "date": "2024-08-25",
+      "family": "Fautes",
+      "side": "domicile",
+      "sourceA": 19,
+      "sourceB": 20
+    },
+    {
+      "competition": "Premier League",
+      "match": "Arsenal - Brighton",
+      "date": "2024-08-31",
+      "family": "Cartons jaunes",
+      "side": "domicile",
+      "sourceA": 3,
+      "sourceB": 4
+    },
+    {
+      "competition": "Premier League",
+      "match": "Everton - Bournemouth",
+      "date": "2024-08-31",
+      "family": "Fautes",
+      "side": "extérieur",
+      "sourceA": 1,
+      "sourceB": 11
+    },
+    {
+      "competition": "Premier League",
+      "match": "Chelsea - Crystal Palace",
+      "date": "2024-09-01",
+      "family": "Corners",
+      "side": "extérieur",
+      "sourceA": 5,
+      "sourceB": 4
+    },
+    {
+      "competition": "Premier League",
+      "match": "Fulham - Newcastle",
+      "date": "2024-09-21",
+      "family": "Tirs",
+      "side": "extérieur",
+      "sourceA": 15,
+      "sourceB": 16
+    },
+    {
+      "competition": "Premier League",
+      "match": "Fulham - Newcastle",
+      "date": "2024-09-21",
+      "family": "Tirs cadrés",
+      "side": "extérieur",
+      "sourceA": 4,
+      "sourceB": 5
+    },
+    {
+      "competition": "Premier League",
+      "match": "Leicester - Everton",
+      "date": "2024-09-21",
+      "family": "Tirs",
+      "side": "extérieur",
+      "sourceA": 16,
+      "sourceB": 17
+    },
+    {
+      "competition": "Premier League",
+      "match": "Crystal Palace - Man. United",
+      "date": "2024-09-21",
+      "family": "Cartons jaunes",
+      "side": "extérieur",
+      "sourceA": 1,
+      "sourceB": 2
+    },
+    {
+      "competition": "Premier League",
+      "match": "Brighton - Not. Forest",
+      "date": "2024-09-22",
+      "family": "Cartons jaunes",
+      "side": "extérieur",
+      "sourceA": 4,
+      "sourceB": 5
+    },
+    {
+      "competition": "Premier League",
+      "match": "Man. City - Arsenal",
+      "date": "2024-09-22",
+      "family": "Cartons jaunes",
+      "side": "extérieur",
+      "sourceA": 4,
+      "sourceB": 5
+    },
+    {
+      "competition": "Premier League",
+      "match": "Arsenal - Leicester",
+      "date": "2024-09-28",
+      "family": "Tirs",
+      "side": "domicile",
+      "sourceA": 36,
+      "sourceB": 35
+    },
+    {
+      "competition": "Premier League",
+      "match": "Brentford - West Ham",
+      "date": "2024-09-28",
+      "family": "Corners",
+      "side": "extérieur",
+      "sourceA": 7,
+      "sourceB": 6
+    },
+    {
+      "competition": "Premier League",
+      "match": "Everton - Crystal Palace",
+      "date": "2024-09-28",
+      "family": "Cartons jaunes",
+      "side": "extérieur",
+      "sourceA": 1,
+      "sourceB": 0
+    },
+    {
+      "competition": "Premier League",
+      "match": "Bournemouth - Southampton",
+      "date": "2024-09-30",
+      "family": "Corners",
+      "side": "domicile",
+      "sourceA": 7,
+      "sourceB": 6
+    },
+    {
+      "competition": "Premier League",
+      "match": "Leicester - Bournemouth",
+      "date": "2024-10-05",
+      "family": "Tirs",
+      "side": "extérieur",
+      "sourceA": 17,
+      "sourceB": 19
+    },
+    {
+      "competition": "Premier League",
+      "match": "Chelsea - Not. Forest",
+      "date": "2024-10-06",
+      "family": "Cartons jaunes",
+      "side": "extérieur",
+      "sourceA": 2,
+      "sourceB": 3
+    },
+    {
+      "competition": "Premier League",
+      "match": "Fulham - Aston Villa",
+      "date": "2024-10-19",
+      "family": "Cartons jaunes",
+      "side": "extérieur",
+      "sourceA": 3,
+      "sourceB": 4
+    },
+    {
+      "competition": "Premier League",
+      "match": "Ipswich - Everton",
+      "date": "2024-10-19",
+      "family": "Corners",
+      "side": "extérieur",
+      "sourceA": 8,
+      "sourceB": 7
+    },
+    {
+      "competition": "Premier League",
+      "match": "Man. United - Brentford",
+      "date": "2024-10-19",
+      "family": "Fautes",
+      "side": "domicile",
+      "sourceA": 14,
+      "sourceB": 4
+    },
+    {
+      "competition": "Premier League",
+      "match": "Liverpool - Chelsea",
+      "date": "2024-10-20",
+      "family": "Corners",
+      "side": "extérieur",
+      "sourceA": 6,
+      "sourceB": 5
+    },
+    {
+      "competition": "Premier League",
+      "match": "Leicester - Not. Forest",
+      "date": "2024-10-25",
+      "family": "Cartons jaunes",
+      "side": "extérieur",
+      "sourceA": 2,
+      "sourceB": 3
+    },
+    {
+      "competition": "Premier League",
+      "match": "Aston Villa - Bournemouth",
+      "date": "2024-10-26",
+      "family": "Tirs",
+      "side": "extérieur",
+      "sourceA": 11,
+      "sourceB": 10
+    },
+    {
+      "competition": "Premier League",
+      "match": "Brentford - Ipswich",
+      "date": "2024-10-26",
+      "family": "Corners",
+      "side": "domicile",
+      "sourceA": 5,
+      "sourceB": 4
+    },
+    {
+      "competition": "Premier League",
+      "match": "Brentford - Ipswich",
+      "date": "2024-10-26",
+      "family": "Cartons jaunes",
+      "side": "extérieur",
+      "sourceA": 1,
+      "sourceB": 2
+    },
+    {
+      "competition": "Premier League",
+      "match": "Ipswich - Leicester",
+      "date": "2024-11-02",
+      "family": "Cartons jaunes",
+      "side": "domicile",
+      "sourceA": 4,
+      "sourceB": 5
+    },
+    {
+      "competition": "Premier League",
+      "match": "Liverpool - Brighton",
+      "date": "2024-11-02",
+      "family": "Corners",
+      "side": "domicile",
+      "sourceA": 10,
+      "sourceB": 9
+    },
+    {
+      "competition": "Premier League",
+      "match": "Liverpool - Brighton",
+      "date": "2024-11-02",
+      "family": "Cartons jaunes",
+      "side": "extérieur",
+      "sourceA": 1,
+      "sourceB": 2
+    },
+    {
+      "competition": "Premier League",
+      "match": "Not. Forest - West Ham",
+      "date": "2024-11-02",
+      "family": "Corners",
+      "side": "domicile",
+      "sourceA": 11,
+      "sourceB": 10
+    },
+    {
+      "competition": "Premier League",
+      "match": "Not. Forest - West Ham",
+      "date": "2024-11-02",
+      "family": "Cartons jaunes",
+      "side": "extérieur",
+      "sourceA": 2,
+      "sourceB": 3
+    },
+    {
+      "competition": "Premier League",
+      "match": "Arsenal - Not. Forest",
+      "date": "2024-11-23",
+      "family": "Fautes",
+      "side": "extérieur",
+      "sourceA": 1,
+      "sourceB": 11
+    },
+    {
+      "competition": "Premier League",
+      "match": "Bournemouth - Brighton",
+      "date": "2024-11-23",
+      "family": "Cartons jaunes",
+      "side": "extérieur",
+      "sourceA": 2,
+      "sourceB": 3
+    },
+    {
+      "competition": "Premier League",
+      "match": "Wolves - Bournemouth",
+      "date": "2024-11-30",
+      "family": "Cartons jaunes",
+      "side": "domicile",
+      "sourceA": 4,
+      "sourceB": 5
+    },
+    {
+      "competition": "Premier League",
+      "match": "Crystal Palace - Man. City",
+      "date": "2024-12-07",
+      "family": "Cartons jaunes",
+      "side": "extérieur",
+      "sourceA": 0,
+      "sourceB": 1
+    },
+    {
+      "competition": "Premier League",
+      "match": "Leicester - Brighton",
+      "date": "2024-12-08",
+      "family": "Corners",
+      "side": "domicile",
+      "sourceA": 5,
+      "sourceB": 4
+    },
+    {
+      "competition": "Premier League",
+      "match": "Tottenham - Chelsea",
+      "date": "2024-12-08",
+      "family": "Cartons jaunes",
+      "side": "extérieur",
+      "sourceA": 2,
+      "sourceB": 3
+    },
+    {
+      "competition": "Premier League",
+      "match": "Wolves - Ipswich",
+      "date": "2024-12-14",
+      "family": "Cartons jaunes",
+      "side": "domicile",
+      "sourceA": 0,
+      "sourceB": 1
+    },
+    {
+      "competition": "Premier League",
+      "match": "Wolves - Ipswich",
+      "date": "2024-12-14",
+      "family": "Cartons jaunes",
+      "side": "extérieur",
+      "sourceA": 2,
+      "sourceB": 3
+    },
+    {
+      "competition": "Premier League",
+      "match": "Chelsea - Brentford",
+      "date": "2024-12-15",
+      "family": "Cartons jaunes",
+      "side": "domicile",
+      "sourceA": 0,
+      "sourceB": 1
+    },
+    {
+      "competition": "Premier League",
+      "match": "Brentford - Not. Forest",
+      "date": "2024-12-21",
+      "family": "Fautes",
+      "side": "domicile",
+      "sourceA": 9,
+      "sourceB": 10
+    },
+    {
+      "competition": "Premier League",
+      "match": "Fulham - Southampton",
+      "date": "2024-12-22",
+      "family": "Tirs",
+      "side": "domicile",
+      "sourceA": 16,
+      "sourceB": 15
+    },
+    {
+      "competition": "Premier League",
+      "match": "Not. Forest - Tottenham",
+      "date": "2024-12-26",
+      "family": "Cartons jaunes",
+      "side": "extérieur",
+      "sourceA": 2,
+      "sourceB": 3
+    },
+    {
+      "competition": "Premier League",
+      "match": "Wolves - Man. United",
+      "date": "2024-12-26",
+      "family": "Corners",
+      "side": "domicile",
+      "sourceA": 4,
+      "sourceB": 3
+    },
+    {
+      "competition": "Premier League",
+      "match": "Wolves - Man. United",
+      "date": "2024-12-26",
+      "family": "Cartons jaunes",
+      "side": "extérieur",
+      "sourceA": 2,
+      "sourceB": 3
+    },
+    {
+      "competition": "Premier League",
+      "match": "West Ham - Liverpool",
+      "date": "2024-12-29",
+      "family": "Corners",
+      "side": "domicile",
+      "sourceA": 3,
+      "sourceB": 2
+    },
+    {
+      "competition": "Premier League",
+      "match": "Man. United - Newcastle",
+      "date": "2024-12-30",
+      "family": "Tirs cadrés",
+      "side": "domicile",
+      "sourceA": 0,
+      "sourceB": 1
+    },
+    {
+      "competition": "Premier League",
+      "match": "Aston Villa - Leicester",
+      "date": "2025-01-04",
+      "family": "Corners",
+      "side": "domicile",
+      "sourceA": 7,
+      "sourceB": 6
+    },
+    {
+      "competition": "Premier League",
+      "match": "Man. United - Southampton",
+      "date": "2025-01-16",
+      "family": "Corners",
+      "side": "domicile",
+      "sourceA": 5,
+      "sourceB": 4
+    },
+    {
+      "competition": "Premier League",
+      "match": "West Ham - Crystal Palace",
+      "date": "2025-01-18",
+      "family": "Cartons jaunes",
+      "side": "domicile",
+      "sourceA": 1,
+      "sourceB": 2
+    },
+    {
+      "competition": "Premier League",
+      "match": "Brighton - Everton",
+      "date": "2025-01-25",
+      "family": "Cartons jaunes",
+      "side": "domicile",
+      "sourceA": 3,
+      "sourceB": 4
+    },
+    {
+      "competition": "Premier League",
+      "match": "Wolves - Arsenal",
+      "date": "2025-01-25",
+      "family": "Cartons jaunes",
+      "side": "domicile",
+      "sourceA": 0,
+      "sourceB": 1
+    },
+    {
+      "competition": "Premier League",
+      "match": "Man. City - Chelsea",
+      "date": "2025-01-25",
+      "family": "Corners",
+      "side": "extérieur",
+      "sourceA": 4,
+      "sourceB": 3
+    },
+    {
+      "competition": "Premier League",
+      "match": "Crystal Palace - Brentford",
+      "date": "2025-01-26",
+      "family": "Tirs",
+      "side": "extérieur",
+      "sourceA": 13,
+      "sourceB": 12
+    },
+    {
+      "competition": "Premier League",
+      "match": "Newcastle - Fulham",
+      "date": "2025-02-01",
+      "family": "Corners",
+      "side": "domicile",
+      "sourceA": 4,
+      "sourceB": 3
+    },
+    {
+      "competition": "Premier League",
+      "match": "Everton - Liverpool",
+      "date": "2025-02-12",
+      "family": "Cartons jaunes",
+      "side": "domicile",
+      "sourceA": 2,
+      "sourceB": 3
+    },
+    {
+      "competition": "Premier League",
+      "match": "Everton - Liverpool",
+      "date": "2025-02-12",
+      "family": "Cartons jaunes",
+      "side": "extérieur",
+      "sourceA": 2,
+      "sourceB": 3
+    },
+    {
+      "competition": "Premier League",
+      "match": "Aston Villa - Ipswich",
+      "date": "2025-02-15",
+      "family": "Cartons jaunes",
+      "side": "extérieur",
+      "sourceA": 3,
+      "sourceB": 4
+    },
+    {
+      "competition": "Premier League",
+      "match": "Everton - Man. United",
+      "date": "2025-02-22",
+      "family": "Corners",
+      "side": "extérieur",
+      "sourceA": 9,
+      "sourceB": 8
+    },
+    {
+      "competition": "Premier League",
+      "match": "Wolves - Fulham",
+      "date": "2025-02-25",
+      "family": "Corners",
+      "side": "extérieur",
+      "sourceA": 5,
+      "sourceB": 4
+    },
+    {
+      "competition": "Premier League",
+      "match": "Arsenal - Fulham",
+      "date": "2025-04-01",
+      "family": "Cartons jaunes",
+      "side": "extérieur",
+      "sourceA": 2,
+      "sourceB": 3
+    },
+    {
+      "competition": "Premier League",
+      "match": "Brighton - Aston Villa",
+      "date": "2025-04-02",
+      "family": "Cartons jaunes",
+      "side": "domicile",
+      "sourceA": 1,
+      "sourceB": 2
+    },
+    {
+      "competition": "Premier League",
+      "match": "Crystal Palace - Brighton",
+      "date": "2025-04-05",
+      "family": "Cartons jaunes",
+      "side": "domicile",
+      "sourceA": 0,
+      "sourceB": 2
+    },
+    {
+      "competition": "Premier League",
+      "match": "Crystal Palace - Brighton",
+      "date": "2025-04-05",
+      "family": "Cartons jaunes",
+      "side": "extérieur",
+      "sourceA": 1,
+      "sourceB": 2
+    },
+    {
+      "competition": "Premier League",
+      "match": "Southampton - Aston Villa",
+      "date": "2025-04-12",
+      "family": "Corners",
+      "side": "extérieur",
+      "sourceA": 14,
+      "sourceB": 13
+    },
+    {
+      "competition": "Premier League",
+      "match": "Brentford - Brighton",
+      "date": "2025-04-19",
+      "family": "Corners",
+      "side": "extérieur",
+      "sourceA": 8,
+      "sourceB": 7
+    },
+    {
+      "competition": "Premier League",
+      "match": "Crystal Palace - Bournemouth",
+      "date": "2025-04-19",
+      "family": "Cartons jaunes",
+      "side": "domicile",
+      "sourceA": 3,
+      "sourceB": 4
+    },
+    {
+      "competition": "Premier League",
+      "match": "Fulham - Chelsea",
+      "date": "2025-04-20",
+      "family": "Corners",
+      "side": "domicile",
+      "sourceA": 6,
+      "sourceB": 5
+    },
+    {
+      "competition": "Premier League",
+      "match": "Brighton - West Ham",
+      "date": "2025-04-26",
+      "family": "Cartons jaunes",
+      "side": "domicile",
+      "sourceA": 1,
+      "sourceB": 2
+    },
+    {
+      "competition": "Premier League",
+      "match": "Newcastle - Ipswich",
+      "date": "2025-04-26",
+      "family": "Cartons jaunes",
+      "side": "extérieur",
+      "sourceA": 2,
+      "sourceB": 3
+    },
+    {
+      "competition": "Premier League",
+      "match": "Everton - Ipswich",
+      "date": "2025-05-03",
+      "family": "Corners",
+      "side": "domicile",
+      "sourceA": 3,
+      "sourceB": 2
+    },
+    {
+      "competition": "Premier League",
+      "match": "Leicester - Southampton",
+      "date": "2025-05-03",
+      "family": "Corners",
+      "side": "domicile",
+      "sourceA": 7,
+      "sourceB": 6
+    },
+    {
+      "competition": "Premier League",
+      "match": "Brentford - Man. United",
+      "date": "2025-05-04",
+      "family": "Corners",
+      "side": "extérieur",
+      "sourceA": 4,
+      "sourceB": 3
+    },
+    {
+      "competition": "Premier League",
+      "match": "Bournemouth - Aston Villa",
+      "date": "2025-05-10",
+      "family": "Cartons jaunes",
+      "side": "extérieur",
+      "sourceA": 3,
+      "sourceB": 4
+    },
+    {
+      "competition": "Premier League",
+      "match": "Liverpool - Arsenal",
+      "date": "2025-05-11",
+      "family": "Cartons jaunes",
+      "side": "extérieur",
+      "sourceA": 1,
+      "sourceB": 2
+    },
+    {
+      "competition": "Premier League",
+      "match": "Crystal Palace - Wolves",
+      "date": "2025-05-20",
+      "family": "Corners",
+      "side": "extérieur",
+      "sourceA": 10,
+      "sourceB": 9
+    },
+    {
+      "competition": "Premier League",
+      "match": "Liverpool - Crystal Palace",
+      "date": "2025-05-25",
+      "family": "Cartons jaunes",
+      "side": "domicile",
+      "sourceA": 1,
+      "sourceB": 2
+    },
+    {
+      "competition": "Premier League",
+      "match": "Man. United - Aston Villa",
+      "date": "2025-05-25",
+      "family": "Tirs",
+      "side": "domicile",
+      "sourceA": 25,
+      "sourceB": 26
+    },
+    {
+      "competition": "LaLiga",
+      "match": "Osasuna - Girona",
+      "date": "2025-04-13",
+      "family": "Cartons jaunes",
+      "side": "extérieur",
+      "sourceA": 0,
+      "sourceB": 1
+    },
+    {
+      "competition": "LaLiga",
+      "match": "Valladolid - Osasuna",
+      "date": "2025-04-20",
+      "family": "Cartons jaunes",
+      "side": "domicile",
+      "sourceA": 2,
+      "sourceB": 1
+    },
+    {
+      "competition": "LaLiga",
+      "match": "Valladolid - Osasuna",
+      "date": "2025-04-20",
+      "family": "Cartons jaunes",
+      "side": "extérieur",
+      "sourceA": 0,
+      "sourceB": 1
+    },
+    {
+      "competition": "LaLiga",
+      "match": "Villarreal - R. Sociedad",
+      "date": "2025-04-20",
+      "family": "Cartons jaunes",
+      "side": "domicile",
+      "sourceA": 5,
+      "sourceB": 4
+    },
+    {
+      "competition": "LaLiga",
+      "match": "Barcelona - Mallorca",
+      "date": "2025-04-22",
+      "family": "Tirs cadrés",
+      "side": "domicile",
+      "sourceA": 13,
+      "sourceB": 12
+    },
+    {
+      "competition": "LaLiga",
+      "match": "Atl. Madrid - Rayo Vallecano",
+      "date": "2025-04-24",
+      "family": "Tirs",
+      "side": "domicile",
+      "sourceA": 10,
+      "sourceB": 11
+    },
+    {
+      "competition": "LaLiga",
+      "match": "Atl. Madrid - Rayo Vallecano",
+      "date": "2025-04-24",
+      "family": "Tirs cadrés",
+      "side": "domicile",
+      "sourceA": 5,
+      "sourceB": 6
+    },
+    {
+      "competition": "LaLiga",
+      "match": "Ath. Bilbao - Alavés",
+      "date": "2025-05-11",
+      "family": "Tirs",
+      "side": "extérieur",
+      "sourceA": 4,
+      "sourceB": 3
+    },
+    {
+      "competition": "LaLiga",
+      "match": "Espanyol - Barcelona",
+      "date": "2025-05-15",
+      "family": "Cartons jaunes",
+      "side": "domicile",
+      "sourceA": 2,
+      "sourceB": 4
+    },
+    {
+      "competition": "LaLiga",
+      "match": "Espanyol - Barcelona",
+      "date": "2025-05-15",
+      "family": "Cartons jaunes",
+      "side": "extérieur",
+      "sourceA": 2,
+      "sourceB": 1
+    },
+    {
+      "competition": "LaLiga",
+      "match": "Betis - Valencia",
+      "date": "2025-05-23",
+      "family": "Cartons jaunes",
+      "side": "extérieur",
+      "sourceA": 2,
+      "sourceB": 3
+    },
+    {
+      "competition": "LaLiga",
+      "match": "Girona - Atl. Madrid",
+      "date": "2025-05-25",
+      "family": "Cartons jaunes",
+      "side": "extérieur",
+      "sourceA": 1,
+      "sourceB": 0
+    },
+    {
+      "competition": "LaLiga",
+      "match": "Ath. Bilbao - Barcelona",
+      "date": "2025-05-25",
+      "family": "Tirs",
+      "side": "domicile",
+      "sourceA": 10,
+      "sourceB": 9
+    }
+  ],
+  "perFamily": [
+    {
+      "family": "Tirs",
+      "compared": 920,
+      "divergences": 11,
+      "rate": 1.1956521739130435,
+      "meanGap": 1.0909090909090908,
+      "maxGap": {
+        "competition": "Premier League",
+        "match": "Leicester - Bournemouth",
+        "date": "2024-10-05",
+        "family": "Tirs",
+        "side": "extérieur",
+        "sourceA": 17,
+        "sourceB": 19
+      }
+    },
+    {
+      "family": "Tirs cadrés",
+      "compared": 920,
+      "divergences": 4,
+      "rate": 0.43478260869565216,
+      "meanGap": 1,
+      "maxGap": {
+        "competition": "Premier League",
+        "match": "Fulham - Newcastle",
+        "date": "2024-09-21",
+        "family": "Tirs cadrés",
+        "side": "extérieur",
+        "sourceA": 4,
+        "sourceB": 5
+      }
+    },
+    {
+      "family": "Corners",
+      "compared": 920,
+      "divergences": 24,
+      "rate": 2.608695652173913,
+      "meanGap": 1,
+      "maxGap": {
+        "competition": "Premier League",
+        "match": "Chelsea - Crystal Palace",
+        "date": "2024-09-01",
+        "family": "Corners",
+        "side": "extérieur",
+        "sourceA": 5,
+        "sourceB": 4
+      }
+    },
+    {
+      "family": "Fautes",
+      "compared": 920,
+      "divergences": 6,
+      "rate": 0.6521739130434783,
+      "meanGap": 5.5,
+      "maxGap": {
+        "competition": "Premier League",
+        "match": "Everton - Bournemouth",
+        "date": "2024-08-31",
+        "family": "Fautes",
+        "side": "extérieur",
+        "sourceA": 1,
+        "sourceB": 11
+      }
+    },
+    {
+      "family": "Cartons jaunes",
+      "compared": 920,
+      "divergences": 45,
+      "rate": 4.891304347826087,
+      "meanGap": 1.0444444444444445,
+      "maxGap": {
+        "competition": "Premier League",
+        "match": "Crystal Palace - Brighton",
+        "date": "2025-04-05",
+        "family": "Cartons jaunes",
+        "side": "domicile",
+        "sourceA": 0,
+        "sourceB": 2
+      }
+    },
+    {
+      "family": "Cartons rouges",
+      "compared": 920,
+      "divergences": 0,
+      "rate": 0,
+      "meanGap": null,
+      "maxGap": null
+    }
+  ]
+}

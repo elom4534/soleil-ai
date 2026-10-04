@@ -1,0 +1,968 @@
+// ============================================================================
+// SOLEIL — Prisma Schema
+// Base de datos para la plataforma de predicción football
+// ============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================================================
+// UTILISATEURS & AUTHENTIFICATION
+// ============================================================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String   @unique
+  emailVerified DateTime?
+  name          String?
+  passwordHash  String?
+  image         String?
+  role          UserRole @default(USER)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  preferences   UserPreferences?
+  predictions   UserPrediction[]
+  favoriteTeams Team[]     @relation("UserFavoriteTeams")
+  aiConversations AIConversation[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token       String   @unique
+  expires     DateTime
+
+  @@unique([identifier, token])
+}
+
+model UserPreferences {
+  id                 String   @id @default(cuid())
+  userId            String   @unique
+  theme             Theme    @default(SYSTEM)
+  language          String   @default("fr")
+  timezone          String   @default("Africa/Lome")
+  notificationsEmail Boolean  @default(true)
+  notificationsPush Boolean   @default(false)
+  favoriteLeagues   String[] @default([])
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum Theme {
+  LIGHT
+  DARK
+  SYSTEM
+}
+
+// ============================================================================
+// FOOTBALL DATA — ÉQUIPES, LIGUES, MATCHS
+// ============================================================================
+
+model League {
+  id            String       @id @default(cuid())
+  externalId    String       @unique // ID depuis l'API source (ex: football-data.org, api-football)
+  /// Identifiants fournisseur conservés tels quels, par source (cf. Team).
+  providerRefs  Json?
+  name          String
+  shortName     String?
+  country       String
+  countryCode   String?  // ISO code
+  logo          String?  // URL du logo
+  flag          String?  // URL du drapeau
+  type          LeagueType @default(LEAGUE)
+  currentSeason String?
+  isActive      Boolean  @default(true)
+  dataQuality   DataQuality @default(MEDIUM)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  teams         Team[]
+  matches       Match[]
+  seasons       Season[]
+}
+
+enum LeagueType {
+  LEAGUE
+  CUP
+  INTERNATIONAL
+}
+
+model Season {
+  id              String   @id @default(cuid())
+  leagueId        String
+  year            String   // ex: "2024", "2024/2025"
+  startDate       DateTime?
+  endDate         DateTime?
+  currentMatchday Int?
+  isCurrent       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  league         League               @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  matches        Match[]
+  statistics     TeamStatistics[]
+  strengthScores TeamStrengthScore[]
+
+  @@unique([leagueId, year])
+}
+
+model Team {
+  id             String       @id @default(cuid())
+  externalId    String       @unique
+  /// Identifiants fournisseur conservés tels quels, par source :
+  /// `{ "live-football-api": "3u9qf9ju8eym4g8qsa0avfjm2" }`.
+  /// L'identifiant fournisseur prime pour l'identité (§17) ; le slug interne
+  /// reste la clé de rapprochement entre sources.
+  providerRefs  Json?
+  name          String
+  shortName     String?
+  tla           String?      // Three letter abbreviation
+  crest         String?      // URL du logo
+  founded       Int?
+  venue         String?
+  venueCapacity Int?
+  city          String?
+  country       String?
+  clubColors    String?
+  website       String?
+  dataQuality   DataQuality  @default(MEDIUM)
+  lastDataUpdate DateTime?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  leagueId      String?
+  league        League?       @relation(fields: [leagueId], references: [id], onDelete: SetNull)
+  homeMatches   Match[]      @relation("HomeTeam")
+  awayMatches   Match[]      @relation("AwayTeam")
+  statistics     TeamStatistics[]
+  formEntries    TeamForm[]
+  strengthScores TeamStrengthScore[]
+  favoritedBy    User[]       @relation("UserFavoriteTeams")
+  h2hAsTeamA     HeadToHead[] @relation("H2HTeamA")
+  h2hAsTeamB     HeadToHead[] @relation("H2HTeamB")
+  teamGoalPredictions TeamGoalsPrediction[]
+}
+
+model TeamStatistics {
+  id                  String   @id @default(cuid())
+  teamId              String
+  seasonId            String
+  matchesPlayed       Int      @default(0)
+  wins                Int      @default(0)
+  draws               Int      @default(0)
+  losses              Int      @default(0)
+  goalsFor            Int      @default(0)
+  goalsAgainst        Int      @default(0)
+  cleanSheets         Int      @default(0)
+  failedToScore       Int      @default(0)
+  // Home stats
+  homeMatchesPlayed   Int      @default(0)
+  homeWins            Int      @default(0)
+  homeDraws           Int      @default(0)
+  homeLosses          Int      @default(0)
+  homeGoalsFor        Int      @default(0)
+  homeGoalsAgainst    Int      @default(0)
+  // Away stats
+  awayMatchesPlayed   Int      @default(0)
+  awayWins            Int      @default(0)
+  awayDraws           Int      @default(0)
+  awayLosses          Int      @default(0)
+  awayGoalsFor        Int      @default(0)
+  awayGoalsAgainst    Int      @default(0)
+  // Advanced (xG, shots, etc.)
+  xG                Float?
+  xGA               Float?
+  shots             Int?
+  shotsOnTarget     Int?
+  possession        Float?
+  // Computed
+  avgGoalsFor       Float?
+  avgGoalsAgainst   Float?
+  form              String?  // ex: "WDLWW"
+  lastUpdated       DateTime @default(now())
+
+  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  season Season @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, seasonId])
+}
+
+model TeamForm {
+  id           String      @id @default(cuid())
+  teamId      String
+  matchId     String
+  matchDate   DateTime
+  isHome      Boolean
+  opponentId  String
+  result      MatchResult // W, D, L
+  goalsFor    Int
+  goalsAgainst Int
+  xG          Float?
+  xGA         Float?
+  createdAt   DateTime   @default(now())
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+}
+
+model TeamStrengthScore {
+  id                String   @id @default(cuid())
+  teamId            String
+  seasonId          String
+  overallScore      Float    // 0-100
+  attackScore       Float
+  defenseScore      Float
+  homeScore         Float
+  awayScore         Float
+  formScore         Float
+  consistencyScore  Float
+  xGScore           Float?
+  calculatedAt      DateTime @default(now())
+
+  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  season Season @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, seasonId])
+}
+
+enum MatchResult {
+  WIN
+  DRAW
+  LOSS
+}
+
+enum DataQuality {
+  EXCELLENT
+  GOOD
+  MEDIUM
+  LOW
+  INSUFFICIENT
+}
+
+// ============================================================================
+// MATCHS
+// ============================================================================
+
+model Match {
+  id                String        @id @default(cuid())
+  externalId        String       @unique
+  seasonId          String
+  leagueId          String
+  homeTeamId        String
+  awayTeamId        String
+  utcDate           DateTime
+  status            MatchStatus  @default(SCHEDULED)
+  matchday          Int?
+  stage             String?
+  group             String?
+  // Scores
+  homeScore       Int?
+  awayScore       Int?
+  halfTimeHomeScore Int?
+  halfTimeAwayScore Int?
+  // Winner
+  winner          MatchWinner?
+  // Referee, venue
+  referee       String?
+  venue         String?
+  // Data quality
+  dataQuality   DataQuality  @default(MEDIUM)
+  dataSources   String[]     @default([])
+  lastDataUpdate DateTime?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  season        Season       @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  league        League       @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  homeTeam      Team         @relation("HomeTeam", fields: [homeTeamId], references: [id], onDelete: Cascade)
+  awayTeam      Team         @relation("AwayTeam", fields: [awayTeamId], references: [id], onDelete: Cascade)
+  predictions   Prediction[]
+  h2hMatches    HeadToHead[]
+  liveData      MatchLiveData?
+  aiConversations AIConversation[]
+}
+
+model MatchLiveData {
+  id                  String   @id @default(cuid())
+  matchId             String   @unique
+  minute              Int?
+  homeShots           Int?
+  awayShots           Int?
+  homeShotsOnTarget   Int?
+  awayShotsOnTarget   Int?
+  homeCorners         Int?
+  awayCorners         Int?
+  homeYellowCards     Int?
+  awayYellowCards     Int?
+  homeRedCards        Int?
+  awayRedCards        Int?
+  homePossession      Float?
+  awayPossession      Float?
+  homeXg              Float?
+  awayXg              Float?
+  updatedAt           DateTime @updatedAt
+
+  match Match @relation(fields: [matchId], references: [id], onDelete: Cascade)
+}
+
+enum MatchStatus {
+  SCHEDULED
+  LIVE
+  IN_PLAY
+  PAUSED
+  FINISHED
+  POSTPONED
+  CANCELLED
+  SUSPENDED
+}
+
+enum MatchWinner {
+  HOME_TEAM
+  AWAY_TEAM
+  DRAW
+}
+
+// ============================================================================
+// HEAD TO HEAD
+// ============================================================================
+
+model HeadToHead {
+  id            String   @id @default(cuid())
+  teamAId       String
+  teamBId       String
+  matchId       String
+  matchDate     DateTime
+  teamAHome     Boolean
+  teamAScore    Int
+  teamBScore    Int
+  competition   String?
+  createdAt     DateTime @default(now())
+
+  teamA Team @relation("H2HTeamA", fields: [teamAId], references: [id], onDelete: Cascade)
+  teamB Team @relation("H2HTeamB", fields: [teamBId], references: [id], onDelete: Cascade)
+  match Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
+
+  @@index([teamAId, teamBId])
+}
+
+// ============================================================================
+// PRÉDICTIONS — MOTEUR DE PRÉDICTION
+// ============================================================================
+
+model Prediction {
+  id              String             @id @default(cuid())
+  matchId         String
+  modelVersion    String             // ex: "v1.0.0-ensemble"
+  status          PredictionStatus   @default(GENERATED)
+  // Confidence
+  confidenceScore Int                // 0-100 SOLEIL CONFIDENCE SCORE
+  dataQuality     DataQuality
+  // Model agreement
+  modelAgreement  Float?             // 0-1, accord entre modèles
+  // Generated at
+  generatedAt   DateTime             @default(now())
+  publishedAt   DateTime?
+  // Results (filled after match)
+  actualResult  MatchResultType?
+  isCorrect     Boolean?
+  brierScore    Float?
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+
+  match           Match               @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  matchResult     MatchResultPrediction?
+  totalGoals      TotalGoalsPrediction?
+  exactScore      ExactScorePrediction?
+  btts            BTTS_Prediction?
+  halfTime        HalfTimePrediction?
+  teamGoals       TeamGoalsPrediction[]
+  modelOutputs    ModelOutput[]
+  userPredictions UserPrediction[]
+
+  @@index([matchId])
+  @@index([generatedAt])
+  @@index([confidenceScore])
+}
+
+enum PredictionStatus {
+  GENERATED
+  PUBLISHED
+  EXPIRED
+  SETTLED
+}
+
+enum MatchResultType {
+  HOME_WIN
+  DRAW
+  AWAY_WIN
+}
+
+// --- Résultat du match (1X2) ---
+model MatchResultPrediction {
+  id                    String  @id @default(cuid())
+  predictionId        String  @unique
+  homeWinProb         Float   // 0-1
+  drawProb            Float
+  awayWinProb         Float
+  // Consensus
+  consensusPick       MatchResultType?
+  consensusConfidence Float?
+  // Individual models
+  statisticalModelHome Float?
+  statisticalModelDraw Float?
+  statisticalModelAway Float?
+  poissonModelHome    Float?
+  poissonModelDraw    Float?
+  poissonModelAway    Float?
+  xgModelHome         Float?
+  xgModelDraw         Float?
+  xgModelAway         Float?
+  formModelHome       Float?
+  formModelDraw       Float?
+  formModelAway       Float?
+  homeAwayModelHome   Float?
+  homeAwayModelDraw   Float?
+  homeAwayModelAway   Float?
+  mlModelHome         Float?
+  mlModelDraw         Float?
+  mlModelAway         Float?
+  ensembleHome        Float?
+  ensembleDraw        Float?
+  ensembleAway        Float?
+  // Explanation factors
+  factors       Json?   // Facteurs explicatifs
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  prediction Prediction @relation(fields: [predictionId], references: [id], onDelete: Cascade)
+}
+
+// --- Total Goals (Over/Under) ---
+model TotalGoalsPrediction {
+  id              String  @id @default(cuid())
+  predictionId    String  @unique
+  expectedGoals   Float
+  expectedGoalsHome Float?
+  expectedGoalsAway Float?
+  // Over/Under lines
+  ou05Over        Float?
+  ou05Under       Float?
+  ou15Over        Float?
+  ou15Under       Float?
+  ou25Over        Float?
+  ou25Under       Float?
+  ou35Over        Float?
+  ou35Under       Float?
+  ou45Over        Float?
+  ou45Under       Float?
+  // Confidence per line
+  ou05Confidence  Int?
+  ou15Confidence  Int?
+  ou25Confidence  Int?
+  ou35Confidence  Int?
+  ou45Confidence  Int?
+  // Distribution
+  goalsDistribution Json? // {0: 0.08, 1: 0.22, 2: 0.28, 3: 0.22, 4: 0.12, 5: 0.08}
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  prediction Prediction @relation(fields: [predictionId], references: [id], onDelete: Cascade)
+}
+
+// --- Exact Score ---
+model ExactScorePrediction {
+  id                  String  @id @default(cuid())
+  predictionId        String  @unique
+  topScores           Json    // [{score: "1-1", prob: 0.142}, {score: "2-1", prob: 0.118}, ...]
+  mostLikelyScore     String?
+  mostLikelyProb      Float?
+  // Model details
+  poissonDistribution      Json?
+  bivarPoissonDistribution Json?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  prediction Prediction @relation(fields: [predictionId], references: [id], onDelete: Cascade)
+}
+
+// --- BTTS ---
+model BTTS_Prediction {
+  id            String  @id @default(cuid())
+  predictionId  String  @unique
+  yesProb       Float
+  noProb        Float
+  confidence    Int?
+  factors       Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  prediction Prediction @relation(fields: [predictionId], references: [id], onDelete: Cascade)
+}
+
+// --- Half Time ---
+model HalfTimePrediction {
+  id                  String  @id @default(cuid())
+  predictionId        String  @unique
+  // First half
+  ht05Over            Float?
+  ht05Under           Float?
+  ht15Over            Float?
+  ht15Under           Float?
+  ht25Over            Float?
+  ht25Under           Float?
+  htExpectedGoals     Float?
+  htGoalsDist         Json?
+  // Second half
+  st05Over            Float?
+  st05Under           Float?
+  st15Over            Float?
+  st15Under           Float?
+  st25Over            Float?
+  st25Under           Float?
+  stExpectedGoals     Float?
+  stGoalsDist         Json?
+  // Probabilities
+  probGoalInFirstHalf  Float?
+  probGoalInSecondHalf Float?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  prediction Prediction @relation(fields: [predictionId], references: [id], onDelete: Cascade)
+}
+
+// --- Team Goals ---
+model TeamGoalsPrediction {
+  id              String   @id @default(cuid())
+  predictionId    String
+  teamId          String
+  isHome          Boolean
+  expectedGoals   Float
+  // Over/Under per team
+  ou05Over        Float?
+  ou05Under       Float?
+  ou15Over        Float?
+  ou15Under       Float?
+  ou25Over        Float?
+  ou25Under       Float?
+  // Goal probability distribution
+  prob0Goals      Float?
+  prob1Goal       Float?
+  prob2Goals      Float?
+  prob3Goals      Float?
+  prob4PlusGoals  Float?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  prediction Prediction @relation(fields: [predictionId], references: [id], onDelete: Cascade)
+  team       Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([predictionId, teamId])
+}
+
+// --- Model Outputs (pour Multi-Model Ensemble) ---
+model ModelOutput {
+  id            String  @id @default(cuid())
+  predictionId  String
+  modelName     String  // "statistical", "poisson", "xg", "form", "home_away", "ml", "ensemble"
+  modelVersion  String
+  output        Json    // Sortie brute du modèle
+  weight        Float   // Poids dans l'ensemble
+  confidence    Float?  // Confiance propre du modèle
+  createdAt     DateTime @default(now())
+
+  prediction Prediction @relation(fields: [predictionId], references: [id], onDelete: Cascade)
+
+  @@unique([predictionId, modelName])
+}
+
+// ============================================================================
+// PRÉDICTIONS UTILISATEURS & HISTORIQUE
+// ============================================================================
+
+model UserPrediction {
+  id            String   @id @default(cuid())
+  userId        String
+  predictionId  String
+  // User's own pick
+  userPick      MatchResultType?
+  userConfidence Int?    // 0-100
+  // Tracking
+  viewedAt      DateTime?
+  savedAt       DateTime  @default(now())
+  notified      Boolean   @default(false)
+
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prediction  Prediction @relation(fields: [predictionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, predictionId])
+}
+
+// ============================================================================
+// PERFORMANCE & ÉVALUATION DES MODÈLES
+// ============================================================================
+
+model ModelPerformance {
+  id                String   @id @default(cuid())
+  modelName       String
+  modelVersion    String
+  leagueId      String?
+  seasonId      String?
+  dateFrom      DateTime
+  dateTo        DateTime
+  // Metrics
+  totalPredictions    Int
+  correctPredictions  Int
+  accuracy      Float
+  brierScore    Float
+  logLoss       Float
+  // Calibration
+  calibrationData Json? // {bin: {predicted: 0.7, actual: 0.68, count: 50}}
+  // Per market
+  market1x2Accuracy   Float?
+  marketOU25Accuracy  Float?
+  marketBTTSAccuracy  Float?
+  marketExactAccuracy Float?
+  // Per confidence level
+  confidenceBreakdown Json? // {80-100: {acc: 0.75, count: 20}, ...}
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([modelName, modelVersion])
+  @@index([leagueId, seasonId])
+}
+
+// ============================================================================
+// SOLEIL AI — CONVERSATIONS
+// ============================================================================
+
+model AIConversation {
+  id          String   @id @default(cuid())
+  userId      String
+  matchId     String?
+  title       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  match       Match?     @relation(fields: [matchId], references: [id], onDelete: SetNull)
+  messages    AIMessage[]
+}
+
+model AIMessage {
+  id             String   @id @default(cuid())
+  conversationId String
+  role          MessageRole
+  content       String   @db.Text
+  // Metadata for AI responses
+  matchId       String?
+  predictionId  String?
+  modelUsed     String?
+  tokensUsed    Int?
+  createdAt     DateTime @default(now())
+
+  conversation AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+  SYSTEM
+}
+
+// ============================================================================
+// DATA SOURCES & SYNCHRONISATION
+// ============================================================================
+
+model DataSource {
+  id            String   @id @default(cuid())
+  name          String   @unique // "football-data.org", "api-football", "manual"
+  displayName   String
+  apiBaseUrl    String?
+  apiKeyName    String?  // Nom de la variable d'env
+  rateLimit     Int?     // req/min
+  priority      Int      @default(1) // 1 = primary
+  isActive      Boolean  @default(true)
+  lastSync      DateTime?
+  lastError     String?
+  errorCount    Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  syncLogs      DataSyncLog[]
+}
+
+model DataSyncLog {
+  id            String   @id @default(cuid())
+  dataSourceId  String
+  entityType    String   // "leagues", "teams", "matches", "statistics"
+  entityCount   Int
+  status        SyncStatus
+  errorMessage  String?
+  durationMs    Int?
+  startedAt     DateTime
+  completedAt   DateTime?
+  createdAt     DateTime @default(now())
+
+  dataSource DataSource @relation(fields: [dataSourceId], references: [id], onDelete: Cascade)
+
+  @@index([dataSourceId, startedAt])
+}
+
+enum SyncStatus {
+  STARTED
+  SUCCESS
+  PARTIAL
+  FAILED
+}
+
+// ============================================================================
+// ADMIN & LOGS
+// ============================================================================
+
+model AdminLog {
+  id          String   @id @default(cuid())
+  userId      String?
+  action      String
+  entityType  String?
+  entityId    String?
+  metadata    Json?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([entityType, entityId])
+}
+
+// ============================================================================
+// CREDENTIALS API & CONSOMMATION — §13 (rotation) et §28 (monitoring)
+// ============================================================================
+
+/**
+ * Suivi d'une clé d'API. La clé elle-même n'est JAMAIS stockée : seul son
+ * empreinte SHA-256 l'est, afin qu'une fuite de la base ne compromette aucun
+ * accès fournisseur (§30).
+ */
+model ApiCredential {
+  id            String    @id @default(cuid())
+  provider      String    // ex. « api-football-live »
+  keyHash       String    // SHA-256 de la clé — jamais la clé en clair
+  label         String?   // « Clé 1 », « Clé 2 »… pour l'affichage admin
+  isActive      Boolean   @default(true)
+
+  // Quotas lus depuis les en-têtes de réponse du fournisseur
+  dailyLimit        Int?
+  dailyRemaining    Int?
+  minuteLimit       Int?
+  minuteRemaining   Int?
+
+  // Compteurs locaux, remis à zéro chaque jour (UTC)
+  usedToday         Int      @default(0)
+  usedTotal         Int      @default(0)
+  usageDay          DateTime @default(now())
+
+  // Répartition de la consommation par endpoint (JSON : { "fixtures": 12, ... })
+  usageByEndpoint   Json      @default("{}")
+
+  lastUsedAt        DateTime?
+  lastError         String?
+  lastErrorAt       DateTime?
+  consecutiveErrors Int       @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([provider, keyHash])
+  @@index([provider, isActive])
+}
+
+/**
+ * Journal d'appel — alimente le tableau de bord administrateur (§28).
+ * Volontairement borné : les entrées anciennes sont purgées par la tâche de
+ * maintenance, seules les N dernières restent consultables.
+ */
+model ApiCallLog {
+  id           String   @id @default(cuid())
+  provider     String
+  credentialId String?
+  endpoint     String
+  cost         Int      @default(1)
+  statusCode   Int?
+  durationMs   Int?
+  fromCache    Boolean  @default(false)
+  cacheKey     String?
+  quotaAfter   Int?
+  error        String?
+  createdAt    DateTime @default(now())
+
+  @@index([provider, createdAt])
+  @@index([endpoint, createdAt])
+}
+
+model SystemConfig {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       Json
+  description String?
+  updatedAt   DateTime @updatedAt
+}
+// ---------------------------------------------------------------------------
+// §7 (Phase 15) — Registre des versions du modèle.
+// Append-only : une version n'est jamais modifiée dans ses paramètres, elle
+// change seulement d'état (CANDIDATE → ACTIVE → ARCHIVED / ROLLED_BACK).
+// ---------------------------------------------------------------------------
+model ModelVersion {
+  id                 String             @id @default(cuid())
+  /// Identifiant lisible : « 1.1.0-matrix-1x2 ».
+  label              String             @unique
+  modelVersion       String
+  calibrationVersion String?
+  /// Poids du modèle xG au moment de cette version (0 = exclu).
+  xgWeight           Float
+  /// Origine du 1X2 publié : « matrix » ou « consensus ».
+  outcomeSource      String
+  /// Fin des données d'entraînement ; rien au-delà n'a servi à calibrer.
+  trainingCutoff     DateTime?
+  /// Empreinte des données utilisées (fichiers + effectifs).
+  dataSnapshot       String
+  status             ModelVersionStatus @default(CANDIDATE)
+  /// Justification chiffrée : validation temporelle, décision, retrait.
+  validation         Json?
+  supersedesId       String?
+  createdAt          DateTime           @default(now())
+
+  supersedes ModelVersion?    @relation("VersionChain", fields: [supersedesId], references: [id])
+  replaces   ModelVersion[]   @relation("VersionChain")
+  errors     PredictionError[]
+
+  @@index([status, createdAt])
+}
+
+enum ModelVersionStatus {
+  CANDIDATE
+  ACTIVE
+  ROLLED_BACK
+  ARCHIVED
+}
+
+// ---------------------------------------------------------------------------
+// §4 (Phase 15) — Erreur mesurée de chaque prédiction réglée.
+// Une ligne par prédiction, jamais réécrite : c'est la mémoire d'apprentissage.
+// ---------------------------------------------------------------------------
+model PredictionError {
+  id           String   @id @default(cuid())
+  predictionId String   @unique
+  matchId      String
+  modelVersion String
+  versionId    String?
+  predictedAt  DateTime
+  matchDate    DateTime
+
+  /// Probabilité manquante sur l'issue réalisée (0 = parfaite).
+  error1x2        Float
+  errorOver25     Float
+  errorBtts       Float
+  errorTeamHome   Float
+  errorTeamAway   Float
+  errorExactScore Float?
+
+  /// Brier multiclasse et Log Loss du 1X2.
+  brier       Float
+  logLoss     Float
+  calibration Float
+
+  /// L'issue publiée s'est-elle réalisée ? (taux de réussite)
+  hit             Boolean
+  /// Probabilité accordée à l'issue publiée. Base de l'erreur de calibration.
+  pickProbability Float
+
+  /// Biais signés : positif = le modèle a surestimé l'événement.
+  biasHome    Float
+  biasOver25  Float
+  biasBtts    Float
+
+  /// Contexte, pour les diagnostics groupés (§5).
+  competition   String
+  season        String?
+  confidence    Float
+  dataGrade     String
+  xgUsed        Boolean
+  xgWeight      Float
+  expectedGoals Float?
+  favouriteSide String
+  createdAt     DateTime @default(now())
+
+  version ModelVersion? @relation(fields: [versionId], references: [id])
+
+  @@index([predictedAt])
+  @@index([competition])
+  @@index([xgUsed])
+  @@index([modelVersion])
+}
+
+// ---------------------------------------------------------------------------
+// §13 à §16 (Phase 15) — Cache des visuels (logos, drapeaux).
+// Aucune image n'est inventée : on ne stocke que des URL fournies par une
+// source, avec leur provenance et la date de dernière vérification.
+// ---------------------------------------------------------------------------
+model AssetCache {
+  id           String   @id @default(cuid())
+  /// « team » | « league » | « country » | « player »
+  entityType   String
+  entityId     String
+  entityName   String
+  /// URL fournie par la source. Jamais construite, jamais devinée.
+  logoUrl      String
+  /// Source d'origine : « live-football-api », « football-data-org », …
+  source       String
+  /// Dernière vérification de la disponibilité de l'URL.
+  lastVerified DateTime?
+  /// Résultat de la dernière vérification : disponible ou non.
+  reachable    Boolean?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([entityType, entityId, source])
+  @@index([entityType, entityId])
+}

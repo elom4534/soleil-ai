@@ -1,0 +1,5796 @@
+{
+  "generatedAt": "2026-09-29T21:46:25.456Z",
+  "provider": {
+    "id": "live-football-api",
+    "displayName": "LiveFootballApi (live-football-api.com)",
+    "baseUrl": "https://live-football-api.com/api/v1",
+    "authStyle": "query",
+    "authHeader": null,
+    "authParam": "api_key",
+    "creditPerCall": 1,
+    "docsUrl": "https://www.live-football-api.com/docs"
+  },
+  "plan": {
+    "label": "LiveFootballApi — audit ciblé (14 étapes, 14 crédits au maximum)",
+    "steps": [
+      {
+        "key": "leagues",
+        "endpoint": "leagues",
+        "question": "L'authentification fonctionne-t-elle, combien de compétitions sont couvertes, et lesquelles sont africaines ?",
+        "cost": 1,
+        "required": true
+      },
+      {
+        "key": "matches_today",
+        "endpoint": "matches",
+        "question": "Les rencontres du jour sont-elles accessibles en un appel, avec score, horaire et statut ? (endpoint de la page « Matchs du jour »)",
+        "cost": 1,
+        "required": true
+      },
+      {
+        "key": "matches_finished",
+        "endpoint": "matches",
+        "question": "Une journée écoulée livre-t-elle les scores terminaux et les scores à la mi-temps ? (base de l'historique)",
+        "cost": 1,
+        "required": true
+      },
+      {
+        "key": "matches_future",
+        "endpoint": "matches",
+        "question": "Le calendrier s'étend-il au-delà du jour même (programmation à l'avance) ?",
+        "cost": 1,
+        "required": false
+      },
+      {
+        "key": "details_active",
+        "endpoint": "live_match_details",
+        "question": "Quelles statistiques de match sont réellement fournies — et contiennent-elles l'expected goals ?",
+        "cost": 1,
+        "required": true
+      },
+      {
+        "key": "details_finished",
+        "endpoint": "live_match_details",
+        "question": "Les statistiques et événements restent-ils disponibles après la fin du match ? (condition de constitution de l'historique)",
+        "cost": 1,
+        "required": false
+      },
+      {
+        "key": "standings",
+        "endpoint": "league_standings",
+        "question": "Le classement est-il complet (points, joués, buts, différence, forme) et quel historique de saisons est réellement conservé ?",
+        "cost": 1,
+        "required": true
+      },
+      {
+        "key": "league_fixtures",
+        "endpoint": "league_fixtures",
+        "question": "Le calendrier complet d'une compétition est-il récupérable en un appel ? (coût d'un import de référence)",
+        "cost": 1,
+        "required": true
+      },
+      {
+        "key": "league_fixtures_old",
+        "endpoint": "league_fixtures",
+        "question": "Une saison antérieure est-elle réellement servie ? (profondeur d'historique)",
+        "cost": 1,
+        "required": false
+      },
+      {
+        "key": "team_matches",
+        "endpoint": "team_matches",
+        "question": "Les rencontres d'une équipe sur une saison sont-elles récupérables (forme, domicile/extérieur, buts pour/contre) ?",
+        "cost": 1,
+        "required": true
+      },
+      {
+        "key": "team_standings",
+        "endpoint": "team_standings",
+        "question": "Le classement filtré sur une équipe est-il disponible ?",
+        "cost": 1,
+        "required": false
+      },
+      {
+        "key": "h2h",
+        "endpoint": "h2h",
+        "question": "Les confrontations directes et la forme récente des deux équipes sont-elles fournies ?",
+        "cost": 1,
+        "required": false
+      },
+      {
+        "key": "african_standings",
+        "endpoint": "league_standings",
+        "question": "Une compétition africaine dispose-t-elle d'un classement réel ? (enjeu direct pour le public de SOLEIL)",
+        "cost": 1,
+        "required": false
+      },
+      {
+        "key": "african_fixtures",
+        "endpoint": "league_fixtures",
+        "question": "Une compétition africaine dispose-t-elle d'un calendrier réel ?",
+        "cost": 1,
+        "required": false
+      }
+    ],
+    "maxCost": 14
+  },
+  "budget": {
+    "declared": 25,
+    "spentBySoleil": 14
+  },
+  "creditVerification": {
+    "callCount": 14,
+    "firstBalance": 499,
+    "lastBalance": 486,
+    "observedDelta": 13,
+    "expectedDelta": 13,
+    "conforms": true
+  },
+  "keysDetected": 18,
+  "context": {
+    "today": "2026-09-29",
+    "yesterday": "2026-09-28",
+    "lastSaturday": "2026-09-26",
+    "nextSaturday": "2026-10-03",
+    "league": 39,
+    "season": 2026,
+    "slots": {
+      "leagueId": "581t4mywybx21wcpmpykhyzr3",
+      "leagueLabel": "Argentina — Premier League",
+      "africanLeagueId": "61ny7153y7f0nqpwop51qd49h",
+      "africanLeagueLabel": "Africa — African Games",
+      "matchId": "dngq70mnnfgsvn3hto0naujv8",
+      "matchKind": "live",
+      "leagueIdFromMatch": "cu0rmpyff5692eo06ltddjo8a",
+      "teamId": "75wey07xf5dwm5t76drg6k4k9",
+      "finishedMatchId": "1vul4ucfdbfim2265tx9z7zf8",
+      "oldSeason": "2025"
+    }
+  },
+  "steps": [
+    {
+      "key": "leagues",
+      "question": "L'authentification fonctionne-t-elle, combien de compétitions sont couvertes, et lesquelles sont africaines ?",
+      "endpoint": "leagues",
+      "params": {
+        "lang": "en"
+      },
+      "cost": 1,
+      "required": true,
+      "status": "success",
+      "creditsSpent": 1,
+      "creditsRemaining": 499,
+      "fromCache": false,
+      "itemCount": 159,
+      "durationMs": 1402,
+      "answers": [
+        "Authentification : fonctionnelle · crédits restants annoncés : 499.",
+        "Compétitions : 159 pays, 1416 ligues listées.",
+        "Compétitions africaines détectées (105) : Africa — Africa Cup of Nations · Africa — Africa Cup of Nations U17 · Africa — Africa U20 Nations Cup Qualification · Africa — African Games · Africa — African Games Women · Africa — African Women's Cup of Nations Qualification · Africa — CAF Champions League · Africa — CAF Confederations Cup · Africa — CAF Super Cup · Africa — CAF Women's Champions League · Africa — CAF Women's Championship U20 · Africa — CAF Women's Olympic Qualification."
+      ],
+      "evidence": {
+        "totalCountries": 159,
+        "countries": [
+          "Africa",
+          "Albania",
+          "Algeria",
+          "Andorra",
+          "Angola",
+          "Argentina",
+          "Armenia",
+          "Aruba",
+          "Asia",
+          "Australia",
+          "Austria",
+          "Azerbaijan",
+          "Bahrain",
+          "Bangladesh",
+          "Belarus",
+          "Belgium",
+          "Belize",
+          "Bolivia",
+          "Bosnia and Herzegovina",
+          "Botswana",
+          "Brazil",
+          "Bulgaria",
+          "Burkina Faso",
+          "Burundi",
+          "Cambodia",
+          "Cameroon",
+          "Canada",
+          "Chile",
+          "China",
+          "Colombia",
+          "Costa Rica",
+          "Croatia",
+          "Cuba",
+          "Cyprus",
+          "Czechia",
+          "Denmark",
+          "Djibouti",
+          "Dominican Republic",
+          "Ecuador",
+          "Egypt",
+          "El Salvador",
+          "England",
+          "Estonia",
+          "Ethiopia",
+          "Europe",
+          "Faroe Islands",
+          "Finland",
+          "France",
+          "Gambia",
+          "Georgia",
+          "Germany",
+          "Ghana",
+          "Gibraltar",
+          "Greece",
+          "Grenada",
+          "Guatemala",
+          "Honduras",
+          "Hong Kong",
+          "Hungary",
+          "Iceland",
+          "India",
+          "Indonesia",
+          "International",
+          "Iran",
+          "Iraq",
+          "Israel",
+          "Italy",
+          "Ivory Coast",
+          "Jamaica",
+          "Japan",
+          "Jordan",
+          "Kazakhstan",
+          "Kenya",
+          "Kosovo",
+          "Kuwait",
+          "Kyrgyzstan",
+          "Latvia",
+          "Lebanon",
+          "Liberia",
+          "Liechtenstein",
+          "Lithuania",
+          "Luxembourg",
+          "Macau",
+          "Malawi",
+          "Malaysia",
+          "Mali",
+          "Malta",
+          "Mauritania",
+          "Mexico",
+          "Moldova",
+          "Mongolia",
+          "Montenegro",
+          "Morocco",
+          "Mozambique",
+          "Myanmar",
+          "Namibia",
+          "Netherlands",
+          "New Zealand",
+          "Nicaragua",
+          "Niger",
+          "Nigeria",
+          "North Macedonia",
+          "North/Central America",
+          "Northern Ireland",
+          "Norway",
+          "Oceania",
+          "Oman",
+          "Panama",
+          "Paraguay",
+          "Peru",
+          "Philippines",
+          "Poland",
+          "Portugal",
+          "Qatar",
+          "Republic of Ireland",
+          "Romania",
+          "Russia",
+          "Rwanda",
+          "Saint Kitts and Nevis",
+          "San Marino",
+          "Saudi Arabia",
+          "Scotland",
+          "Senegal",
+          "Serbia",
+          "Seychelles",
+          "Sierra Leone",
+          "Singapore",
+          "Slovakia",
+          "Slovenia",
+          "South Africa",
+          "South America",
+          "South Korea",
+          "Spain",
+          "Suriname",
+          "Sweden",
+          "Switzerland",
+          "Syria",
+          "Taiwan",
+          "Tajikistan",
+          "Tanzania",
+          "Thailand",
+          "Togo",
+          "Trinidad and Tobago",
+          "Tunisia",
+          "Türkiye",
+          "UAE",
+          "USA",
+          "Uganda",
+          "Ukraine",
+          "Uruguay",
+          "Uzbekistan",
+          "Venezuela",
+          "Vietnam",
+          "Wales",
+          "World",
+          "Zambia",
+          "Zanzibar",
+          "Zimbabwe",
+          "eFootball"
+        ],
+        "leagues": [
+          {
+            "id": "68zplepppndhl8bfdvgy9vgu1",
+            "name": "Africa Cup of Nations",
+            "country": "Africa"
+          },
+          {
+            "id": "aenz5625kw4280usgjnbo8mqz",
+            "name": "Africa Cup of Nations U17",
+            "country": "Africa"
+          },
+          {
+            "id": "4fht4nyqpp5dzzv6ucm057dp0",
+            "name": "Africa U20 Nations Cup Qualification",
+            "country": "Africa"
+          },
+          {
+            "id": "61ny7153y7f0nqpwop51qd49h",
+            "name": "African Games",
+            "country": "Africa"
+          },
+          {
+            "id": "93n3ie5xphxyiggdsg5xk3uok",
+            "name": "African Games Women",
+            "country": "Africa"
+          },
+          {
+            "id": "2cb7wex1kos0h0dtehlovab6c",
+            "name": "African Women's Cup of Nations Qualification",
+            "country": "Africa"
+          },
+          {
+            "id": "cse5oqqt2pzfcy8uz6yz3tkbj",
+            "name": "CAF Champions League",
+            "country": "Africa"
+          },
+          {
+            "id": "bx57cmq1edfq53ckfk791supi",
+            "name": "CAF Confederations Cup",
+            "country": "Africa"
+          },
+          {
+            "id": "22dnvpi8qeluhs1f7y9l07a2x",
+            "name": "CAF Super Cup",
+            "country": "Africa"
+          },
+          {
+            "id": "xu2nd3dkwdun0j71tnqabfo4",
+            "name": "CAF Women's Champions League",
+            "country": "Africa"
+          },
+          {
+            "id": "3lmcbdd5m14q5erbtool2o9en",
+            "name": "CAF Women's Championship U20",
+            "country": "Africa"
+          },
+          {
+            "id": "a1o520wpyhu8hjdsbf692j0tl",
+            "name": "CAF Women's Olympic Qualification",
+            "country": "Africa"
+          },
+          {
+            "id": "89xp61lrgd40cwvcsx9h2di0a",
+            "name": "COSAFA Championship U20",
+            "country": "Africa"
+          },
+          {
+            "id": "5liafywveaf56s2nod8hg9nca",
+            "name": "COSAFA Cup",
+            "country": "Africa"
+          },
+          {
+            "id": "f4vol68gjccwoajo0os2q09ka",
+            "name": "COSAFA Women's Cup",
+            "country": "Africa"
+          },
+          {
+            "id": "7qce1cyzv51an5furf31escx6",
+            "name": "COSAFA Women's Cup U20",
+            "country": "Africa"
+          },
+          {
+            "id": "3aa4mumjl6zyetg6o9hwd5hhx",
+            "name": "DK Elemeler",
+            "country": "Africa"
+          },
+          {
+            "id": "2r1hqz453bn9ljzt53kdr2lwb",
+            "name": "Nations Championship",
+            "country": "Africa"
+          },
+          {
+            "id": "ad8y7vdjhinfqv4wo8rod6dck",
+            "name": "Nations Championship Qualifiers",
+            "country": "Africa"
+          },
+          {
+            "id": "ax1yf4nlzqpcji4j8epdgx3zl",
+            "name": "Nations Cup Qualifiers",
+            "country": "Africa"
+          },
+          {
+            "id": "7dauoeun2gnkofl7f4y510s4f",
+            "name": "Nations Cup U20",
+            "country": "Africa"
+          },
+          {
+            "id": "5krw9gokv1sxsmuc5sazclbmc",
+            "name": "WAFU A Women's Cup",
+            "country": "Africa"
+          },
+          {
+            "id": "14bdhdgyjd4pqapxjhfq267ge",
+            "name": "Women's Nations Cup",
+            "country": "Africa"
+          },
+          {
+            "id": "8vr10yi3vrkiem3lqc3cdc4x5",
+            "name": "Women's Senior Challenge Cup",
+            "country": "Africa"
+          },
+          {
+            "id": "5h4rpn83aeqzc275kvc8mirxq",
+            "name": "Cup",
+            "country": "Albania"
+          },
+          {
+            "id": "5laava24i9c121nm1hooqrubl",
+            "name": "League 1",
+            "country": "Albania"
+          },
+          {
+            "id": "62tmn0smwchfftjkafaj5ts5x",
+            "name": "Play-off 1/2",
+            "country": "Albania"
+          },
+          {
+            "id": "9iqaslqco4yf8c1cmnqorope5",
+            "name": "Super Cup",
+            "country": "Albania"
+          },
+          {
+            "id": "1zcp6rnjil25rnsv1ttcz3dhx",
+            "name": "Super Lig",
+            "country": "Albania"
+          },
+          {
+            "id": "57nu0wygurzkp6fuy5hhrtaa2",
+            "name": "League 1",
+            "country": "Algeria"
+          },
+          {
+            "id": "9hh6n2f84k31zmlcxyvmc1w2y",
+            "name": "League 2",
+            "country": "Algeria"
+          },
+          {
+            "id": "dr6r77p0pavomlvzvdkjrj54h",
+            "name": "National Cup",
+            "country": "Algeria"
+          },
+          {
+            "id": "9mjnt1mei5wcehylmffc19ic4",
+            "name": "Reserve League",
+            "country": "Algeria"
+          },
+          {
+            "id": "7eh9ynr7f0lcp7yv2rm8i3rba",
+            "name": "Super Cup",
+            "country": "Algeria"
+          },
+          {
+            "id": "5a1bw1gcizd2iud370nc3yyob",
+            "name": "U21 1st League",
+            "country": "Algeria"
+          },
+          {
+            "id": "7yx3dmsu97t2azo5nsowt7vwo",
+            "name": "Constitucio Cup",
+            "country": "Andorra"
+          },
+          {
+            "id": "ejunkmfhjz9weugd2bqrkgobb",
+            "name": "League 1",
+            "country": "Andorra"
+          },
+          {
+            "id": "2y7myq41xi0b0nvbmh6a4k3lh",
+            "name": "League 1 Play-out",
+            "country": "Andorra"
+          },
+          {
+            "id": "3srzp139thd2ppo8ediqcasuq",
+            "name": "League 2",
+            "country": "Andorra"
+          },
+          {
+            "id": "9r9w9f59lfycbl6d4iyak2e67",
+            "name": "Super Cup",
+            "country": "Andorra"
+          },
+          {
+            "id": "6c76ua2pykvzepkmpprq4i8kf",
+            "name": "Girabola",
+            "country": "Angola"
+          },
+          {
+            "id": "a81lq2nnsh2h11qr4z5cpieei",
+            "name": "Argentina Champions Cup",
+            "country": "Argentina"
+          },
+          {
+            "id": "6q6al9aofo1zlf9l11qcpmvl6",
+            "name": "Copa Santa Fe",
+            "country": "Argentina"
+          },
+          {
+            "id": "bdtat25m14jy85y484z3e6lf",
+            "name": "Cup",
+            "country": "Argentina"
+          },
+          {
+            "id": "5zfudxcld0kr6bspk1jauq3t9",
+            "name": "Federal Amateur Regional Tournament",
+            "country": "Argentina"
+          },
+          {
+            "id": "a08z7wsz0uqx90wsj33g65fcd",
+            "name": "Federal Tournament A",
+            "country": "Argentina"
+          },
+          {
+            "id": "cjfsodtfpi0mm2594rbj2urro",
+            "name": "International Super Cup",
+            "country": "Argentina"
+          },
+          {
+            "id": "2tyo5z2kcb5eiv8u53ne72yn4",
+            "name": "League C",
+            "country": "Argentina"
+          },
+          {
+            "id": "581t4mywybx21wcpmpykhyzr3",
+            "name": "Premier League",
+            "country": "Argentina"
+          },
+          {
+            "id": "66nxwll8fur0rtp9q7wqaki1l",
+            "name": "Primera B Metropolitana",
+            "country": "Argentina"
+          },
+          {
+            "id": "byu00jvt1j6csyv4y1lkt2fm2",
+            "name": "Primera Nacional",
+            "country": "Argentina"
+          },
+          {
+            "id": "2f3fydvyjz2svhlc1eo3qflwd",
+            "name": "Reserve League",
+            "country": "Argentina"
+          },
+          {
+            "id": "1eimd27tu748g3q46i0qapem3",
+            "name": "Super Cup",
+            "country": "Argentina"
+          },
+          {
+            "id": "8nbwkj392b0xzssqpw9jwmzdn",
+            "name": "The League",
+            "country": "Argentina"
+          },
+          {
+            "id": "1be64lgp0chekkyu0iuyta8kc",
+            "name": "League 1",
+            "country": "Armenia"
+          },
+          {
+            "id": "dn9kmfdbz74lzt3m8e9g0vwjq",
+            "name": "Premier League",
+            "country": "Armenia"
+          },
+          {
+            "id": "ai1avxe03fp35cep030gkcwjs",
+            "name": "Honor League",
+            "country": "Aruba"
+          },
+          {
+            "id": "21unwecwwhmf87e9awiyd7ztg",
+            "name": "Play-offs 1/2",
+            "country": "Aruba"
+          },
+          {
+            "id": "93cgnp505neae8bj9n0ezhjwd",
+            "name": "AFC Challenge League",
+            "country": "Asia"
+          },
+          {
+            "id": "1fedahp0rws09tj451onten8r",
+            "name": "AFC Champions League",
+            "country": "Asia"
+          },
+          {
+            "id": "e6vzdkz6l236s9p288mharefy",
+            "name": "AFC Champions League 2",
+            "country": "Asia"
+          },
+          {
+            "id": "ep4po13e04rjg268pgete0fvu",
+            "name": "AFC Champions League Women",
+            "country": "Asia"
+          },
+          {
+            "id": "2ffdvl11p1b2j5j7mnbxnuivo",
+            "name": "AFC U17 Asian Cup",
+            "country": "Asia"
+          },
+          {
+            "id": "a8zfs5watabzd386mqas8rn6c",
+            "name": "AFC U20 Asian Cup",
+            "country": "Asia"
+          },
+          {
+            "id": "c889g8rf89us2wf9jga0v7xuc",
+            "name": "AFC U20 Asian Cup Qualification",
+            "country": "Asia"
+          },
+          {
+            "id": "e72eouiobe3w4nnd6u846cz1m",
+            "name": "AFC U20 Asian Cup Women",
+            "country": "Asia"
+          },
+          {
+            "id": "89edmwynhffa7dr9l5cvugmzu",
+            "name": "AFC U20 Women's Asian Cup Qualification",
+            "country": "Asia"
+          },
+          {
+            "id": "dlf90uty1axvtr1vn2aaw9vqh",
+            "name": "AFC U23 Asian Cup",
+            "country": "Asia"
+          },
+          {
+            "id": "9c0sdh9dm7ktcvs7vojicls7o",
+            "name": "AFC U23 Asian Cup Qualification",
+            "country": "Asia"
+          },
+          {
+            "id": "3oou3t0rf7xf45w1zzvvgs9fx",
+            "name": "AFF U19 Championship",
+            "country": "Asia"
+          },
+          {
+            "id": "lfa17494566517017860088",
+            "name": "AFF U19 Championship Women",
+            "country": "Asia"
+          },
+          {
+            "id": "5p0v7s4g7idym875mfb9m3k2y",
+            "name": "AFF U23 Championship",
+            "country": "Asia"
+          },
+          {
+            "id": "8dxsd8xnjm9n1ogo37yomgl3p",
+            "name": "ASEAN Championship",
+            "country": "Asia"
+          },
+          {
+            "id": "6j6x5731pkw3tzvm5gpvbspas",
+            "name": "ASEAN Clubs Championship",
+            "country": "Asia"
+          },
+          {
+            "id": "86b30pmmbgqqgn6emfdf7tw4",
+            "name": "ASEAN Women's Championship Qualification",
+            "country": "Asia"
+          },
+          {
+            "id": "93i7thp7zi0ympyt6l8aa1r2i",
+            "name": "Asian Cup",
+            "country": "Asia"
+          },
+          {
+            "id": "emy1ibc8fu2l0fukh4vlu5xl5",
+            "name": "Asian Cup Qualifiers",
+            "country": "Asia"
+          },
+          {
+            "id": "107srxl6dq0esc8tfzz3dpit",
+            "name": "Asian Cup Women",
+            "country": "Asia"
+          },
+          {
+            "id": "5adng1a0v1k97emai1libg3h",
+            "name": "Asian Football Federation Women's Championship",
+            "country": "Asia"
+          },
+          {
+            "id": "ude9t6yj60lebbn356qzg4k4",
+            "name": "CAFA Nations Cup",
+            "country": "Asia"
+          },
+          {
+            "id": "5y2gt23c30e73v2ei6m8qafbo",
+            "name": "CAFA U20 Championship",
+            "country": "Asia"
+          },
+          {
+            "id": "40yjcbx2sq6oq736iqqqczwt1",
+            "name": "DK Elemeler",
+            "country": "Asia"
+          },
+          {
+            "id": "7ncu68l8o4qr5pj0lbta50xec",
+            "name": "EAFF Championship Qualifiers",
+            "country": "Asia"
+          },
+          {
+            "id": "1nta6ljqryzmwl9njiqtt45at",
+            "name": "EAFF E-1 Football Championship",
+            "country": "Asia"
+          },
+          {
+            "id": "5gprnr61il34svwh1j30w161h",
+            "name": "EAFF Women's East Asian Cup",
+            "country": "Asia"
+          },
+          {
+            "id": "4gyhjrol8ycf1taamo21fvfh2",
+            "name": "Gulf Clubs Champions League",
+            "country": "Asia"
+          },
+          {
+            "id": "6yeu4m8ey7hcaa5wuf6oe81iw",
+            "name": "Gulf Cup",
+            "country": "Asia"
+          },
+          {
+            "id": "m302t7zh5cjqxb8hlygsj0no",
+            "name": "Qatar - UAE Challenge Cup",
+            "country": "Asia"
+          },
+          {
+            "id": "epm8e31ji94fvjuhjz89sphqs",
+            "name": "Qatar-UAE Super Cup",
+            "country": "Asia"
+          },
+          {
+            "id": "lfa1752572253125540053",
+            "name": "SAFF U20 Women's Championship",
+            "country": "Asia"
+          },
+          {
+            "id": "3g0hx0xh4r5bst7c4i941uead",
+            "name": "South Asian Football Federation Women's Championship",
+            "country": "Asia"
+          },
+          {
+            "id": "7bylkzri35914smr1pu56u7e4",
+            "name": "Southeast Asian Games",
+            "country": "Asia"
+          },
+          {
+            "id": "egmzlu53pj9hpl9huntztaluc",
+            "name": "UAE - Qatar Champions Cup",
+            "country": "Asia"
+          },
+          {
+            "id": "7k8sm9bfafxj4sauqt2osww0k",
+            "name": "UAE-Qatar Challenge Cup",
+            "country": "Asia"
+          },
+          {
+            "id": "7tduxx5z8sx24odgyfenegb2s",
+            "name": "West Asian Championship",
+            "country": "Asia"
+          },
+          {
+            "id": "34zuqd7ylixhicu2zrk71indg",
+            "name": "Women's Asian Cup Qualifiers",
+            "country": "Asia"
+          },
+          {
+            "id": "3pyn6688uq9zars5srftk5ejt",
+            "name": "Women's Asian Olympic Qualifiers",
+            "country": "Asia"
+          },
+          {
+            "id": "aaaux0wnaqhajb8ruawy0pnm9",
+            "name": "Women's Southeast Asian Games",
+            "country": "Asia"
+          },
+          {
+            "id": "9p3nnxhdjahfn8qswpzy8oyc3",
+            "name": "A-League Women",
+            "country": "Australia"
+          },
+          {
+            "id": "lfa16949401379868078058",
+            "name": "Amateur Premier League",
+            "country": "Australia"
+          },
+          {
+            "id": "lfa16911470608842645476",
+            "name": "Australia Queensland Premier League 4",
+            "country": "Australia"
+          },
+          {
+            "id": "3jlffacre45qv9p155t1yr7je",
+            "name": "Brisbane Premier League",
+            "country": "Australia"
+          },
+          {
+            "id": "bsfradgvkxh4xnsdv13fcpkz9",
+            "name": "Brisbane Reserve Premier League",
+            "country": "Australia"
+          },
+          {
+            "id": "eqz64pn0qsp2y7aq4m9id3fn6",
+            "name": "Capital Region NPL",
+            "country": "Australia"
+          },
+          {
+            "id": "c94v1ygetqisxeijmyhta076y",
+            "name": "Capital Region NPL Women",
+            "country": "Australia"
+          },
+          {
+            "id": "9zmk2nvdaohu0lggtfc6vdo4q",
+            "name": "Capital Region NPL Youth League",
+            "country": "Australia"
+          },
+          {
+            "id": "3ke8zwvvzg87zrt62g8empxxw",
+            "name": "Capital Region NPL Youth League 2",
+            "country": "Australia"
+          },
+          {
+            "id": "3kzix5x6lqvik8xiw2242fmne",
+            "name": "Capital Territory NPL 2",
+            "country": "Australia"
+          },
+          {
+            "id": "41hbf8hlc2hfpw0n9hnn1ow7o",
+            "name": "Championship",
+            "country": "Australia"
+          },
+          {
+            "id": "2rdrisk4vlglfjxwu0precyqd",
+            "name": "FFA Cup",
+            "country": "Australia"
+          },
+          {
+            "id": "lfa17209432293223727483",
+            "name": "NSW NPL 2 Women",
+            "country": "Australia"
+          },
+          {
+            "id": "610n5m1lx1y35jlo0ttfvuck4",
+            "name": "NSW Play-off Round 1",
+            "country": "Australia"
+          },
+          {
+            "id": "bzajdavf25nuvt03llalv6yac",
+            "name": "NSW Play-off Round 2",
+            "country": "Australia"
+          },
+          {
+            "id": "9u4pm8x0lfmfq3r0pypmrls71",
+            "name": "National Premier League North",
+            "country": "Australia"
+          },
+          {
+            "id": "6g8hw3acenrw828la7gwx4mvs",
+            "name": "New South Wales NPL",
+            "country": "Australia"
+          },
+          {
+            "id": "5f4vmg8dv2d0y8fuw60f0kbca",
+            "name": "New South Wales NPL 2",
+            "country": "Australia"
+          },
+          {
+            "id": "aed8nciihgj74iq4tv6mrq39w",
+            "name": "New South Wales NPL 3",
+            "country": "Australia"
+          },
+          {
+            "id": "69ruk23bbos6yc07zeogu0mzu",
+            "name": "New South Wales NPL Women",
+            "country": "Australia"
+          },
+          {
+            "id": "ahqvf4v6ibao6885a6d7h8jmy",
+            "name": "New South Wales NPL Youth League",
+            "country": "Australia"
+          },
+          {
+            "id": "axmk1ke9j3idwqdxurn5d33mc",
+            "name": "New South Wales NPL Youth League 2",
+            "country": "Australia"
+          }
+        ],
+        "africanLeagues": [
+          {
+            "id": "68zplepppndhl8bfdvgy9vgu1",
+            "name": "Africa Cup of Nations",
+            "country": "Africa"
+          },
+          {
+            "id": "aenz5625kw4280usgjnbo8mqz",
+            "name": "Africa Cup of Nations U17",
+            "country": "Africa"
+          },
+          {
+            "id": "4fht4nyqpp5dzzv6ucm057dp0",
+            "name": "Africa U20 Nations Cup Qualification",
+            "country": "Africa"
+          },
+          {
+            "id": "61ny7153y7f0nqpwop51qd49h",
+            "name": "African Games",
+            "country": "Africa"
+          },
+          {
+            "id": "93n3ie5xphxyiggdsg5xk3uok",
+            "name": "African Games Women",
+            "country": "Africa"
+          },
+          {
+            "id": "2cb7wex1kos0h0dtehlovab6c",
+            "name": "African Women's Cup of Nations Qualification",
+            "country": "Africa"
+          },
+          {
+            "id": "cse5oqqt2pzfcy8uz6yz3tkbj",
+            "name": "CAF Champions League",
+            "country": "Africa"
+          },
+          {
+            "id": "bx57cmq1edfq53ckfk791supi",
+            "name": "CAF Confederations Cup",
+            "country": "Africa"
+          },
+          {
+            "id": "22dnvpi8qeluhs1f7y9l07a2x",
+            "name": "CAF Super Cup",
+            "country": "Africa"
+          },
+          {
+            "id": "xu2nd3dkwdun0j71tnqabfo4",
+            "name": "CAF Women's Champions League",
+            "country": "Africa"
+          },
+          {
+            "id": "3lmcbdd5m14q5erbtool2o9en",
+            "name": "CAF Women's Championship U20",
+            "country": "Africa"
+          },
+          {
+            "id": "a1o520wpyhu8hjdsbf692j0tl",
+            "name": "CAF Women's Olympic Qualification",
+            "country": "Africa"
+          },
+          {
+            "id": "89xp61lrgd40cwvcsx9h2di0a",
+            "name": "COSAFA Championship U20",
+            "country": "Africa"
+          },
+          {
+            "id": "5liafywveaf56s2nod8hg9nca",
+            "name": "COSAFA Cup",
+            "country": "Africa"
+          },
+          {
+            "id": "f4vol68gjccwoajo0os2q09ka",
+            "name": "COSAFA Women's Cup",
+            "country": "Africa"
+          },
+          {
+            "id": "7qce1cyzv51an5furf31escx6",
+            "name": "COSAFA Women's Cup U20",
+            "country": "Africa"
+          },
+          {
+            "id": "3aa4mumjl6zyetg6o9hwd5hhx",
+            "name": "DK Elemeler",
+            "country": "Africa"
+          },
+          {
+            "id": "2r1hqz453bn9ljzt53kdr2lwb",
+            "name": "Nations Championship",
+            "country": "Africa"
+          },
+          {
+            "id": "ad8y7vdjhinfqv4wo8rod6dck",
+            "name": "Nations Championship Qualifiers",
+            "country": "Africa"
+          },
+          {
+            "id": "ax1yf4nlzqpcji4j8epdgx3zl",
+            "name": "Nations Cup Qualifiers",
+            "country": "Africa"
+          }
+        ],
+        "fieldCoverage": [
+          {
+            "path": "[].id",
+            "sample": "68zplepppndhl8bfdvgy9vgu1"
+          },
+          {
+            "path": "[].name",
+            "sample": "Africa Cup of Nations"
+          },
+          {
+            "path": "[].country",
+            "sample": "Africa"
+          }
+        ]
+      }
+    },
+    {
+      "key": "matches_today",
+      "question": "Les rencontres du jour sont-elles accessibles en un appel, avec score, horaire et statut ? (endpoint de la page « Matchs du jour »)",
+      "endpoint": "matches",
+      "params": {
+        "date": "2026-09-29",
+        "lang": "en"
+      },
+      "cost": 1,
+      "required": true,
+      "status": "success",
+      "creditsSpent": 1,
+      "creditsRemaining": 498,
+      "fromCache": false,
+      "itemCount": 193,
+      "durationMs": 840,
+      "answers": [
+        "Rencontres du jour : 193 rencontre(s) — 4 en direct, 162 terminée(s), 27 à venir.",
+        "Dates couvertes par la réponse : 2026-09-29 → 2026-09-29.",
+        "Score final présent sur 86 % des rencontres · score à la mi-temps sur 86 %.",
+        "Champs incomplets : home.score 86 % · halftime.home+away 86 %.",
+        "États rencontrés : postGame×162, postponed×14, preGame×13, inPlay×4."
+      ],
+      "evidence": {
+        "survey": {
+          "count": 193,
+          "live": 4,
+          "finished": 162,
+          "upcoming": 27,
+          "halftimeFilled": 86,
+          "scoresFilled": 86,
+          "kickoffFilled": 100,
+          "leagueIdFilled": 100,
+          "dates": [
+            "2026-09-29"
+          ],
+          "fieldCoverage": [
+            {
+              "field": "id",
+              "percent": 100
+            },
+            {
+              "field": "league.id",
+              "percent": 100
+            },
+            {
+              "field": "league.country",
+              "percent": 100
+            },
+            {
+              "field": "horaire (kickoff/date)",
+              "percent": 100
+            },
+            {
+              "field": "status.state",
+              "percent": 100
+            },
+            {
+              "field": "home.id",
+              "percent": 100
+            },
+            {
+              "field": "home.name",
+              "percent": 100
+            },
+            {
+              "field": "home.score",
+              "percent": 86
+            },
+            {
+              "field": "halftime.home+away",
+              "percent": 86
+            },
+            {
+              "field": "week / round",
+              "percent": 100
+            }
+          ],
+          "statusLabels": {
+            "postGame": 162,
+            "postponed": 14,
+            "preGame": 13,
+            "inPlay": 4
+          }
+        },
+        "sample": [
+          {
+            "id": "3eskwfpnju5i1lsz1yg9ec844",
+            "league": {
+              "id": "cesdwwnxbc5fmajgroc0hqzy2",
+              "name": "International Friendlies Countries",
+              "country": "World"
+            },
+            "week": "Friendlies 1",
+            "kickoff": "00:00",
+            "status": {
+              "status": "scheduled",
+              "display": "00:00",
+              "is_live": false,
+              "state": "preGame"
+            },
+            "home": {
+              "id": "9vh2u1p4ppm597tjfahst2m3n",
+              "name": "United States",
+              "logo": "https://live-football-api.com/teams/9vh2u1p4ppm597tjfahst2m3n.png",
+              "score": null
+            },
+            "away": {
+              "id": "4etj58jfe5zmfspk9pl7jfzr3",
+              "name": "Chile",
+              "logo": "https://live-football-api.com/teams/4etj58jfe5zmfspk9pl7jfzr3.png",
+              "score": null
+            },
+            "halftime": {
+              "home": null,
+              "away": null
+            },
+            "tv_broadcast": false,
+            "penalty": {
+              "home": null,
+              "away": null
+            }
+          },
+          {
+            "id": "1xhg0550hjzg2lvht3ed6l4wk",
+            "league": {
+              "id": "cu0rmpyff5692eo06ltddjo8a",
+              "name": "Concacaf Nations League",
+              "country": "N/C America"
+            },
+            "week": "League A",
+            "kickoff": "00:00",
+            "status": {
+              "status": "finished",
+              "display": "FT",
+              "is_live": false,
+              "state": "postGame"
+            },
+            "home": {
+              "id": "8yhjl13p7luh3v905btbvz42t",
+              "name": "Jamaica",
+              "logo": "https://live-football-api.com/teams/8yhjl13p7luh3v905btbvz42t.png",
+              "score": "0"
+            },
+            "away": {
+              "id": "6ngz19ekzqqufux1sswnhzlsw",
+              "name": "Honduras",
+              "logo": "https://live-football-api.com/teams/6ngz19ekzqqufux1sswnhzlsw.png",
+              "score": "1"
+            },
+            "halftime": {
+              "home": 0,
+              "away": 1
+            },
+            "tv_broadcast": false,
+            "penalty": {
+              "home": null,
+              "away": null
+            }
+          },
+          {
+            "id": "dlylleztuo7clusepxogr3x90",
+            "league": {
+              "id": "cu0rmpyff5692eo06ltddjo8a",
+              "name": "Concacaf Nations League",
+              "country": "N/C America"
+            },
+            "week": "League B",
+            "kickoff": "00:00",
+            "status": {
+              "status": "finished",
+              "display": "FT",
+              "is_live": false,
+              "state": "postGame"
+            },
+            "home": {
+              "id": "3lk3jbw7cuvuny690bz0obsp6",
+              "name": "St. Lucia",
+              "logo": "https://live-football-api.com/teams/3lk3jbw7cuvuny690bz0obsp6.png",
+              "score": "5"
+            },
+            "away": {
+              "id": "88ca766nh0ae9i9kpvwubxpzp",
+              "name": "Bermuda",
+              "logo": "https://live-football-api.com/teams/88ca766nh0ae9i9kpvwubxpzp.png",
+              "score": "2"
+            },
+            "halftime": {
+              "home": 3,
+              "away": 1
+            },
+            "tv_broadcast": false,
+            "penalty": {
+              "home": null,
+              "away": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "matches_finished",
+      "question": "Une journée écoulée livre-t-elle les scores terminaux et les scores à la mi-temps ? (base de l'historique)",
+      "endpoint": "matches",
+      "params": {
+        "date": "2026-09-26",
+        "lang": "en"
+      },
+      "cost": 1,
+      "required": true,
+      "status": "success",
+      "creditsSpent": 1,
+      "creditsRemaining": 497,
+      "fromCache": false,
+      "itemCount": 819,
+      "durationMs": 2414,
+      "answers": [
+        "Journée écoulée (dernier samedi) : 819 rencontre(s) — 0 en direct, 802 terminée(s), 17 à venir.",
+        "Dates couvertes par la réponse : 2026-09-26 → 2026-09-26.",
+        "Score final présent sur 98 % des rencontres · score à la mi-temps sur 54 %.",
+        "Champs incomplets : home.score 98 % · halftime.home+away 54 % · week / round 95 %.",
+        "États rencontrés : postGame×802, postponed×17."
+      ],
+      "evidence": {
+        "survey": {
+          "count": 819,
+          "live": 0,
+          "finished": 802,
+          "upcoming": 17,
+          "halftimeFilled": 54,
+          "scoresFilled": 98,
+          "kickoffFilled": 100,
+          "leagueIdFilled": 100,
+          "dates": [
+            "2026-09-26"
+          ],
+          "fieldCoverage": [
+            {
+              "field": "id",
+              "percent": 100
+            },
+            {
+              "field": "league.id",
+              "percent": 100
+            },
+            {
+              "field": "league.country",
+              "percent": 100
+            },
+            {
+              "field": "horaire (kickoff/date)",
+              "percent": 100
+            },
+            {
+              "field": "status.state",
+              "percent": 100
+            },
+            {
+              "field": "home.id",
+              "percent": 100
+            },
+            {
+              "field": "home.name",
+              "percent": 100
+            },
+            {
+              "field": "home.score",
+              "percent": 98
+            },
+            {
+              "field": "halftime.home+away",
+              "percent": 54
+            },
+            {
+              "field": "week / round",
+              "percent": 95
+            }
+          ],
+          "statusLabels": {
+            "postGame": 802,
+            "postponed": 17
+          }
+        },
+        "sample": [
+          {
+            "id": "1vul4ucfdbfim2265tx9z7zf8",
+            "league": {
+              "id": "cu0rmpyff5692eo06ltddjo8a",
+              "name": "Concacaf Nations League",
+              "country": "N/C America"
+            },
+            "week": "League A",
+            "kickoff": "00:00",
+            "status": {
+              "status": "finished",
+              "display": "FT",
+              "is_live": false,
+              "state": "postGame"
+            },
+            "home": {
+              "id": "8yhjl13p7luh3v905btbvz42t",
+              "name": "Jamaica",
+              "logo": "https://live-football-api.com/teams/8yhjl13p7luh3v905btbvz42t.png",
+              "score": "3"
+            },
+            "away": {
+              "id": "a4wu0pabb2b7r8ik6gs0w1o28",
+              "name": "Guatemala",
+              "logo": "https://live-football-api.com/teams/a4wu0pabb2b7r8ik6gs0w1o28.png",
+              "score": "2"
+            },
+            "halftime": {
+              "home": 1,
+              "away": 1
+            },
+            "tv_broadcast": false,
+            "penalty": {
+              "home": null,
+              "away": null
+            }
+          },
+          {
+            "id": "dhi7uplig9drztu7qp4u9u1w4",
+            "league": {
+              "id": "cu0rmpyff5692eo06ltddjo8a",
+              "name": "Concacaf Nations League",
+              "country": "N/C America"
+            },
+            "week": "League B",
+            "kickoff": "00:00",
+            "status": {
+              "status": "finished",
+              "display": "FT",
+              "is_live": false,
+              "state": "postGame"
+            },
+            "home": {
+              "id": "6raiahlhb99i9rzr6sj4nm7qh",
+              "name": "Barbados",
+              "logo": "https://live-football-api.com/teams/6raiahlhb99i9rzr6sj4nm7qh.png",
+              "score": "2"
+            },
+            "away": {
+              "id": "3lk3jbw7cuvuny690bz0obsp6",
+              "name": "St. Lucia",
+              "logo": "https://live-football-api.com/teams/3lk3jbw7cuvuny690bz0obsp6.png",
+              "score": "0"
+            },
+            "halftime": {
+              "home": 1,
+              "away": 0
+            },
+            "tv_broadcast": false,
+            "penalty": {
+              "home": null,
+              "away": null
+            }
+          },
+          {
+            "id": "dit5t3yerk0l67prtwuas6uxg",
+            "league": {
+              "id": "cu0rmpyff5692eo06ltddjo8a",
+              "name": "Concacaf Nations League",
+              "country": "N/C America"
+            },
+            "week": "League B",
+            "kickoff": "00:00",
+            "status": {
+              "status": "finished",
+              "display": "FT",
+              "is_live": false,
+              "state": "postGame"
+            },
+            "home": {
+              "id": "8tjgp47v3kqgyyfo8tvo55av7",
+              "name": "Bonaire",
+              "logo": "https://live-football-api.com/teams/8tjgp47v3kqgyyfo8tvo55av7.png",
+              "score": "1"
+            },
+            "away": {
+              "id": "6jwullawcerruu29afyok2wgl",
+              "name": "St. Kitts",
+              "logo": "https://live-football-api.com/teams/6jwullawcerruu29afyok2wgl.png",
+              "score": "2"
+            },
+            "halftime": {
+              "home": 1,
+              "away": 1
+            },
+            "tv_broadcast": false,
+            "penalty": {
+              "home": null,
+              "away": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "matches_future",
+      "question": "Le calendrier s'étend-il au-delà du jour même (programmation à l'avance) ?",
+      "endpoint": "matches",
+      "params": {
+        "date": "2026-10-03",
+        "lang": "en"
+      },
+      "cost": 1,
+      "required": false,
+      "status": "success",
+      "creditsSpent": 1,
+      "creditsRemaining": 496,
+      "fromCache": false,
+      "itemCount": 786,
+      "durationMs": 2256,
+      "answers": [
+        "Samedi suivant : 786 rencontre(s) — 0 en direct, 0 terminée(s), 786 à venir.",
+        "Dates couvertes par la réponse : 2026-10-03 → 2026-10-03.",
+        "Score final présent sur 0 % des rencontres · score à la mi-temps sur 0 %.",
+        "Champs incomplets : home.score 0 % · halftime.home+away 0 % · week / round 99 %.",
+        "États rencontrés : preGame×748, postponed×35, cancelled×3."
+      ],
+      "evidence": {
+        "survey": {
+          "count": 786,
+          "live": 0,
+          "finished": 0,
+          "upcoming": 786,
+          "halftimeFilled": 0,
+          "scoresFilled": 0,
+          "kickoffFilled": 100,
+          "leagueIdFilled": 100,
+          "dates": [
+            "2026-10-03"
+          ],
+          "fieldCoverage": [
+            {
+              "field": "id",
+              "percent": 100
+            },
+            {
+              "field": "league.id",
+              "percent": 100
+            },
+            {
+              "field": "league.country",
+              "percent": 100
+            },
+            {
+              "field": "horaire (kickoff/date)",
+              "percent": 100
+            },
+            {
+              "field": "status.state",
+              "percent": 100
+            },
+            {
+              "field": "home.id",
+              "percent": 100
+            },
+            {
+              "field": "home.name",
+              "percent": 100
+            },
+            {
+              "field": "home.score",
+              "percent": 0
+            },
+            {
+              "field": "halftime.home+away",
+              "percent": 0
+            },
+            {
+              "field": "week / round",
+              "percent": 99
+            }
+          ],
+          "statusLabels": {
+            "preGame": 748,
+            "postponed": 35,
+            "cancelled": 3
+          }
+        },
+        "sample": [
+          {
+            "id": "axt8dtutmfftyoyayddxy5vro",
+            "league": {
+              "id": "cesdwwnxbc5fmajgroc0hqzy2",
+              "name": "International Friendlies Countries",
+              "country": "World"
+            },
+            "week": "Friendlies 3",
+            "kickoff": "00:00",
+            "status": {
+              "status": "cancelled",
+              "display": "Cancelled",
+              "is_live": false,
+              "state": "cancelled"
+            },
+            "home": {
+              "id": "3u9qf9ju8eym4g8qsa0avfjm2",
+              "name": "Sri Lanka",
+              "logo": "https://live-football-api.com/teams/3u9qf9ju8eym4g8qsa0avfjm2.png",
+              "score": null
+            },
+            "away": {
+              "id": "81vlgos2xom62qgl4xfezm385",
+              "name": "Djibouti",
+              "logo": "https://live-football-api.com/teams/81vlgos2xom62qgl4xfezm385.png",
+              "score": null
+            },
+            "halftime": {
+              "home": null,
+              "away": null
+            },
+            "tv_broadcast": false,
+            "penalty": {
+              "home": null,
+              "away": null
+            }
+          },
+          {
+            "id": "5w98q2uuvgvcsli7pdzif651w",
+            "league": {
+              "id": "cesdwwnxbc5fmajgroc0hqzy2",
+              "name": "International Friendlies Countries",
+              "country": "World"
+            },
+            "week": "Friendlies 1",
+            "kickoff": "00:00",
+            "status": {
+              "status": "scheduled",
+              "display": "00:00",
+              "is_live": false,
+              "state": "preGame"
+            },
+            "home": {
+              "id": "7km4szeh6fs5bbdgypshh0snd",
+              "name": "Colombia",
+              "logo": "https://live-football-api.com/teams/7km4szeh6fs5bbdgypshh0snd.png",
+              "score": null
+            },
+            "away": {
+              "id": "3cwjdmekfdouwg990mqdq9fh0",
+              "name": "Paraguay",
+              "logo": "https://live-football-api.com/teams/3cwjdmekfdouwg990mqdq9fh0.png",
+              "score": null
+            },
+            "halftime": {
+              "home": null,
+              "away": null
+            },
+            "tv_broadcast": false,
+            "penalty": {
+              "home": null,
+              "away": null
+            }
+          },
+          {
+            "id": "85odt9nfqumvxiiplfiwcgnbo",
+            "league": {
+              "id": "cesdwwnxbc5fmajgroc0hqzy2",
+              "name": "International Friendlies Countries",
+              "country": "World"
+            },
+            "week": "Friendlies 1",
+            "kickoff": "00:00",
+            "status": {
+              "status": "scheduled",
+              "display": "00:00",
+              "is_live": false,
+              "state": "preGame"
+            },
+            "home": {
+              "id": "ak48fkypnql8y4n69cvcq5ghc",
+              "name": "Argentina",
+              "logo": "https://live-football-api.com/teams/ak48fkypnql8y4n69cvcq5ghc.png",
+              "score": null
+            },
+            "away": {
+              "id": "etmdes5ggjhtxte8v8ceiwbio",
+              "name": "Burkina Faso",
+              "logo": "https://live-football-api.com/teams/etmdes5ggjhtxte8v8ceiwbio.png",
+              "score": null
+            },
+            "halftime": {
+              "home": null,
+              "away": null
+            },
+            "tv_broadcast": false,
+            "penalty": {
+              "home": null,
+              "away": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "details_active",
+      "question": "Quelles statistiques de match sont réellement fournies — et contiennent-elles l'expected goals ?",
+      "endpoint": "live_match_details",
+      "params": {
+        "match_id": "dngq70mnnfgsvn3hto0naujv8",
+        "lang": "en"
+      },
+      "cost": 1,
+      "required": true,
+      "status": "success",
+      "creditsSpent": 1,
+      "creditsRemaining": 495,
+      "fromCache": false,
+      "itemCount": 1,
+      "durationMs": 925,
+      "answers": [
+        "Détails du match testé : 32 statistique(s) renvoyée(s) — 32 libellé(s) distinct(s) :",
+        "   Aerial Duels Won · Big Chances Missed · Blocked Shots · Clearances · Corners · Crosses · Direct Red Card · Duels Won · Expected Goals (xG) · Fouls · Goal Kicks · Hit Woodwork · Interceptions · Offsides · Passing Accuracy · Possession · Ppda Defensive Actions · Ppda Opppostition Passes · Red Cards · Second Yellow Card · Shots off Target · Shots on Target · Successful Crosses · Successful Dribbles · Successful Passes · Successful Tackles · Throw-ins · Total Passes · Total Shots · Touches in Opposition Box · Yellow Cards · xG from Set Pieces",
+        "xG : PRÉSENT — Expected Goals (xG) : domicile 0.9 / extérieur 1.11 · xG from Set Pieces : domicile 0.07 / extérieur 0.21",
+        "Événements : 16, tous horodatés : non (16/16 portent une minute) · types : substitution×10, goal×4, yellow_card×2.",
+        "Champs présents : header, stats, events, venue, referee, csb_url · absents : tv_channels, player_of_the_match."
+      ],
+      "evidence": {
+        "survey": {
+          "statsLabels": [
+            "Aerial Duels Won",
+            "Big Chances Missed",
+            "Blocked Shots",
+            "Clearances",
+            "Corners",
+            "Crosses",
+            "Direct Red Card",
+            "Duels Won",
+            "Expected Goals (xG)",
+            "Fouls",
+            "Goal Kicks",
+            "Hit Woodwork",
+            "Interceptions",
+            "Offsides",
+            "Passing Accuracy",
+            "Possession",
+            "Ppda Defensive Actions",
+            "Ppda Opppostition Passes",
+            "Red Cards",
+            "Second Yellow Card",
+            "Shots off Target",
+            "Shots on Target",
+            "Successful Crosses",
+            "Successful Dribbles",
+            "Successful Passes",
+            "Successful Tackles",
+            "Throw-ins",
+            "Total Passes",
+            "Total Shots",
+            "Touches in Opposition Box",
+            "Yellow Cards",
+            "xG from Set Pieces"
+          ],
+          "statsCount": 32,
+          "eventsCount": 16,
+          "eventTypes": {
+            "substitution": 10,
+            "goal": 4,
+            "yellow_card": 2
+          },
+          "eventsWithMinute": 16,
+          "hasHalftimeSplit": false,
+          "keys": [
+            "csb_url",
+            "events",
+            "header",
+            "last_updated",
+            "match_date",
+            "match_id",
+            "player_of_the_match",
+            "referee",
+            "stale",
+            "stats",
+            "tv_channels",
+            "venue"
+          ],
+          "xg": {
+            "present": true,
+            "paths": [],
+            "evidence": [
+              "Expected Goals (xG) : domicile 0.9 / extérieur 1.11",
+              "xG from Set Pieces : domicile 0.07 / extérieur 0.21"
+            ]
+          },
+          "filled": {
+            "header": true,
+            "stats": true,
+            "events": true,
+            "venue": true,
+            "referee": true,
+            "tv_channels": false,
+            "player_of_the_match": false,
+            "csb_url": true
+          }
+        }
+      }
+    },
+    {
+      "key": "details_finished",
+      "question": "Les statistiques et événements restent-ils disponibles après la fin du match ? (condition de constitution de l'historique)",
+      "endpoint": "live_match_details",
+      "params": {
+        "match_id": "1vul4ucfdbfim2265tx9z7zf8",
+        "lang": "en"
+      },
+      "cost": 1,
+      "required": false,
+      "status": "success",
+      "creditsSpent": 1,
+      "creditsRemaining": 494,
+      "fromCache": false,
+      "itemCount": 1,
+      "durationMs": 3305,
+      "answers": [
+        "Détails du match terminé : 32 statistique(s) renvoyée(s) — 32 libellé(s) distinct(s) :",
+        "   Aerial Duels Won · Big Chances Missed · Blocked Shots · Clearances · Corners · Crosses · Direct Red Card · Duels Won · Expected Goals (xG) · Fouls · Goal Kicks · Hit Woodwork · Interceptions · Offsides · Passing Accuracy · Possession · Ppda Defensive Actions · Ppda Opppostition Passes · Red Cards · Second Yellow Card · Shots off Target · Shots on Target · Successful Crosses · Successful Dribbles · Successful Passes · Successful Tackles · Throw-ins · Total Passes · Total Shots · Touches in Opposition Box · Yellow Cards · xG from Set Pieces",
+        "xG : PRÉSENT — Expected Goals (xG) : domicile 1.66 / extérieur 2.99 · xG from Set Pieces : domicile 0 / extérieur 0.36",
+        "Événements : 18, tous horodatés : non (18/18 portent une minute) · types : substitution×8, yellow_card×5, goal×5.",
+        "Champs présents : header, stats, events, venue, referee, player_of_the_match · absents : tv_channels, csb_url."
+      ],
+      "evidence": {
+        "survey": {
+          "statsLabels": [
+            "Aerial Duels Won",
+            "Big Chances Missed",
+            "Blocked Shots",
+            "Clearances",
+            "Corners",
+            "Crosses",
+            "Direct Red Card",
+            "Duels Won",
+            "Expected Goals (xG)",
+            "Fouls",
+            "Goal Kicks",
+            "Hit Woodwork",
+            "Interceptions",
+            "Offsides",
+            "Passing Accuracy",
+            "Possession",
+            "Ppda Defensive Actions",
+            "Ppda Opppostition Passes",
+            "Red Cards",
+            "Second Yellow Card",
+            "Shots off Target",
+            "Shots on Target",
+            "Successful Crosses",
+            "Successful Dribbles",
+            "Successful Passes",
+            "Successful Tackles",
+            "Throw-ins",
+            "Total Passes",
+            "Total Shots",
+            "Touches in Opposition Box",
+            "Yellow Cards",
+            "xG from Set Pieces"
+          ],
+          "statsCount": 32,
+          "eventsCount": 18,
+          "eventTypes": {
+            "substitution": 8,
+            "yellow_card": 5,
+            "goal": 5
+          },
+          "eventsWithMinute": 18,
+          "hasHalftimeSplit": false,
+          "keys": [
+            "csb_url",
+            "events",
+            "header",
+            "last_updated",
+            "match_date",
+            "match_id",
+            "player_of_the_match",
+            "referee",
+            "stale",
+            "stats",
+            "tv_channels",
+            "venue"
+          ],
+          "xg": {
+            "present": true,
+            "paths": [],
+            "evidence": [
+              "Expected Goals (xG) : domicile 1.66 / extérieur 2.99",
+              "xG from Set Pieces : domicile 0 / extérieur 0.36"
+            ]
+          },
+          "filled": {
+            "header": true,
+            "stats": true,
+            "events": true,
+            "venue": true,
+            "referee": true,
+            "tv_channels": false,
+            "player_of_the_match": true,
+            "csb_url": false
+          }
+        }
+      }
+    },
+    {
+      "key": "standings",
+      "question": "Le classement est-il complet (points, joués, buts, différence, forme) et quel historique de saisons est réellement conservé ?",
+      "endpoint": "league_standings",
+      "params": {
+        "league_id": "581t4mywybx21wcpmpykhyzr3",
+        "lang": "en"
+      },
+      "cost": 1,
+      "required": true,
+      "status": "success",
+      "creditsSpent": 1,
+      "creditsRemaining": 493,
+      "fromCache": false,
+      "itemCount": 4,
+      "durationMs": 2653,
+      "answers": [
+        "Classement de référence : 15 équipe(s) classée(s), 4 groupe(s) — champs par ligne : drawn, form, goal_diff, goals_against, goals_for, lost, played, points, rank, team, won, zone.",
+        "Forme (5 derniers résultats) renseignée sur 100 % des lignes · classement domicile : 15 ligne(s) · classement extérieur : 15 ligne(s).",
+        "Saisons réellement disponibles : 2026, 2025, 2024, 2023, 2022, 2021, 2020, 2019/2020, 2018/2019, 2017/2018, 2016/2017, 2016, 2015, 2014, 2013/2014, 2012/2013, 2011/2012, 2010/2011, 2009/2010, 2008/2009, 2007/2008, 2006/2007, 2005/2006, 2004/2005, 2003/2004, 2002/2003, 2001/2002, 2000/2001, 1999/2000 (29).",
+        "Drapeau « stale » : non."
+      ],
+      "evidence": {
+        "survey": {
+          "availableSeasons": [
+            "2026",
+            "2025",
+            "2024",
+            "2023",
+            "2022",
+            "2021",
+            "2020",
+            "2019/2020",
+            "2018/2019",
+            "2017/2018",
+            "2016/2017",
+            "2016",
+            "2015",
+            "2014",
+            "2013/2014",
+            "2012/2013",
+            "2011/2012",
+            "2010/2011",
+            "2009/2010",
+            "2008/2009",
+            "2007/2008",
+            "2006/2007",
+            "2005/2006",
+            "2004/2005",
+            "2003/2004",
+            "2002/2003",
+            "2001/2002",
+            "2000/2001",
+            "1999/2000"
+          ],
+          "season": "2026",
+          "groups": 4,
+          "rows": 15,
+          "rowFields": [
+            "drawn",
+            "form",
+            "goal_diff",
+            "goals_against",
+            "goals_for",
+            "lost",
+            "played",
+            "points",
+            "rank",
+            "team",
+            "won",
+            "zone"
+          ],
+          "formFilled": 100,
+          "homeRows": 15,
+          "awayRows": 15,
+          "stale": false
+        }
+      }
+    },
+    {
+      "key": "league_fixtures",
+      "question": "Le calendrier complet d'une compétition est-il récupérable en un appel ? (coût d'un import de référence)",
+      "endpoint": "league_fixtures",
+      "params": {
+        "league_id": "581t4mywybx21wcpmpykhyzr3",
+        "lang": "en"
+      },
+      "cost": 1,
+      "required": true,
+      "status": "success",
+      "creditsSpent": 1,
+      "creditsRemaining": 492,
+      "fromCache": false,
+      "itemCount": 36,
+      "durationMs": 1415,
+      "answers": [
+        "Calendrier de la saison courante : 495 rencontre(s) — 0 en direct, 405 terminée(s), 90 à venir.",
+        "Dates couvertes par la réponse : 2026-01-22 → 2026-11-08.",
+        "Score final présent sur 82 % des rencontres · score à la mi-temps sur 82 %.",
+        "Champs incomplets : league.country 0 % · home.score 82 % · halftime.home+away 82 %.",
+        "États rencontrés : postGame×405, preGame×90.",
+        "Coût d'une ingestion complète de cette compétition-saison : 1 crédit (calendrier) + 495 crédits (détail match par match) = 496 crédits au maximum.",
+        "Saisons annoncées par le fournisseur pour cette compétition : 2026, 2025, 2024, 2023, 2022, 2021, 2020, 2019/2020, 2018/2019, 2017/2018, 2016/2017, 2016, 2015, 2014, 2013/2014, 2012/2013, 2011/2012, 2010/2011, 2009/2010, 2008/2009, 2007/2008, 2006/2007, 2005/2006, 2004/2005, 2003/2004, 2002/2003, 2001/2002, 2000/2001, 1999/2000."
+      ],
+      "evidence": {
+        "survey": {
+          "count": 495,
+          "live": 0,
+          "finished": 405,
+          "upcoming": 90,
+          "halftimeFilled": 82,
+          "scoresFilled": 82,
+          "kickoffFilled": 100,
+          "leagueIdFilled": 100,
+          "dates": [
+            "2026-01-22",
+            "2026-01-22",
+            "2026-01-22",
+            "2026-01-23",
+            "2026-01-23",
+            "2026-01-23",
+            "2026-01-23",
+            "2026-01-24",
+            "2026-01-24",
+            "2026-01-24",
+            "2026-01-24",
+            "2026-01-25",
+            "2026-01-25",
+            "2026-01-26",
+            "2026-01-26",
+            "2026-01-26",
+            "2026-01-27",
+            "2026-01-27",
+            "2026-01-27",
+            "2026-01-28",
+            "2026-01-28",
+            "2026-01-28",
+            "2026-01-28",
+            "2026-01-28",
+            "2026-01-29",
+            "2026-01-29",
+            "2026-01-29",
+            "2026-01-29",
+            "2026-01-30",
+            "2026-01-30",
+            "2026-01-31",
+            "2026-01-31",
+            "2026-02-01",
+            "2026-02-01",
+            "2026-02-01",
+            "2026-02-01",
+            "2026-02-02",
+            "2026-02-02",
+            "2026-02-02",
+            "2026-02-02",
+            "2026-02-03",
+            "2026-02-03",
+            "2026-02-03",
+            "2026-02-04",
+            "2026-02-04",
+            "2026-02-07",
+            "2026-02-07",
+            "2026-02-07",
+            "2026-02-07",
+            "2026-02-08",
+            "2026-02-08",
+            "2026-02-08",
+            "2026-02-08",
+            "2026-02-08",
+            "2026-02-09",
+            "2026-02-09",
+            "2026-02-09",
+            "2026-02-09",
+            "2026-02-09",
+            "2026-02-10",
+            "2026-02-12",
+            "2026-02-13",
+            "2026-02-13",
+            "2026-02-14",
+            "2026-02-14",
+            "2026-02-14",
+            "2026-02-14",
+            "2026-02-14",
+            "2026-02-15",
+            "2026-02-15",
+            "2026-02-15",
+            "2026-02-15",
+            "2026-02-16",
+            "2026-02-16",
+            "2026-02-16",
+            "2026-02-20",
+            "2026-02-20",
+            "2026-02-20",
+            "2026-02-20",
+            "2026-02-21",
+            "2026-02-21",
+            "2026-02-21",
+            "2026-02-21",
+            "2026-02-21",
+            "2026-02-21",
+            "2026-02-22",
+            "2026-02-22",
+            "2026-02-22",
+            "2026-02-23",
+            "2026-02-24",
+            "2026-02-24",
+            "2026-02-24",
+            "2026-02-25",
+            "2026-02-25",
+            "2026-02-25",
+            "2026-02-25",
+            "2026-02-25",
+            "2026-02-25",
+            "2026-02-26",
+            "2026-02-26",
+            "2026-02-26",
+            "2026-02-26",
+            "2026-02-28",
+            "2026-02-28",
+            "2026-03-01",
+            "2026-03-01",
+            "2026-03-01",
+            "2026-03-01",
+            "2026-03-02",
+            "2026-03-02",
+            "2026-03-02",
+            "2026-03-02",
+            "2026-03-03",
+            "2026-03-03",
+            "2026-03-03",
+            "2026-03-03",
+            "2026-03-04",
+            "2026-03-05",
+            "2026-03-10",
+            "2026-03-10",
+            "2026-03-11",
+            "2026-03-11",
+            "2026-03-11",
+            "2026-03-11",
+            "2026-03-11",
+            "2026-03-12",
+            "2026-03-12",
+            "2026-03-12",
+            "2026-03-12",
+            "2026-03-12",
+            "2026-03-12",
+            "2026-03-13",
+            "2026-03-13",
+            "2026-03-14",
+            "2026-03-15",
+            "2026-03-15",
+            "2026-03-15",
+            "2026-03-15",
+            "2026-03-16",
+            "2026-03-16",
+            "2026-03-16",
+            "2026-03-16",
+            "2026-03-16",
+            "2026-03-16",
+            "2026-03-17",
+            "2026-03-17",
+            "2026-03-18",
+            "2026-03-18",
+            "2026-03-21",
+            "2026-03-21",
+            "2026-03-21",
+            "2026-03-21",
+            "2026-03-21",
+            "2026-03-21",
+            "2026-03-22",
+            "2026-03-22",
+            "2026-03-22",
+            "2026-03-22",
+            "2026-03-23",
+            "2026-03-23",
+            "2026-03-23",
+            "2026-03-24",
+            "2026-03-25",
+            "2026-03-27",
+            "2026-03-31",
+            "2026-04-01",
+            "2026-04-02",
+            "2026-04-02",
+            "2026-04-02",
+            "2026-04-03",
+            "2026-04-03",
+            "2026-04-03",
+            "2026-04-04",
+            "2026-04-04",
+            "2026-04-05",
+            "2026-04-05",
+            "2026-04-05",
+            "2026-04-05",
+            "2026-04-06",
+            "2026-04-07",
+            "2026-04-11",
+            "2026-04-11",
+            "2026-04-11",
+            "2026-04-11",
+            "2026-04-11",
+            "2026-04-12",
+            "2026-04-12",
+            "2026-04-12",
+            "2026-04-12",
+            "2026-04-12",
+            "2026-04-12",
+            "2026-04-13",
+            "2026-04-13",
+            "2026-04-13",
+            "2026-04-14",
+            "2026-04-17",
+            "2026-04-18",
+            "2026-04-18",
+            "2026-04-18",
+            "2026-04-19",
+            "2026-04-19",
+            "2026-04-19",
+            "2026-04-19",
+            "2026-04-20",
+            "2026-04-20",
+            "2026-04-20",
+            "2026-04-20",
+            "2026-04-20",
+            "2026-04-21",
+            "2026-04-21",
+            "2026-04-23",
+            "2026-04-24",
+            "2026-04-24",
+            "2026-04-24",
+            "2026-04-25",
+            "2026-04-25",
+            "2026-04-25",
+            "2026-04-25",
+            "2026-04-26",
+            "2026-04-26",
+            "2026-04-26",
+            "2026-04-26",
+            "2026-04-26",
+            "2026-04-27",
+            "2026-04-28",
+            "2026-05-02",
+            "2026-05-02",
+            "2026-05-02",
+            "2026-05-02",
+            "2026-05-02",
+            "2026-05-03",
+            "2026-05-03",
+            "2026-05-03",
+            "2026-05-03",
+            "2026-05-03",
+            "2026-05-03",
+            "2026-05-03",
+            "2026-05-04",
+            "2026-05-04",
+            "2026-05-05",
+            "2026-05-09",
+            "2026-05-09",
+            "2026-05-10",
+            "2026-05-10",
+            "2026-05-10",
+            "2026-05-10",
+            "2026-05-10",
+            "2026-05-11",
+            "2026-05-12",
+            "2026-05-13",
+            "2026-05-13",
+            "2026-05-14",
+            "2026-05-16",
+            "2026-05-17",
+            "2026-05-24",
+            "2026-07-23",
+            "2026-07-23",
+            "2026-07-24",
+            "2026-07-24",
+            "2026-07-24",
+            "2026-07-24",
+            "2026-07-25",
+            "2026-07-25",
+            "2026-07-25",
+            "2026-07-25",
+            "2026-07-25",
+            "2026-07-26",
+            "2026-07-26",
+            "2026-07-26",
+            "2026-07-26",
+            "2026-07-28",
+            "2026-07-28",
+            "2026-07-29",
+            "2026-07-29",
+            "2026-07-29",
+            "2026-07-29",
+            "2026-07-29",
+            "2026-07-30",
+            "2026-07-30",
+            "2026-07-30",
+            "2026-07-31",
+            "2026-07-31",
+            "2026-08-01",
+            "2026-08-01",
+            "2026-08-01",
+            "2026-08-01",
+            "2026-08-01",
+            "2026-08-02",
+            "2026-08-02",
+            "2026-08-02",
+            "2026-08-02",
+            "2026-08-03",
+            "2026-08-03",
+            "2026-08-03",
+            "2026-08-03",
+            "2026-08-04",
+            "2026-08-04",
+            "2026-08-05",
+            "2026-08-06",
+            "2026-08-06",
+            "2026-08-07",
+            "2026-08-08",
+            "2026-08-08",
+            "2026-08-08",
+            "2026-08-08",
+            "2026-08-08",
+            "2026-08-09",
+            "2026-08-09",
+            "2026-08-09",
+            "2026-08-09",
+            "2026-08-09",
+            "2026-08-09",
+            "2026-08-10",
+            "2026-08-11",
+            "2026-08-12",
+            "2026-08-14",
+            "2026-08-15",
+            "2026-08-15",
+            "2026-08-15",
+            "2026-08-15",
+            "2026-08-15",
+            "2026-08-16",
+            "2026-08-16",
+            "2026-08-16",
+            "2026-08-16",
+            "2026-08-16",
+            "2026-08-17",
+            "2026-08-17",
+            "2026-08-17",
+            "2026-08-18",
+            "2026-08-21",
+            "2026-08-21",
+            "2026-08-22",
+            "2026-08-22",
+            "2026-08-22",
+            "2026-08-23",
+            "2026-08-23",
+            "2026-08-23",
+            "2026-08-23",
+            "2026-08-23",
+            "2026-08-23",
+            "2026-08-24",
+            "2026-08-24",
+            "2026-08-25",
+            "2026-08-25",
+            "2026-08-28",
+            "2026-08-29",
+            "2026-08-29",
+            "2026-08-29",
+            "2026-08-29",
+            "2026-08-30",
+            "2026-08-30",
+            "2026-08-30",
+            "2026-08-30",
+            "2026-08-30",
+            "2026-08-31",
+            "2026-08-31",
+            "2026-08-31",
+            "2026-09-01",
+            "2026-09-01",
+            "2026-09-04",
+            "2026-09-04",
+            "2026-09-04",
+            "2026-09-05",
+            "2026-09-05",
+            "2026-09-05",
+            "2026-09-05",
+            "2026-09-06",
+            "2026-09-06",
+            "2026-09-06",
+            "2026-09-06",
+            "2026-09-06",
+            "2026-09-07",
+            "2026-09-07",
+            "2026-09-08",
+            "2026-09-11",
+            "2026-09-11",
+            "2026-09-12",
+            "2026-09-12",
+            "2026-09-12",
+            "2026-09-12",
+            "2026-09-12",
+            "2026-09-13",
+            "2026-09-13",
+            "2026-09-13",
+            "2026-09-13",
+            "2026-09-14",
+            "2026-09-14",
+            "2026-09-14",
+            "2026-09-15",
+            "2026-09-18",
+            "2026-09-19",
+            "2026-09-19",
+            "2026-09-19",
+            "2026-09-19",
+            "2026-09-19",
+            "2026-09-20",
+            "2026-09-20",
+            "2026-09-20",
+            "2026-09-20",
+            "2026-09-20",
+            "2026-09-21",
+            "2026-09-21",
+            "2026-09-21",
+            "2026-09-22",
+            "2026-10-02",
+            "2026-10-03",
+            "2026-10-03",
+            "2026-10-03",
+            "2026-10-04",
+            "2026-10-04",
+            "2026-10-04",
+            "2026-10-04",
+            "2026-10-05",
+            "2026-10-05",
+            "2026-10-06",
+            "2026-10-06",
+            "2026-10-06",
+            "2026-10-06",
+            "2026-10-09",
+            "2026-10-09",
+            "2026-10-09",
+            "2026-10-10",
+            "2026-10-10",
+            "2026-10-10",
+            "2026-10-10",
+            "2026-10-11",
+            "2026-10-11",
+            "2026-10-11",
+            "2026-10-11",
+            "2026-10-11",
+            "2026-10-12",
+            "2026-10-13",
+            "2026-10-13",
+            "2026-10-14",
+            "2026-10-18",
+            "2026-10-18",
+            "2026-10-18",
+            "2026-10-18",
+            "2026-10-18",
+            "2026-10-18",
+            "2026-10-18",
+            "2026-10-18",
+            "2026-10-18",
+            "2026-10-18",
+            "2026-10-18",
+            "2026-10-18",
+            "2026-10-18",
+            "2026-10-18",
+            "2026-10-18",
+            "2026-10-25",
+            "2026-10-25",
+            "2026-10-25",
+            "2026-10-25",
+            "2026-10-25",
+            "2026-10-25",
+            "2026-10-25",
+            "2026-10-25",
+            "2026-10-25",
+            "2026-10-25",
+            "2026-10-25",
+            "2026-10-25",
+            "2026-10-25",
+            "2026-10-25",
+            "2026-10-25",
+            "2026-11-01",
+            "2026-11-01",
+            "2026-11-01",
+            "2026-11-01",
+            "2026-11-01",
+            "2026-11-01",
+            "2026-11-01",
+            "2026-11-01",
+            "2026-11-01",
+            "2026-11-01",
+            "2026-11-01",
+            "2026-11-01",
+            "2026-11-01",
+            "2026-11-01",
+            "2026-11-01",
+            "2026-11-08",
+            "2026-11-08",
+            "2026-11-08",
+            "2026-11-08",
+            "2026-11-08",
+            "2026-11-08",
+            "2026-11-08",
+            "2026-11-08",
+            "2026-11-08",
+            "2026-11-08",
+            "2026-11-08",
+            "2026-11-08",
+            "2026-11-08",
+            "2026-11-08",
+            "2026-11-08"
+          ],
+          "fieldCoverage": [
+            {
+              "field": "id",
+              "percent": 100
+            },
+            {
+              "field": "league.id",
+              "percent": 100
+            },
+            {
+              "field": "league.country",
+              "percent": 0
+            },
+            {
+              "field": "horaire (kickoff/date)",
+              "percent": 100
+            },
+            {
+              "field": "status.state",
+              "percent": 100
+            },
+            {
+              "field": "home.id",
+              "percent": 100
+            },
+            {
+              "field": "home.name",
+              "percent": 100
+            },
+            {
+              "field": "home.score",
+              "percent": 82
+            },
+            {
+              "field": "halftime.home+away",
+              "percent": 82
+            },
+            {
+              "field": "week / round",
+              "percent": 100
+            }
+          ],
+          "statusLabels": {
+            "postGame": 405,
+            "preGame": 90
+          }
+        },
+        "season": "2026",
+        "availableSeasons": [
+          "2026",
+          "2025",
+          "2024",
+          "2023",
+          "2022",
+          "2021",
+          "2020",
+          "2019/2020",
+          "2018/2019",
+          "2017/2018",
+          "2016/2017",
+          "2016",
+          "2015",
+          "2014",
+          "2013/2014",
+          "2012/2013",
+          "2011/2012",
+          "2010/2011",
+          "2009/2010",
+          "2008/2009",
+          "2007/2008",
+          "2006/2007",
+          "2005/2006",
+          "2004/2005",
+          "2003/2004",
+          "2002/2003",
+          "2001/2002",
+          "2000/2001",
+          "1999/2000"
+        ],
+        "weeks": 36
+      }
+    },
+    {
+      "key": "league_fixtures_old",
+      "question": "Une saison antérieure est-elle réellement servie ? (profondeur d'historique)",
+      "endpoint": "league_fixtures",
+      "params": {
+        "league_id": "581t4mywybx21wcpmpykhyzr3",
+        "season": "2025",
+        "lang": "en"
+      },
+      "cost": 1,
+      "required": false,
+      "status": "success",
+      "creditsSpent": 1,
+      "creditsRemaining": 491,
+      "fromCache": false,
+      "itemCount": 40,
+      "durationMs": 5023,
+      "answers": [
+        "Calendrier de la saison 2025 : 510 rencontre(s) — 0 en direct, 510 terminée(s), 0 à venir.",
+        "Dates couvertes par la réponse : 2025-01-23 → 2025-12-14.",
+        "Score final présent sur 100 % des rencontres · score à la mi-temps sur 100 %.",
+        "Champs incomplets : league.country 0 %.",
+        "États rencontrés : postGame×510.",
+        "Coût d'une ingestion complète de cette compétition-saison : 1 crédit (calendrier) + 510 crédits (détail match par match) = 511 crédits au maximum.",
+        "Saisons annoncées par le fournisseur pour cette compétition : 2026, 2025, 2024, 2023, 2022, 2021, 2020, 2019/2020, 2018/2019, 2017/2018, 2016/2017, 2016, 2015, 2014, 2013/2014, 2012/2013, 2011/2012, 2010/2011, 2009/2010, 2008/2009, 2007/2008, 2006/2007, 2005/2006, 2004/2005, 2003/2004, 2002/2003, 2001/2002, 2000/2001, 1999/2000."
+      ],
+      "evidence": {
+        "survey": {
+          "count": 510,
+          "live": 0,
+          "finished": 510,
+          "upcoming": 0,
+          "halftimeFilled": 100,
+          "scoresFilled": 100,
+          "kickoffFilled": 100,
+          "leagueIdFilled": 100,
+          "dates": [
+            "2025-01-23",
+            "2025-01-23",
+            "2025-01-24",
+            "2025-01-24",
+            "2025-01-24",
+            "2025-01-24",
+            "2025-01-24",
+            "2025-01-25",
+            "2025-01-25",
+            "2025-01-25",
+            "2025-01-25",
+            "2025-01-25",
+            "2025-01-26",
+            "2025-01-26",
+            "2025-01-27",
+            "2025-01-27",
+            "2025-01-28",
+            "2025-01-28",
+            "2025-01-28",
+            "2025-01-29",
+            "2025-01-29",
+            "2025-01-29",
+            "2025-01-29",
+            "2025-01-29",
+            "2025-01-29",
+            "2025-01-30",
+            "2025-01-30",
+            "2025-01-30",
+            "2025-01-31",
+            "2025-01-31",
+            "2025-02-01",
+            "2025-02-01",
+            "2025-02-02",
+            "2025-02-02",
+            "2025-02-02",
+            "2025-02-02",
+            "2025-02-03",
+            "2025-02-03",
+            "2025-02-03",
+            "2025-02-03",
+            "2025-02-03",
+            "2025-02-04",
+            "2025-02-04",
+            "2025-02-05",
+            "2025-02-06",
+            "2025-02-06",
+            "2025-02-07",
+            "2025-02-07",
+            "2025-02-07",
+            "2025-02-08",
+            "2025-02-08",
+            "2025-02-08",
+            "2025-02-08",
+            "2025-02-08",
+            "2025-02-09",
+            "2025-02-09",
+            "2025-02-09",
+            "2025-02-09",
+            "2025-02-10",
+            "2025-02-11",
+            "2025-02-11",
+            "2025-02-11",
+            "2025-02-12",
+            "2025-02-12",
+            "2025-02-12",
+            "2025-02-12",
+            "2025-02-12",
+            "2025-02-12",
+            "2025-02-13",
+            "2025-02-13",
+            "2025-02-13",
+            "2025-02-13",
+            "2025-02-14",
+            "2025-02-14",
+            "2025-02-14",
+            "2025-02-15",
+            "2025-02-15",
+            "2025-02-15",
+            "2025-02-15",
+            "2025-02-16",
+            "2025-02-16",
+            "2025-02-16",
+            "2025-02-17",
+            "2025-02-17",
+            "2025-02-17",
+            "2025-02-17",
+            "2025-02-17",
+            "2025-02-18",
+            "2025-02-18",
+            "2025-02-21",
+            "2025-02-21",
+            "2025-02-21",
+            "2025-02-22",
+            "2025-02-22",
+            "2025-02-22",
+            "2025-02-23",
+            "2025-02-23",
+            "2025-02-23",
+            "2025-02-24",
+            "2025-02-24",
+            "2025-02-24",
+            "2025-02-24",
+            "2025-02-25",
+            "2025-02-28",
+            "2025-03-01",
+            "2025-03-01",
+            "2025-03-01",
+            "2025-03-01",
+            "2025-03-02",
+            "2025-03-02",
+            "2025-03-02",
+            "2025-03-02",
+            "2025-03-02",
+            "2025-03-03",
+            "2025-03-03",
+            "2025-03-04",
+            "2025-03-04",
+            "2025-03-04",
+            "2025-03-07",
+            "2025-03-07",
+            "2025-03-08",
+            "2025-03-08",
+            "2025-03-08",
+            "2025-03-09",
+            "2025-03-09",
+            "2025-03-09",
+            "2025-03-09",
+            "2025-03-09",
+            "2025-03-10",
+            "2025-03-10",
+            "2025-03-10",
+            "2025-03-11",
+            "2025-03-11",
+            "2025-03-14",
+            "2025-03-15",
+            "2025-03-15",
+            "2025-03-15",
+            "2025-03-15",
+            "2025-03-16",
+            "2025-03-16",
+            "2025-03-16",
+            "2025-03-16",
+            "2025-03-17",
+            "2025-03-17",
+            "2025-03-17",
+            "2025-03-17",
+            "2025-03-18",
+            "2025-03-18",
+            "2025-03-21",
+            "2025-03-22",
+            "2025-03-27",
+            "2025-03-27",
+            "2025-03-28",
+            "2025-03-28",
+            "2025-03-28",
+            "2025-03-28",
+            "2025-03-29",
+            "2025-03-29",
+            "2025-03-29",
+            "2025-03-29",
+            "2025-03-29",
+            "2025-03-30",
+            "2025-03-30",
+            "2025-03-30",
+            "2025-03-30",
+            "2025-04-04",
+            "2025-04-05",
+            "2025-04-05",
+            "2025-04-05",
+            "2025-04-05",
+            "2025-04-05",
+            "2025-04-05",
+            "2025-04-06",
+            "2025-04-06",
+            "2025-04-06",
+            "2025-04-06",
+            "2025-04-06",
+            "2025-04-07",
+            "2025-04-08",
+            "2025-04-08",
+            "2025-04-11",
+            "2025-04-12",
+            "2025-04-12",
+            "2025-04-12",
+            "2025-04-12",
+            "2025-04-13",
+            "2025-04-13",
+            "2025-04-13",
+            "2025-04-13",
+            "2025-04-14",
+            "2025-04-14",
+            "2025-04-14",
+            "2025-04-15",
+            "2025-04-15",
+            "2025-04-15",
+            "2025-04-18",
+            "2025-04-18",
+            "2025-04-18",
+            "2025-04-19",
+            "2025-04-19",
+            "2025-04-19",
+            "2025-04-19",
+            "2025-04-20",
+            "2025-04-20",
+            "2025-04-20",
+            "2025-04-20",
+            "2025-04-22",
+            "2025-04-22",
+            "2025-04-23",
+            "2025-04-26",
+            "2025-04-26",
+            "2025-04-26",
+            "2025-04-27",
+            "2025-04-27",
+            "2025-04-27",
+            "2025-04-28",
+            "2025-04-28",
+            "2025-04-28",
+            "2025-04-28",
+            "2025-04-28",
+            "2025-04-29",
+            "2025-04-29",
+            "2025-04-29",
+            "2025-04-29",
+            "2025-05-01",
+            "2025-05-02",
+            "2025-05-02",
+            "2025-05-02",
+            "2025-05-02",
+            "2025-05-02",
+            "2025-05-03",
+            "2025-05-03",
+            "2025-05-03",
+            "2025-05-03",
+            "2025-05-04",
+            "2025-05-04",
+            "2025-05-04",
+            "2025-05-04",
+            "2025-05-04",
+            "2025-05-04",
+            "2025-05-10",
+            "2025-05-10",
+            "2025-05-10",
+            "2025-05-11",
+            "2025-05-11",
+            "2025-05-11",
+            "2025-05-11",
+            "2025-05-12",
+            "2025-05-18",
+            "2025-05-19",
+            "2025-05-20",
+            "2025-05-20",
+            "2025-05-24",
+            "2025-05-25",
+            "2025-06-01",
+            "2025-07-11",
+            "2025-07-11",
+            "2025-07-12",
+            "2025-07-12",
+            "2025-07-12",
+            "2025-07-12",
+            "2025-07-13",
+            "2025-07-13",
+            "2025-07-13",
+            "2025-07-13",
+            "2025-07-14",
+            "2025-07-14",
+            "2025-07-14",
+            "2025-07-15",
+            "2025-07-15",
+            "2025-07-18",
+            "2025-07-19",
+            "2025-07-19",
+            "2025-07-19",
+            "2025-07-19",
+            "2025-07-19",
+            "2025-07-20",
+            "2025-07-20",
+            "2025-07-20",
+            "2025-07-20",
+            "2025-07-20",
+            "2025-07-21",
+            "2025-07-21",
+            "2025-07-22",
+            "2025-07-22",
+            "2025-07-25",
+            "2025-07-26",
+            "2025-07-26",
+            "2025-07-26",
+            "2025-07-26",
+            "2025-07-26",
+            "2025-07-26",
+            "2025-07-27",
+            "2025-07-27",
+            "2025-07-27",
+            "2025-07-27",
+            "2025-07-27",
+            "2025-07-28",
+            "2025-07-28",
+            "2025-07-28",
+            "2025-08-07",
+            "2025-08-07",
+            "2025-08-08",
+            "2025-08-08",
+            "2025-08-09",
+            "2025-08-09",
+            "2025-08-09",
+            "2025-08-09",
+            "2025-08-09",
+            "2025-08-09",
+            "2025-08-09",
+            "2025-08-10",
+            "2025-08-10",
+            "2025-08-10",
+            "2025-08-11",
+            "2025-08-15",
+            "2025-08-15",
+            "2025-08-16",
+            "2025-08-16",
+            "2025-08-16",
+            "2025-08-16",
+            "2025-08-16",
+            "2025-08-17",
+            "2025-08-17",
+            "2025-08-17",
+            "2025-08-17",
+            "2025-08-17",
+            "2025-08-17",
+            "2025-08-18",
+            "2025-08-19",
+            "2025-08-22",
+            "2025-08-22",
+            "2025-08-23",
+            "2025-08-23",
+            "2025-08-23",
+            "2025-08-23",
+            "2025-08-24",
+            "2025-08-24",
+            "2025-08-24",
+            "2025-08-25",
+            "2025-08-25",
+            "2025-08-25",
+            "2025-08-25",
+            "2025-08-26",
+            "2025-08-29",
+            "2025-08-29",
+            "2025-08-30",
+            "2025-08-30",
+            "2025-08-30",
+            "2025-08-30",
+            "2025-08-31",
+            "2025-08-31",
+            "2025-08-31",
+            "2025-08-31",
+            "2025-08-31",
+            "2025-09-01",
+            "2025-09-01",
+            "2025-09-01",
+            "2025-09-11",
+            "2025-09-12",
+            "2025-09-12",
+            "2025-09-12",
+            "2025-09-13",
+            "2025-09-13",
+            "2025-09-13",
+            "2025-09-13",
+            "2025-09-13",
+            "2025-09-14",
+            "2025-09-14",
+            "2025-09-14",
+            "2025-09-14",
+            "2025-09-14",
+            "2025-09-14",
+            "2025-09-19",
+            "2025-09-19",
+            "2025-09-19",
+            "2025-09-20",
+            "2025-09-20",
+            "2025-09-20",
+            "2025-09-21",
+            "2025-09-21",
+            "2025-09-21",
+            "2025-09-21",
+            "2025-09-21",
+            "2025-09-21",
+            "2025-09-22",
+            "2025-09-22",
+            "2025-09-23",
+            "2025-09-26",
+            "2025-09-26",
+            "2025-09-27",
+            "2025-09-27",
+            "2025-09-27",
+            "2025-09-27",
+            "2025-09-27",
+            "2025-09-28",
+            "2025-09-28",
+            "2025-09-28",
+            "2025-09-28",
+            "2025-09-28",
+            "2025-09-29",
+            "2025-09-29",
+            "2025-09-30",
+            "2025-10-03",
+            "2025-10-04",
+            "2025-10-04",
+            "2025-10-04",
+            "2025-10-04",
+            "2025-10-04",
+            "2025-10-04",
+            "2025-10-05",
+            "2025-10-05",
+            "2025-10-05",
+            "2025-10-05",
+            "2025-10-05",
+            "2025-10-06",
+            "2025-10-06",
+            "2025-10-07",
+            "2025-10-10",
+            "2025-10-10",
+            "2025-10-10",
+            "2025-10-10",
+            "2025-10-11",
+            "2025-10-11",
+            "2025-10-12",
+            "2025-10-12",
+            "2025-10-12",
+            "2025-10-12",
+            "2025-10-12",
+            "2025-10-12",
+            "2025-10-13",
+            "2025-10-13",
+            "2025-10-17",
+            "2025-10-18",
+            "2025-10-18",
+            "2025-10-18",
+            "2025-10-18",
+            "2025-10-18",
+            "2025-10-19",
+            "2025-10-19",
+            "2025-10-19",
+            "2025-10-19",
+            "2025-10-20",
+            "2025-10-20",
+            "2025-10-21",
+            "2025-10-21",
+            "2025-10-22",
+            "2025-10-24",
+            "2025-10-24",
+            "2025-10-27",
+            "2025-10-31",
+            "2025-11-01",
+            "2025-11-01",
+            "2025-11-01",
+            "2025-11-01",
+            "2025-11-01",
+            "2025-11-01",
+            "2025-11-02",
+            "2025-11-02",
+            "2025-11-02",
+            "2025-11-03",
+            "2025-11-03",
+            "2025-11-03",
+            "2025-11-04",
+            "2025-11-04",
+            "2025-11-08",
+            "2025-11-08",
+            "2025-11-08",
+            "2025-11-08",
+            "2025-11-09",
+            "2025-11-09",
+            "2025-11-09",
+            "2025-11-09",
+            "2025-11-09",
+            "2025-11-10",
+            "2025-11-10",
+            "2025-11-10",
+            "2025-11-10",
+            "2025-11-11",
+            "2025-11-11",
+            "2025-11-14",
+            "2025-11-15",
+            "2025-11-15",
+            "2025-11-15",
+            "2025-11-16",
+            "2025-11-16",
+            "2025-11-16",
+            "2025-11-16",
+            "2025-11-16",
+            "2025-11-16",
+            "2025-11-16",
+            "2025-11-17",
+            "2025-11-17",
+            "2025-11-17",
+            "2025-11-17",
+            "2025-11-22",
+            "2025-11-23",
+            "2025-11-23",
+            "2025-11-23",
+            "2025-11-24",
+            "2025-11-24",
+            "2025-11-25",
+            "2025-11-27",
+            "2025-11-30",
+            "2025-11-30",
+            "2025-12-01",
+            "2025-12-02",
+            "2025-12-07",
+            "2025-12-08",
+            "2025-12-14"
+          ],
+          "fieldCoverage": [
+            {
+              "field": "id",
+              "percent": 100
+            },
+            {
+              "field": "league.id",
+              "percent": 100
+            },
+            {
+              "field": "league.country",
+              "percent": 0
+            },
+            {
+              "field": "horaire (kickoff/date)",
+              "percent": 100
+            },
+            {
+              "field": "status.state",
+              "percent": 100
+            },
+            {
+              "field": "home.id",
+              "percent": 100
+            },
+            {
+              "field": "home.name",
+              "percent": 100
+            },
+            {
+              "field": "home.score",
+              "percent": 100
+            },
+            {
+              "field": "halftime.home+away",
+              "percent": 100
+            },
+            {
+              "field": "week / round",
+              "percent": 100
+            }
+          ],
+          "statusLabels": {
+            "postGame": 510
+          }
+        },
+        "season": "2025",
+        "availableSeasons": [
+          "2026",
+          "2025",
+          "2024",
+          "2023",
+          "2022",
+          "2021",
+          "2020",
+          "2019/2020",
+          "2018/2019",
+          "2017/2018",
+          "2016/2017",
+          "2016",
+          "2015",
+          "2014",
+          "2013/2014",
+          "2012/2013",
+          "2011/2012",
+          "2010/2011",
+          "2009/2010",
+          "2008/2009",
+          "2007/2008",
+          "2006/2007",
+          "2005/2006",
+          "2004/2005",
+          "2003/2004",
+          "2002/2003",
+          "2001/2002",
+          "2000/2001",
+          "1999/2000"
+        ],
+        "weeks": 40
+      }
+    },
+    {
+      "key": "team_matches",
+      "question": "Les rencontres d'une équipe sur une saison sont-elles récupérables (forme, domicile/extérieur, buts pour/contre) ?",
+      "endpoint": "team_matches",
+      "params": {
+        "team_id": "75wey07xf5dwm5t76drg6k4k9",
+        "lang": "en"
+      },
+      "cost": 1,
+      "required": true,
+      "status": "success",
+      "creditsSpent": 1,
+      "creditsRemaining": 490,
+      "fromCache": false,
+      "itemCount": 10,
+      "durationMs": 888,
+      "answers": [
+        "Rencontres de l'équipe (saison courante) : 10 rencontre(s) — 0 en direct, 7 terminée(s), 3 à venir.",
+        "Dates couvertes par la réponse : 2024-03-22 21:00 → 2026-10-04 20:00.",
+        "Score final présent sur 80 % des rencontres · score à la mi-temps sur 100 %.",
+        "Champs incomplets : status.state 0 % · home.score 80 % · week / round 0 %.",
+        "États rencontrés : FT×7, Scheduled×2, LIVE×1.",
+        "Bilan calculable depuis la réponse : 4 V / 5 N / 1 D, dont 5 rencontre(s) à domicile — la répartition domicile/extérieur et les buts pour/contre sont donc dérivables sans appel supplémentaire.",
+        "Saisons disponibles pour cette équipe : 2026, 2024/2025, 2023/2024, 2022/2023, 2022, 2019/2020, 2018/2019, 2017 USA, 2018, 2014, 2010, 2007 Trinidad and Tobago, 2005 Barbados, 2006 Germany, 2003, 2002 Korea Rep/Japan."
+      ],
+      "evidence": {
+        "survey": {
+          "count": 10,
+          "live": 0,
+          "finished": 7,
+          "upcoming": 3,
+          "halftimeFilled": 100,
+          "scoresFilled": 80,
+          "kickoffFilled": 100,
+          "leagueIdFilled": 100,
+          "dates": [
+            "2024-03-22 21:00",
+            "2024-03-26 19:00",
+            "2025-08-14 00:00",
+            "2025-08-15 01:00",
+            "2025-08-16 21:00",
+            "2025-11-15 00:00",
+            "2026-09-26 20:00",
+            "2026-09-29 20:00",
+            "2026-10-01 20:00",
+            "2026-10-04 20:00"
+          ],
+          "fieldCoverage": [
+            {
+              "field": "id",
+              "percent": 100
+            },
+            {
+              "field": "league.id",
+              "percent": 100
+            },
+            {
+              "field": "league.country",
+              "percent": 100
+            },
+            {
+              "field": "horaire (kickoff/date)",
+              "percent": 100
+            },
+            {
+              "field": "status.state",
+              "percent": 0
+            },
+            {
+              "field": "home.id",
+              "percent": 100
+            },
+            {
+              "field": "home.name",
+              "percent": 100
+            },
+            {
+              "field": "home.score",
+              "percent": 80
+            },
+            {
+              "field": "halftime.home+away",
+              "percent": 100
+            },
+            {
+              "field": "week / round",
+              "percent": 0
+            }
+          ],
+          "statusLabels": {
+            "FT": 7,
+            "Scheduled": 2,
+            "LIVE": 1
+          }
+        },
+        "record": {
+          "wins": 4,
+          "draws": 5,
+          "losses": 1,
+          "homeGames": 5
+        },
+        "availableSeasons": [
+          "2026",
+          "2024/2025",
+          "2023/2024",
+          "2022/2023",
+          "2022",
+          "2019/2020",
+          "2018/2019",
+          "2017 USA",
+          "2018",
+          "2014",
+          "2010",
+          "2007 Trinidad and Tobago",
+          "2005 Barbados",
+          "2006 Germany",
+          "2003",
+          "2002 Korea Rep/Japan"
+        ],
+        "sample": [
+          {
+            "id": "a4n326u5l8jse5jl5wbitsjdg",
+            "date": "2024-03-22 21:00",
+            "timestamp": 1711141200,
+            "league": {
+              "id": "3a0j0giz3c3ajw9h59evv7lqt",
+              "name": "WC Qualification Concacaf",
+              "country": "N/C America"
+            },
+            "status": "FT",
+            "home": {
+              "id": "75wey07xf5dwm5t76drg6k4k9",
+              "name": "USVI",
+              "logo": "https://live-football-api.com/teams/75wey07xf5dwm5t76drg6k4k9.png",
+              "score": "1"
+            },
+            "away": {
+              "id": "9u425psmj98quzjm5ekozmeyb",
+              "name": "British VI",
+              "logo": "https://live-football-api.com/teams/9u425psmj98quzjm5ekozmeyb.png",
+              "score": "1"
+            }
+          },
+          {
+            "id": "a5keua8clv4l6hjp7ejjtm0pg",
+            "date": "2024-03-26 19:00",
+            "timestamp": 1711479600,
+            "league": {
+              "id": "3a0j0giz3c3ajw9h59evv7lqt",
+              "name": "WC Qualification Concacaf",
+              "country": "N/C America"
+            },
+            "status": "FT",
+            "home": {
+              "id": "9u425psmj98quzjm5ekozmeyb",
+              "name": "British VI",
+              "logo": "https://live-football-api.com/teams/9u425psmj98quzjm5ekozmeyb.png",
+              "score": "0"
+            },
+            "away": {
+              "id": "75wey07xf5dwm5t76drg6k4k9",
+              "name": "USVI",
+              "logo": "https://live-football-api.com/teams/75wey07xf5dwm5t76drg6k4k9.png",
+              "score": "0"
+            }
+          },
+          {
+            "id": "8whi9e2hacmol6tp9oaim6psk",
+            "date": "2025-08-14 00:00",
+            "timestamp": 1755129600,
+            "league": {
+              "id": "cesdwwnxbc5fmajgroc0hqzy2",
+              "name": "International Friendlies Countries",
+              "country": "World"
+            },
+            "status": "FT",
+            "home": {
+              "id": "75wey07xf5dwm5t76drg6k4k9",
+              "name": "USVI",
+              "logo": "https://live-football-api.com/teams/75wey07xf5dwm5t76drg6k4k9.png",
+              "score": "1"
+            },
+            "away": {
+              "id": "cc0hi2guykoqjj15atvrsmgs5",
+              "name": "Turks & Caicos",
+              "logo": "https://live-football-api.com/teams/cc0hi2guykoqjj15atvrsmgs5.png",
+              "score": "1"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "team_standings",
+      "question": "Le classement filtré sur une équipe est-il disponible ?",
+      "endpoint": "team_standings",
+      "params": {
+        "team_id": "75wey07xf5dwm5t76drg6k4k9",
+        "lang": "en"
+      },
+      "cost": 1,
+      "required": false,
+      "status": "success",
+      "creditsSpent": 1,
+      "creditsRemaining": 489,
+      "fromCache": false,
+      "itemCount": 1,
+      "durationMs": 273,
+      "answers": [
+        "Classement de l'équipe : 3 équipe(s) classée(s), 1 groupe(s) — champs par ligne : drawn, form, goal_diff, goals_against, goals_for, lost, played, points, rank, team, won, zone.",
+        "Forme (5 derniers résultats) renseignée sur 0 % des lignes · classement domicile : 0 ligne(s) · classement extérieur : 0 ligne(s).",
+        "Saisons réellement disponibles : 2026, 2024/2025, 2023/2024, 2022/2023, 2022, 2019/2020, 2018/2019, 2017 USA, 2018, 2014, 2010, 2007 Trinidad and Tobago, 2005 Barbados, 2006 Germany, 2003, 2002 Korea Rep/Japan (16)."
+      ],
+      "evidence": {
+        "survey": {
+          "availableSeasons": [
+            "2026",
+            "2024/2025",
+            "2023/2024",
+            "2022/2023",
+            "2022",
+            "2019/2020",
+            "2018/2019",
+            "2017 USA",
+            "2018",
+            "2014",
+            "2010",
+            "2007 Trinidad and Tobago",
+            "2005 Barbados",
+            "2006 Germany",
+            "2003",
+            "2002 Korea Rep/Japan"
+          ],
+          "season": "2026",
+          "groups": 1,
+          "rows": 3,
+          "rowFields": [
+            "drawn",
+            "form",
+            "goal_diff",
+            "goals_against",
+            "goals_for",
+            "lost",
+            "played",
+            "points",
+            "rank",
+            "team",
+            "won",
+            "zone"
+          ],
+          "formFilled": 0,
+          "homeRows": 0,
+          "awayRows": 0,
+          "stale": null
+        }
+      }
+    },
+    {
+      "key": "h2h",
+      "question": "Les confrontations directes et la forme récente des deux équipes sont-elles fournies ?",
+      "endpoint": "h2h",
+      "params": {
+        "match_id": "dngq70mnnfgsvn3hto0naujv8",
+        "lang": "en"
+      },
+      "cost": 1,
+      "required": false,
+      "status": "success",
+      "creditsSpent": 1,
+      "creditsRemaining": 488,
+      "fromCache": false,
+      "itemCount": 2,
+      "durationMs": 888,
+      "answers": [
+        "Confrontations directes : 2 rencontre(s) renvoyée(s) (la plus récente : 2024-10-13).",
+        "Forme récente fournie avec la réponse : 5 rencontre(s) pour l'équipe à domicile, 5 pour l'équipe à l'extérieur — la forme est donc obtenue sans appel dédié.",
+        "Synthèse des confrontations fournie par le fournisseur : {\"home_wins\":0,\"away_wins\":1,\"draws\":1}."
+      ],
+      "evidence": {
+        "h2hCount": 2,
+        "homeFormCount": 5,
+        "awayFormCount": 5,
+        "summary": {
+          "home_wins": 0,
+          "away_wins": 1,
+          "draws": 1
+        },
+        "sample": [
+          {
+            "date": "2024-10-13",
+            "home": {
+              "id": "64le7lqb2ork2odjnft2lcf6d",
+              "name": "Bahamas",
+              "logo": "https://live-football-api.com/teams/64le7lqb2ork2odjnft2lcf6d.png"
+            },
+            "away": {
+              "id": "75wey07xf5dwm5t76drg6k4k9",
+              "name": "USVI",
+              "logo": "https://live-football-api.com/teams/75wey07xf5dwm5t76drg6k4k9.png"
+            },
+            "score": "3-1"
+          },
+          {
+            "date": "2024-09-04",
+            "home": {
+              "id": "75wey07xf5dwm5t76drg6k4k9",
+              "name": "USVI",
+              "logo": "https://live-football-api.com/teams/75wey07xf5dwm5t76drg6k4k9.png"
+            },
+            "away": {
+              "id": "64le7lqb2ork2odjnft2lcf6d",
+              "name": "Bahamas",
+              "logo": "https://live-football-api.com/teams/64le7lqb2ork2odjnft2lcf6d.png"
+            },
+            "score": "3-3"
+          }
+        ]
+      }
+    },
+    {
+      "key": "african_standings",
+      "question": "Une compétition africaine dispose-t-elle d'un classement réel ? (enjeu direct pour le public de SOLEIL)",
+      "endpoint": "league_standings",
+      "params": {
+        "league_id": "61ny7153y7f0nqpwop51qd49h",
+        "lang": "en"
+      },
+      "cost": 1,
+      "required": false,
+      "status": "success",
+      "creditsSpent": 1,
+      "creditsRemaining": 487,
+      "fromCache": false,
+      "itemCount": 2,
+      "durationMs": 1061,
+      "answers": [
+        "Classement africain : 4 équipe(s) classée(s), 2 groupe(s) — champs par ligne : drawn, form, goal_diff, goals_against, goals_for, lost, played, points, rank, team, won, zone.",
+        "Forme (5 derniers résultats) renseignée sur 100 % des lignes · classement domicile : 4 ligne(s) · classement extérieur : 4 ligne(s).",
+        "Saisons réellement disponibles : 2027, 2023, 2019 Rabat, 2015 Brazzaville, 2011 Maputo (5).",
+        "Drapeau « stale » : non."
+      ],
+      "evidence": {
+        "survey": {
+          "availableSeasons": [
+            "2027",
+            "2023",
+            "2019 Rabat",
+            "2015 Brazzaville",
+            "2011 Maputo"
+          ],
+          "season": "2023",
+          "groups": 2,
+          "rows": 4,
+          "rowFields": [
+            "drawn",
+            "form",
+            "goal_diff",
+            "goals_against",
+            "goals_for",
+            "lost",
+            "played",
+            "points",
+            "rank",
+            "team",
+            "won",
+            "zone"
+          ],
+          "formFilled": 100,
+          "homeRows": 4,
+          "awayRows": 4,
+          "stale": false
+        }
+      }
+    },
+    {
+      "key": "african_fixtures",
+      "question": "Une compétition africaine dispose-t-elle d'un calendrier réel ?",
+      "endpoint": "league_fixtures",
+      "params": {
+        "league_id": "61ny7153y7f0nqpwop51qd49h",
+        "lang": "en"
+      },
+      "cost": 1,
+      "required": false,
+      "status": "success",
+      "creditsSpent": 1,
+      "creditsRemaining": 486,
+      "fromCache": false,
+      "itemCount": 8,
+      "durationMs": 303,
+      "answers": [
+        "Calendrier africain : 20 rencontre(s) — 0 en direct, 16 terminée(s), 4 à venir.",
+        "Dates couvertes par la réponse : 2024-03-07 → 2024-03-22.",
+        "Score final présent sur 80 % des rencontres · score à la mi-temps sur 0 %.",
+        "Champs incomplets : league.country 0 % · home.score 80 % · halftime.home+away 0 %.",
+        "États rencontrés : postGame×16, cancelled×4.",
+        "Coût d'une ingestion complète de cette compétition-saison : 1 crédit (calendrier) + 20 crédits (détail match par match) = 21 crédits au maximum.",
+        "Saisons annoncées par le fournisseur pour cette compétition : 2027, 2023, 2019 Rabat, 2015 Brazzaville, 2011 Maputo."
+      ],
+      "evidence": {
+        "survey": {
+          "count": 20,
+          "live": 0,
+          "finished": 16,
+          "upcoming": 4,
+          "halftimeFilled": 0,
+          "scoresFilled": 80,
+          "kickoffFilled": 100,
+          "leagueIdFilled": 100,
+          "dates": [
+            "2024-03-07",
+            "2024-03-07",
+            "2024-03-08",
+            "2024-03-08",
+            "2024-03-10",
+            "2024-03-11",
+            "2024-03-11",
+            "2024-03-12",
+            "2024-03-12",
+            "2024-03-12",
+            "2024-03-14",
+            "2024-03-15",
+            "2024-03-15",
+            "2024-03-15",
+            "2024-03-15",
+            "2024-03-16",
+            "2024-03-19",
+            "2024-03-19",
+            "2024-03-22",
+            "2024-03-22"
+          ],
+          "fieldCoverage": [
+            {
+              "field": "id",
+              "percent": 100
+            },
+            {
+              "field": "league.id",
+              "percent": 100
+            },
+            {
+              "field": "league.country",
+              "percent": 0
+            },
+            {
+              "field": "horaire (kickoff/date)",
+              "percent": 100
+            },
+            {
+              "field": "status.state",
+              "percent": 100
+            },
+            {
+              "field": "home.id",
+              "percent": 100
+            },
+            {
+              "field": "home.name",
+              "percent": 100
+            },
+            {
+              "field": "home.score",
+              "percent": 80
+            },
+            {
+              "field": "halftime.home+away",
+              "percent": 0
+            },
+            {
+              "field": "week / round",
+              "percent": 100
+            }
+          ],
+          "statusLabels": {
+            "postGame": 16,
+            "cancelled": 4
+          }
+        },
+        "season": "2023",
+        "availableSeasons": [
+          "2027",
+          "2023",
+          "2019 Rabat",
+          "2015 Brazzaville",
+          "2011 Maputo"
+        ],
+        "weeks": 8
+      }
+    }
+  ],
+  "rawSamples": {
+    "leagues": {
+      "success": true,
+      "message": "Success",
+      "credits_remaining": 499,
+      "data": {
+        "language": "en",
+        "total_countries": 159,
+        "data": [
+          {
+            "country": "Africa",
+            "leagues": [
+              {
+                "id": "…",
+                "name": "…",
+                "logo": "…"
+              },
+              {
+                "id": "…",
+                "name": "…",
+                "logo": "…"
+              },
+              {
+                "id": "…",
+                "name": "…",
+                "logo": "…"
+              }
+            ]
+          },
+          {
+            "country": "Albania",
+            "leagues": [
+              {
+                "id": "…",
+                "name": "…",
+                "logo": "…"
+              },
+              {
+                "id": "…",
+                "name": "…",
+                "logo": "…"
+              },
+              {
+                "id": "…",
+                "name": "…",
+                "logo": "…"
+              }
+            ]
+          },
+          {
+            "country": "Algeria",
+            "leagues": [
+              {
+                "id": "…",
+                "name": "…",
+                "logo": "…"
+              },
+              {
+                "id": "…",
+                "name": "…",
+                "logo": "…"
+              },
+              {
+                "id": "…",
+                "name": "…",
+                "logo": "…"
+              }
+            ]
+          }
+        ]
+      },
+      "timestamp": "2026-09-29 21:46:01"
+    },
+    "matches_today": {
+      "success": true,
+      "message": "Success",
+      "credits_remaining": 498,
+      "data": {
+        "date": "2026-09-29",
+        "language": "en",
+        "timezone": "UTC",
+        "matches": [
+          {
+            "id": "3eskwfpnju5i1lsz1yg9ec844",
+            "league": {
+              "id": "cesdwwnxbc5fmajgroc0hqzy2",
+              "name": "International Friendlies Countries",
+              "country": "World"
+            },
+            "week": "Friendlies 1",
+            "kickoff": "00:00",
+            "status": {
+              "status": "scheduled",
+              "display": "00:00",
+              "is_live": false,
+              "state": "preGame"
+            },
+            "home": {
+              "id": "9vh2u1p4ppm597tjfahst2m3n",
+              "name": "United States",
+              "logo": "https://live-football-api.com/teams/9vh2u1p4ppm597tjfahst2m3n.png",
+              "score": null
+            },
+            "away": {
+              "id": "4etj58jfe5zmfspk9pl7jfzr3",
+              "name": "Chile",
+              "logo": "https://live-football-api.com/teams/4etj58jfe5zmfspk9pl7jfzr3.png",
+              "score": null
+            },
+            "halftime": {
+              "home": null,
+              "away": null
+            },
+            "tv_broadcast": false,
+            "penalty": {
+              "home": null,
+              "away": null
+            }
+          },
+          {
+            "id": "1xhg0550hjzg2lvht3ed6l4wk",
+            "league": {
+              "id": "cu0rmpyff5692eo06ltddjo8a",
+              "name": "Concacaf Nations League",
+              "country": "N/C America"
+            },
+            "week": "League A",
+            "kickoff": "00:00",
+            "status": {
+              "status": "finished",
+              "display": "FT",
+              "is_live": false,
+              "state": "postGame"
+            },
+            "home": {
+              "id": "8yhjl13p7luh3v905btbvz42t",
+              "name": "Jamaica",
+              "logo": "https://live-football-api.com/teams/8yhjl13p7luh3v905btbvz42t.png",
+              "score": "0"
+            },
+            "away": {
+              "id": "6ngz19ekzqqufux1sswnhzlsw",
+              "name": "Honduras",
+              "logo": "https://live-football-api.com/teams/6ngz19ekzqqufux1sswnhzlsw.png",
+              "score": "1"
+            },
+            "halftime": {
+              "home": 0,
+              "away": 1
+            },
+            "tv_broadcast": false,
+            "penalty": {
+              "home": null,
+              "away": null
+            }
+          },
+          {
+            "id": "dlylleztuo7clusepxogr3x90",
+            "league": {
+              "id": "cu0rmpyff5692eo06ltddjo8a",
+              "name": "Concacaf Nations League",
+              "country": "N/C America"
+            },
+            "week": "League B",
+            "kickoff": "00:00",
+            "status": {
+              "status": "finished",
+              "display": "FT",
+              "is_live": false,
+              "state": "postGame"
+            },
+            "home": {
+              "id": "3lk3jbw7cuvuny690bz0obsp6",
+              "name": "St. Lucia",
+              "logo": "https://live-football-api.com/teams/3lk3jbw7cuvuny690bz0obsp6.png",
+              "score": "5"
+            },
+            "away": {
+              "id": "88ca766nh0ae9i9kpvwubxpzp",
+              "name": "Bermuda",
+              "logo": "https://live-football-api.com/teams/88ca766nh0ae9i9kpvwubxpzp.png",
+              "score": "2"
+            },
+            "halftime": {
+              "home": 3,
+              "away": 1
+            },
+            "tv_broadcast": false,
+            "penalty": {
+              "home": null,
+              "away": null
+            }
+          }
+        ]
+      },
+      "timestamp": "2026-09-29 21:46:02"
+    },
+    "matches_finished": {
+      "success": true,
+      "message": "Success",
+      "credits_remaining": 497,
+      "data": {
+        "date": "2026-09-26",
+        "language": "en",
+        "timezone": "UTC",
+        "matches": [
+          {
+            "id": "1vul4ucfdbfim2265tx9z7zf8",
+            "league": {
+              "id": "cu0rmpyff5692eo06ltddjo8a",
+              "name": "Concacaf Nations League",
+              "country": "N/C America"
+            },
+            "week": "League A",
+            "kickoff": "00:00",
+            "status": {
+              "status": "finished",
+              "display": "FT",
+              "is_live": false,
+              "state": "postGame"
+            },
+            "home": {
+              "id": "8yhjl13p7luh3v905btbvz42t",
+              "name": "Jamaica",
+              "logo": "https://live-football-api.com/teams/8yhjl13p7luh3v905btbvz42t.png",
+              "score": "3"
+            },
+            "away": {
+              "id": "a4wu0pabb2b7r8ik6gs0w1o28",
+              "name": "Guatemala",
+              "logo": "https://live-football-api.com/teams/a4wu0pabb2b7r8ik6gs0w1o28.png",
+              "score": "2"
+            },
+            "halftime": {
+              "home": 1,
+              "away": 1
+            },
+            "tv_broadcast": false,
+            "penalty": {
+              "home": null,
+              "away": null
+            }
+          },
+          {
+            "id": "dhi7uplig9drztu7qp4u9u1w4",
+            "league": {
+              "id": "cu0rmpyff5692eo06ltddjo8a",
+              "name": "Concacaf Nations League",
+              "country": "N/C America"
+            },
+            "week": "League B",
+            "kickoff": "00:00",
+            "status": {
+              "status": "finished",
+              "display": "FT",
+              "is_live": false,
+              "state": "postGame"
+            },
+            "home": {
+              "id": "6raiahlhb99i9rzr6sj4nm7qh",
+              "name": "Barbados",
+              "logo": "https://live-football-api.com/teams/6raiahlhb99i9rzr6sj4nm7qh.png",
+              "score": "2"
+            },
+            "away": {
+              "id": "3lk3jbw7cuvuny690bz0obsp6",
+              "name": "St. Lucia",
+              "logo": "https://live-football-api.com/teams/3lk3jbw7cuvuny690bz0obsp6.png",
+              "score": "0"
+            },
+            "halftime": {
+              "home": 1,
+              "away": 0
+            },
+            "tv_broadcast": false,
+            "penalty": {
+              "home": null,
+              "away": null
+            }
+          },
+          {
+            "id": "dit5t3yerk0l67prtwuas6uxg",
+            "league": {
+              "id": "cu0rmpyff5692eo06ltddjo8a",
+              "name": "Concacaf Nations League",
+              "country": "N/C America"
+            },
+            "week": "League B",
+            "kickoff": "00:00",
+            "status": {
+              "status": "finished",
+              "display": "FT",
+              "is_live": false,
+              "state": "postGame"
+            },
+            "home": {
+              "id": "8tjgp47v3kqgyyfo8tvo55av7",
+              "name": "Bonaire",
+              "logo": "https://live-football-api.com/teams/8tjgp47v3kqgyyfo8tvo55av7.png",
+              "score": "1"
+            },
+            "away": {
+              "id": "6jwullawcerruu29afyok2wgl",
+              "name": "St. Kitts",
+              "logo": "https://live-football-api.com/teams/6jwullawcerruu29afyok2wgl.png",
+              "score": "2"
+            },
+            "halftime": {
+              "home": 1,
+              "away": 1
+            },
+            "tv_broadcast": false,
+            "penalty": {
+              "home": null,
+              "away": null
+            }
+          }
+        ]
+      },
+      "timestamp": "2026-09-29 21:46:03"
+    },
+    "matches_future": {
+      "success": true,
+      "message": "Success",
+      "credits_remaining": 496,
+      "data": {
+        "date": "2026-10-03",
+        "language": "en",
+        "timezone": "UTC",
+        "matches": [
+          {
+            "id": "axt8dtutmfftyoyayddxy5vro",
+            "league": {
+              "id": "cesdwwnxbc5fmajgroc0hqzy2",
+              "name": "International Friendlies Countries",
+              "country": "World"
+            },
+            "week": "Friendlies 3",
+            "kickoff": "00:00",
+            "status": {
+              "status": "cancelled",
+              "display": "Cancelled",
+              "is_live": false,
+              "state": "cancelled"
+            },
+            "home": {
+              "id": "3u9qf9ju8eym4g8qsa0avfjm2",
+              "name": "Sri Lanka",
+              "logo": "https://live-football-api.com/teams/3u9qf9ju8eym4g8qsa0avfjm2.png",
+              "score": null
+            },
+            "away": {
+              "id": "81vlgos2xom62qgl4xfezm385",
+              "name": "Djibouti",
+              "logo": "https://live-football-api.com/teams/81vlgos2xom62qgl4xfezm385.png",
+              "score": null
+            },
+            "halftime": {
+              "home": null,
+              "away": null
+            },
+            "tv_broadcast": false,
+            "penalty": {
+              "home": null,
+              "away": null
+            }
+          },
+          {
+            "id": "5w98q2uuvgvcsli7pdzif651w",
+            "league": {
+              "id": "cesdwwnxbc5fmajgroc0hqzy2",
+              "name": "International Friendlies Countries",
+              "country": "World"
+            },
+            "week": "Friendlies 1",
+            "kickoff": "00:00",
+            "status": {
+              "status": "scheduled",
+              "display": "00:00",
+              "is_live": false,
+              "state": "preGame"
+            },
+            "home": {
+              "id": "7km4szeh6fs5bbdgypshh0snd",
+              "name": "Colombia",
+              "logo": "https://live-football-api.com/teams/7km4szeh6fs5bbdgypshh0snd.png",
+              "score": null
+            },
+            "away": {
+              "id": "3cwjdmekfdouwg990mqdq9fh0",
+              "name": "Paraguay",
+              "logo": "https://live-football-api.com/teams/3cwjdmekfdouwg990mqdq9fh0.png",
+              "score": null
+            },
+            "halftime": {
+              "home": null,
+              "away": null
+            },
+            "tv_broadcast": false,
+            "penalty": {
+              "home": null,
+              "away": null
+            }
+          },
+          {
+            "id": "85odt9nfqumvxiiplfiwcgnbo",
+            "league": {
+              "id": "cesdwwnxbc5fmajgroc0hqzy2",
+              "name": "International Friendlies Countries",
+              "country": "World"
+            },
+            "week": "Friendlies 1",
+            "kickoff": "00:00",
+            "status": {
+              "status": "scheduled",
+              "display": "00:00",
+              "is_live": false,
+              "state": "preGame"
+            },
+            "home": {
+              "id": "ak48fkypnql8y4n69cvcq5ghc",
+              "name": "Argentina",
+              "logo": "https://live-football-api.com/teams/ak48fkypnql8y4n69cvcq5ghc.png",
+              "score": null
+            },
+            "away": {
+              "id": "etmdes5ggjhtxte8v8ceiwbio",
+              "name": "Burkina Faso",
+              "logo": "https://live-football-api.com/teams/etmdes5ggjhtxte8v8ceiwbio.png",
+              "score": null
+            },
+            "halftime": {
+              "home": null,
+              "away": null
+            },
+            "tv_broadcast": false,
+            "penalty": {
+              "home": null,
+              "away": null
+            }
+          }
+        ]
+      },
+      "timestamp": "2026-09-29 21:46:06"
+    },
+    "details_active": {
+      "success": true,
+      "message": "Success",
+      "credits_remaining": 495,
+      "data": {
+        "match_id": "dngq70mnnfgsvn3hto0naujv8",
+        "match_date": "2026-09-29 20:00:00",
+        "last_updated": "2026-09-29 21:46:09 UTC",
+        "header": {
+          "home": {
+            "name": "USVI",
+            "id": "75wey07xf5dwm5t76drg6k4k9",
+            "logo": "https://live-football-api.com/teams/75wey07xf5dwm5t76drg6k4k9.png",
+            "score": "3"
+          },
+          "away": {
+            "name": "Bahamas",
+            "id": "64le7lqb2ork2odjnft2lcf6d",
+            "logo": "https://live-football-api.com/teams/64le7lqb2ork2odjnft2lcf6d.png",
+            "score": "1"
+          },
+          "status": {
+            "display": "",
+            "is_live": true,
+            "is_postponed": 0,
+            "minute": "88",
+            "state": "inPlay",
+            "extra_time": {
+              "first_half": 3
+            }
+          }
+        },
+        "events": [
+          {
+            "time": "5",
+            "type": "yellow_card",
+            "side": "away",
+            "detail": {
+              "player": {
+                "name": "…",
+                "id": "…",
+                "image": "…"
+              }
+            }
+          },
+          {
+            "time": "14",
+            "type": "goal",
+            "side": "home",
+            "detail": {
+              "player": {
+                "name": "…",
+                "id": "…",
+                "image": "…"
+              },
+              "score": "1-0",
+              "assist": {
+                "name": "…",
+                "id": "…",
+                "image": "…"
+              }
+            }
+          },
+          {
+            "time": "36",
+            "type": "yellow_card",
+            "side": "home",
+            "detail": {
+              "player": {
+                "name": "…",
+                "id": "…",
+                "image": "…"
+              }
+            }
+          }
+        ],
+        "stats": [
+          {
+            "label": "Possession",
+            "home": "40",
+            "away": "60"
+          },
+          {
+            "label": "Expected Goals (xG)",
+            "home": "0.9",
+            "away": "1.11"
+          },
+          {
+            "label": "xG from Set Pieces",
+            "home": "0.07",
+            "away": "0.21"
+          }
+        ],
+        "csb_url": "https://live-football-api.com/api/v1/csb?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b21lcklkIjoibWFja29saWtXZWIiLCJ1c2VySWQiOiI5ZDNxZHA4M2wiLCJzcG9ydGlkIjoiMSIsImdzbWlkIjoiNTA3NjA4OCIsIndiaWQiOiIyNTU5MzUzIiwicmJpZCI6IjI0MDY1NzQiLCJ1dWlkIjoiZG5ncTcwbW5uZmdzdm4zaHRvMG5hdWp2OCIsImlhdCI6MTc5MDcxNTczOSwiZXhwIjoxNzkwNzMwMTM5LCJpc3MiOiJjc2IifQ.bp0OLck1hMJmzH0D2C_QL82GCoQcZIWKMu7qNpWWj2k&matchid=dngq70mnnfgsvn3hto0naujv8&lang=en",
+        "stale": false,
+        "venue": {
+          "name": "Bethlehem Soccer Complex",
+          "capacity": 1000
+        },
+        "referee": "O. Nicholson",
+        "tv_channels": [],
+        "player_of_the_match": null
+      },
+      "timestamp": "2026-09-29 21:46:09"
+    },
+    "details_finished": {
+      "success": true,
+      "message": "Success",
+      "credits_remaining": 494,
+      "data": {
+        "match_id": "1vul4ucfdbfim2265tx9z7zf8",
+        "match_date": "2026-09-26 00:00:00",
+        "last_updated": "2026-09-29 21:46:12 UTC",
+        "header": {
+          "home": {
+            "name": "Jamaica",
+            "id": "8yhjl13p7luh3v905btbvz42t",
+            "logo": "https://live-football-api.com/teams/8yhjl13p7luh3v905btbvz42t.png",
+            "score": "3"
+          },
+          "away": {
+            "name": "Guatemala",
+            "id": "a4wu0pabb2b7r8ik6gs0w1o28",
+            "logo": "https://live-football-api.com/teams/a4wu0pabb2b7r8ik6gs0w1o28.png",
+            "score": "2"
+          },
+          "status": {
+            "display": "FT",
+            "is_live": false,
+            "is_postponed": 0,
+            "minute": "",
+            "state": "postGame",
+            "extra_time": {
+              "first_half": 2,
+              "second_half": 5
+            }
+          }
+        },
+        "events": [
+          {
+            "time": "1",
+            "type": "yellow_card",
+            "side": "away",
+            "detail": {
+              "player": {
+                "name": "…",
+                "id": "…",
+                "image": "…"
+              }
+            }
+          },
+          {
+            "time": "2",
+            "type": "goal",
+            "side": "away",
+            "detail": {
+              "player": {
+                "name": "…",
+                "id": "…",
+                "image": "…"
+              },
+              "score": "0-1",
+              "assist": {
+                "name": "…",
+                "id": "…",
+                "image": "…"
+              }
+            }
+          },
+          {
+            "time": "7",
+            "type": "yellow_card",
+            "side": "home",
+            "detail": {
+              "player": {
+                "name": "…",
+                "id": "…",
+                "image": "…"
+              }
+            }
+          }
+        ],
+        "stats": [
+          {
+            "label": "Possession",
+            "home": "58",
+            "away": "42"
+          },
+          {
+            "label": "Expected Goals (xG)",
+            "home": "1.66",
+            "away": "2.99"
+          },
+          {
+            "label": "xG from Set Pieces",
+            "home": "0",
+            "away": "0.36"
+          }
+        ],
+        "csb_url": null,
+        "stale": false,
+        "venue": {
+          "name": "Independence Park",
+          "capacity": 35000
+        },
+        "referee": "K. Herrera",
+        "tv_channels": [],
+        "player_of_the_match": {
+          "name": "Ó. Santis",
+          "id": "axyza1ni5edoxzs0bo7gylxwp",
+          "image": "https://live-football-api.com/people/axyza1ni5edoxzs0bo7gylxwp.png",
+          "rating": 9
+        }
+      },
+      "timestamp": "2026-09-29 21:46:12"
+    },
+    "standings": {
+      "success": true,
+      "message": "Success",
+      "credits_remaining": 493,
+      "data": {
+        "league_id": "581t4mywybx21wcpmpykhyzr3",
+        "season": "2026",
+        "available_seasons": [
+          "2026",
+          "2025",
+          "2024"
+        ],
+        "timezone": "UTC",
+        "standings": [
+          {
+            "title": "Group A",
+            "table": [
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              },
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              },
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              }
+            ]
+          },
+          {
+            "title": "Group B",
+            "table": [
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              },
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              },
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              }
+            ]
+          },
+          {
+            "title": "Group A",
+            "table": [
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              },
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              },
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              }
+            ]
+          }
+        ],
+        "stale": false,
+        "home_standings": [
+          {
+            "title": "Group A",
+            "table": [
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              },
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              },
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              }
+            ]
+          },
+          {
+            "title": "Group B",
+            "table": [
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              },
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              },
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              }
+            ]
+          },
+          {
+            "title": "Group A",
+            "table": [
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              },
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              },
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              }
+            ]
+          }
+        ],
+        "away_standings": [
+          {
+            "title": "Group A",
+            "table": [
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              },
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              },
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              }
+            ]
+          },
+          {
+            "title": "Group B",
+            "table": [
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              },
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              },
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              }
+            ]
+          },
+          {
+            "title": "Group A",
+            "table": [
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              },
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              },
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              }
+            ]
+          }
+        ]
+      },
+      "timestamp": "2026-09-29 21:46:14"
+    },
+    "league_fixtures": {
+      "success": true,
+      "message": "Success",
+      "credits_remaining": 492,
+      "data": {
+        "league_id": "581t4mywybx21wcpmpykhyzr3",
+        "league_name": "Liga Profesional Argentina",
+        "season": "2026",
+        "available_seasons": [
+          "2026",
+          "2025",
+          "2024"
+        ],
+        "timezone": "UTC",
+        "weeks": [
+          {
+            "week": "1",
+            "matches": [
+              {
+                "id": "…",
+                "league": "…",
+                "round": "…",
+                "date": "…",
+                "kickoff": "…",
+                "status": "…",
+                "home": "…",
+                "away": "…",
+                "halftime": "…",
+                "penalty": "…"
+              },
+              {
+                "id": "…",
+                "league": "…",
+                "round": "…",
+                "date": "…",
+                "kickoff": "…",
+                "status": "…",
+                "home": "…",
+                "away": "…",
+                "halftime": "…",
+                "penalty": "…"
+              },
+              {
+                "id": "…",
+                "league": "…",
+                "round": "…",
+                "date": "…",
+                "kickoff": "…",
+                "status": "…",
+                "home": "…",
+                "away": "…",
+                "halftime": "…",
+                "penalty": "…"
+              }
+            ]
+          },
+          {
+            "week": "2",
+            "matches": [
+              {
+                "id": "…",
+                "league": "…",
+                "round": "…",
+                "date": "…",
+                "kickoff": "…",
+                "status": "…",
+                "home": "…",
+                "away": "…",
+                "halftime": "…",
+                "penalty": "…"
+              },
+              {
+                "id": "…",
+                "league": "…",
+                "round": "…",
+                "date": "…",
+                "kickoff": "…",
+                "status": "…",
+                "home": "…",
+                "away": "…",
+                "halftime": "…",
+                "penalty": "…"
+              },
+              {
+                "id": "…",
+                "league": "…",
+                "round": "…",
+                "date": "…",
+                "kickoff": "…",
+                "status": "…",
+                "home": "…",
+                "away": "…",
+                "halftime": "…",
+                "penalty": "…"
+              }
+            ]
+          },
+          {
+            "week": "3",
+            "matches": [
+              {
+                "id": "…",
+                "league": "…",
+                "round": "…",
+                "date": "…",
+                "kickoff": "…",
+                "status": "…",
+                "home": "…",
+                "away": "…",
+                "halftime": "…",
+                "penalty": "…"
+              },
+              {
+                "id": "…",
+                "league": "…",
+                "round": "…",
+                "date": "…",
+                "kickoff": "…",
+                "status": "…",
+                "home": "…",
+                "away": "…",
+                "halftime": "…",
+                "penalty": "…"
+              },
+              {
+                "id": "…",
+                "league": "…",
+                "round": "…",
+                "date": "…",
+                "kickoff": "…",
+                "status": "…",
+                "home": "…",
+                "away": "…",
+                "halftime": "…",
+                "penalty": "…"
+              }
+            ]
+          }
+        ],
+        "stale": false
+      },
+      "timestamp": "2026-09-29 21:46:15"
+    },
+    "league_fixtures_old": {
+      "success": true,
+      "message": "Success",
+      "credits_remaining": 491,
+      "data": {
+        "league_id": "581t4mywybx21wcpmpykhyzr3",
+        "league_name": "Liga Profesional Argentina",
+        "season": "2025",
+        "available_seasons": [
+          "2026",
+          "2025",
+          "2024"
+        ],
+        "timezone": "UTC",
+        "weeks": [
+          {
+            "week": "1",
+            "matches": [
+              {
+                "id": "…",
+                "league": "…",
+                "round": "…",
+                "date": "…",
+                "kickoff": "…",
+                "status": "…",
+                "home": "…",
+                "away": "…",
+                "halftime": "…",
+                "penalty": "…"
+              },
+              {
+                "id": "…",
+                "league": "…",
+                "round": "…",
+                "date": "…",
+                "kickoff": "…",
+                "status": "…",
+                "home": "…",
+                "away": "…",
+                "halftime": "…",
+                "penalty": "…"
+              },
+              {
+                "id": "…",
+                "league": "…",
+                "round": "…",
+                "date": "…",
+                "kickoff": "…",
+                "status": "…",
+                "home": "…",
+                "away": "…",
+                "halftime": "…",
+                "penalty": "…"
+              }
+            ]
+          },
+          {
+            "week": "2",
+            "matches": [
+              {
+                "id": "…",
+                "league": "…",
+                "round": "…",
+                "date": "…",
+                "kickoff": "…",
+                "status": "…",
+                "home": "…",
+                "away": "…",
+                "halftime": "…",
+                "penalty": "…"
+              },
+              {
+                "id": "…",
+                "league": "…",
+                "round": "…",
+                "date": "…",
+                "kickoff": "…",
+                "status": "…",
+                "home": "…",
+                "away": "…",
+                "halftime": "…",
+                "penalty": "…"
+              },
+              {
+                "id": "…",
+                "league": "…",
+                "round": "…",
+                "date": "…",
+                "kickoff": "…",
+                "status": "…",
+                "home": "…",
+                "away": "…",
+                "halftime": "…",
+                "penalty": "…"
+              }
+            ]
+          },
+          {
+            "week": "3",
+            "matches": [
+              {
+                "id": "…",
+                "league": "…",
+                "round": "…",
+                "date": "…",
+                "kickoff": "…",
+                "status": "…",
+                "home": "…",
+                "away": "…",
+                "halftime": "…",
+                "penalty": "…"
+              },
+              {
+                "id": "…",
+                "league": "…",
+                "round": "…",
+                "date": "…",
+                "kickoff": "…",
+                "status": "…",
+                "home": "…",
+                "away": "…",
+                "halftime": "…",
+                "penalty": "…"
+              },
+              {
+                "id": "…",
+                "league": "…",
+                "round": "…",
+                "date": "…",
+                "kickoff": "…",
+                "status": "…",
+                "home": "…",
+                "away": "…",
+                "halftime": "…",
+                "penalty": "…"
+              }
+            ]
+          }
+        ],
+        "stale": false
+      },
+      "timestamp": "2026-09-29 21:46:20"
+    },
+    "team_matches": {
+      "success": true,
+      "message": "Success",
+      "credits_remaining": 490,
+      "data": {
+        "team_id": "75wey07xf5dwm5t76drg6k4k9",
+        "team_logo": "https://live-football-api.com/teams/75wey07xf5dwm5t76drg6k4k9.png",
+        "season": "2026",
+        "available_seasons": [
+          "2026",
+          "2024/2025",
+          "2023/2024"
+        ],
+        "timezone": "UTC",
+        "matches": [
+          {
+            "id": "a4n326u5l8jse5jl5wbitsjdg",
+            "date": "2024-03-22 21:00",
+            "timestamp": 1711141200,
+            "league": {
+              "id": "3a0j0giz3c3ajw9h59evv7lqt",
+              "name": "WC Qualification Concacaf",
+              "country": "N/C America"
+            },
+            "status": "FT",
+            "home": {
+              "id": "75wey07xf5dwm5t76drg6k4k9",
+              "name": "USVI",
+              "logo": "https://live-football-api.com/teams/75wey07xf5dwm5t76drg6k4k9.png",
+              "score": "1"
+            },
+            "away": {
+              "id": "9u425psmj98quzjm5ekozmeyb",
+              "name": "British VI",
+              "logo": "https://live-football-api.com/teams/9u425psmj98quzjm5ekozmeyb.png",
+              "score": "1"
+            }
+          },
+          {
+            "id": "a5keua8clv4l6hjp7ejjtm0pg",
+            "date": "2024-03-26 19:00",
+            "timestamp": 1711479600,
+            "league": {
+              "id": "3a0j0giz3c3ajw9h59evv7lqt",
+              "name": "WC Qualification Concacaf",
+              "country": "N/C America"
+            },
+            "status": "FT",
+            "home": {
+              "id": "9u425psmj98quzjm5ekozmeyb",
+              "name": "British VI",
+              "logo": "https://live-football-api.com/teams/9u425psmj98quzjm5ekozmeyb.png",
+              "score": "0"
+            },
+            "away": {
+              "id": "75wey07xf5dwm5t76drg6k4k9",
+              "name": "USVI",
+              "logo": "https://live-football-api.com/teams/75wey07xf5dwm5t76drg6k4k9.png",
+              "score": "0"
+            }
+          },
+          {
+            "id": "8whi9e2hacmol6tp9oaim6psk",
+            "date": "2025-08-14 00:00",
+            "timestamp": 1755129600,
+            "league": {
+              "id": "cesdwwnxbc5fmajgroc0hqzy2",
+              "name": "International Friendlies Countries",
+              "country": "World"
+            },
+            "status": "FT",
+            "home": {
+              "id": "75wey07xf5dwm5t76drg6k4k9",
+              "name": "USVI",
+              "logo": "https://live-football-api.com/teams/75wey07xf5dwm5t76drg6k4k9.png",
+              "score": "1"
+            },
+            "away": {
+              "id": "cc0hi2guykoqjj15atvrsmgs5",
+              "name": "Turks & Caicos",
+              "logo": "https://live-football-api.com/teams/cc0hi2guykoqjj15atvrsmgs5.png",
+              "score": "1"
+            }
+          }
+        ]
+      },
+      "timestamp": "2026-09-29 21:46:22"
+    },
+    "team_standings": {
+      "success": true,
+      "message": "Success",
+      "credits_remaining": 489,
+      "data": {
+        "team_id": "75wey07xf5dwm5t76drg6k4k9",
+        "season": "2026",
+        "available_seasons": [
+          "2026",
+          "2024/2025",
+          "2023/2024"
+        ],
+        "timezone": "UTC",
+        "standings": [
+          {
+            "league": "Concacaf Nations League - Group C",
+            "table": [
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              },
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              },
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              }
+            ]
+          }
+        ]
+      },
+      "timestamp": "2026-09-29 21:46:22"
+    },
+    "h2h": {
+      "success": true,
+      "message": "Success",
+      "credits_remaining": 488,
+      "data": {
+        "match_id": "dngq70mnnfgsvn3hto0naujv8",
+        "home_form": [
+          {
+            "date": "2026-09-26",
+            "home": {
+              "id": "a527295povj9xxmglo6r86w8k",
+              "name": "Saint Martin",
+              "logo": "https://live-football-api.com/teams/a527295povj9xxmglo6r86w8k.png"
+            },
+            "away": {
+              "id": "75wey07xf5dwm5t76drg6k4k9",
+              "name": "USVI",
+              "logo": "https://live-football-api.com/teams/75wey07xf5dwm5t76drg6k4k9.png"
+            },
+            "score": "0-2"
+          },
+          {
+            "date": "2026-03-29",
+            "home": {
+              "id": "9cud7g7g69dymxowmuu5ueod1",
+              "name": "Puerto Rico",
+              "logo": "https://live-football-api.com/teams/9cud7g7g69dymxowmuu5ueod1.png"
+            },
+            "away": {
+              "id": "75wey07xf5dwm5t76drg6k4k9",
+              "name": "USVI",
+              "logo": "https://live-football-api.com/teams/75wey07xf5dwm5t76drg6k4k9.png"
+            },
+            "score": "2-0"
+          },
+          {
+            "date": "2026-03-25",
+            "home": {
+              "id": "75wey07xf5dwm5t76drg6k4k9",
+              "name": "USVI",
+              "logo": "https://live-football-api.com/teams/75wey07xf5dwm5t76drg6k4k9.png"
+            },
+            "away": {
+              "id": "8ti1gcdqynnn2ld07o1i0egut",
+              "name": "American Samoa",
+              "logo": "https://live-football-api.com/teams/8ti1gcdqynnn2ld07o1i0egut.png"
+            },
+            "score": "5-2"
+          }
+        ],
+        "away_form": [
+          {
+            "date": "2026-09-23",
+            "home": {
+              "id": "64le7lqb2ork2odjnft2lcf6d",
+              "name": "Bahamas",
+              "logo": "https://live-football-api.com/teams/64le7lqb2ork2odjnft2lcf6d.png"
+            },
+            "away": {
+              "id": "a527295povj9xxmglo6r86w8k",
+              "name": "Saint Martin",
+              "logo": "https://live-football-api.com/teams/a527295povj9xxmglo6r86w8k.png"
+            },
+            "score": "0-8"
+          },
+          {
+            "date": "2026-03-30",
+            "home": {
+              "id": "ckypeadymrd2akaqkumu3w6ol",
+              "name": "Cayman",
+              "logo": "https://live-football-api.com/teams/ckypeadymrd2akaqkumu3w6ol.png"
+            },
+            "away": {
+              "id": "64le7lqb2ork2odjnft2lcf6d",
+              "name": "Bahamas",
+              "logo": "https://live-football-api.com/teams/64le7lqb2ork2odjnft2lcf6d.png"
+            },
+            "score": "1-0"
+          },
+          {
+            "date": "2026-03-26",
+            "home": {
+              "id": "64le7lqb2ork2odjnft2lcf6d",
+              "name": "Bahamas",
+              "logo": "https://live-football-api.com/teams/64le7lqb2ork2odjnft2lcf6d.png"
+            },
+            "away": {
+              "id": "a8qocq8ic1q8zme3s7d3icrmd",
+              "name": "Anguilla",
+              "logo": "https://live-football-api.com/teams/a8qocq8ic1q8zme3s7d3icrmd.png"
+            },
+            "score": "1-3"
+          }
+        ],
+        "h2h": [
+          {
+            "date": "2024-10-13",
+            "home": {
+              "id": "64le7lqb2ork2odjnft2lcf6d",
+              "name": "Bahamas",
+              "logo": "https://live-football-api.com/teams/64le7lqb2ork2odjnft2lcf6d.png"
+            },
+            "away": {
+              "id": "75wey07xf5dwm5t76drg6k4k9",
+              "name": "USVI",
+              "logo": "https://live-football-api.com/teams/75wey07xf5dwm5t76drg6k4k9.png"
+            },
+            "score": "3-1"
+          },
+          {
+            "date": "2024-09-04",
+            "home": {
+              "id": "75wey07xf5dwm5t76drg6k4k9",
+              "name": "USVI",
+              "logo": "https://live-football-api.com/teams/75wey07xf5dwm5t76drg6k4k9.png"
+            },
+            "away": {
+              "id": "64le7lqb2ork2odjnft2lcf6d",
+              "name": "Bahamas",
+              "logo": "https://live-football-api.com/teams/64le7lqb2ork2odjnft2lcf6d.png"
+            },
+            "score": "3-3"
+          }
+        ],
+        "h2h_summary": {
+          "home_wins": 0,
+          "away_wins": 1,
+          "draws": 1
+        }
+      },
+      "timestamp": "2026-09-29 21:46:23"
+    },
+    "african_standings": {
+      "success": true,
+      "message": "Success",
+      "credits_remaining": 487,
+      "data": {
+        "league_id": "61ny7153y7f0nqpwop51qd49h",
+        "season": "2023",
+        "available_seasons": [
+          "2027",
+          "2023",
+          "2019 Rabat"
+        ],
+        "timezone": "UTC",
+        "standings": [
+          {
+            "title": "Group A",
+            "table": [
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              },
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              },
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              }
+            ]
+          },
+          {
+            "title": "Group B",
+            "table": [
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              },
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              },
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              }
+            ]
+          }
+        ],
+        "stale": false,
+        "home_standings": [
+          {
+            "title": "Group A",
+            "table": [
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              },
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              },
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              }
+            ]
+          },
+          {
+            "title": "Group B",
+            "table": [
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              },
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              },
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              }
+            ]
+          }
+        ],
+        "away_standings": [
+          {
+            "title": "Group A",
+            "table": [
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              },
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              },
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              }
+            ]
+          },
+          {
+            "title": "Group B",
+            "table": [
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              },
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              },
+              {
+                "rank": "…",
+                "team": "…",
+                "played": "…",
+                "won": "…",
+                "drawn": "…",
+                "lost": "…",
+                "goals_for": "…",
+                "goals_against": "…",
+                "goal_diff": "…",
+                "points": "…",
+                "form": "…",
+                "zone": "…"
+              }
+            ]
+          }
+        ]
+      },
+      "timestamp": "2026-09-29 21:46:24"
+    },
+    "african_fixtures": {
+      "success": true,
+      "message": "Success",
+      "credits_remaining": 486,
+      "data": {
+        "league_id": "61ny7153y7f0nqpwop51qd49h",
+        "league_name": "African Games",
+        "season": "2023",
+        "available_seasons": [
+          "2027",
+          "2023",
+          "2019 Rabat"
+        ],
+        "timezone": "UTC",
+        "weeks": [
+          {
+            "week": "1",
+            "matches": [
+              {
+                "id": "…",
+                "league": "…",
+                "round": "…",
+                "date": "…",
+                "kickoff": "…",
+                "status": "…",
+                "home": "…",
+                "away": "…",
+                "halftime": "…",
+                "penalty": "…"
+              },
+              {
+                "id": "…",
+                "league": "…",
+                "round": "…",
+                "date": "…",
+                "kickoff": "…",
+                "status": "…",
+                "home": "…",
+                "away": "…",
+                "halftime": "…",
+                "penalty": "…"
+              },
+              {
+                "id": "…",
+                "league": "…",
+                "round": "…",
+                "date": "…",
+                "kickoff": "…",
+                "status": "…",
+                "home": "…",
+                "away": "…",
+                "halftime": "…",
+                "penalty": "…"
+              }
+            ]
+          },
+          {
+            "week": "2",
+            "matches": [
+              {
+                "id": "…",
+                "league": "…",
+                "round": "…",
+                "date": "…",
+                "kickoff": "…",
+                "status": "…",
+                "home": "…",
+                "away": "…",
+                "halftime": "…",
+                "penalty": "…"
+              },
+              {
+                "id": "…",
+                "league": "…",
+                "round": "…",
+                "date": "…",
+                "kickoff": "…",
+                "status": "…",
+                "home": "…",
+                "away": "…",
+                "halftime": "…",
+                "penalty": "…"
+              },
+              {
+                "id": "…",
+                "league": "…",
+                "round": "…",
+                "date": "…",
+                "kickoff": "…",
+                "status": "…",
+                "home": "…",
+                "away": "…",
+                "halftime": "…",
+                "penalty": "…"
+              }
+            ]
+          },
+          {
+            "week": "3",
+            "matches": [
+              {
+                "id": "…",
+                "league": "…",
+                "round": "…",
+                "date": "…",
+                "kickoff": "…",
+                "status": "…",
+                "home": "…",
+                "away": "…",
+                "halftime": "…",
+                "penalty": "…"
+              },
+              {
+                "id": "…",
+                "league": "…",
+                "round": "…",
+                "date": "…",
+                "kickoff": "…",
+                "status": "…",
+                "home": "…",
+                "away": "…",
+                "halftime": "…",
+                "penalty": "…"
+              },
+              {
+                "id": "…",
+                "league": "…",
+                "round": "…",
+                "date": "…",
+                "kickoff": "…",
+                "status": "…",
+                "home": "…",
+                "away": "…",
+                "halftime": "…",
+                "penalty": "…"
+              }
+            ]
+          }
+        ],
+        "stale": false
+      },
+      "timestamp": "2026-09-29 21:46:25"
+    }
+  }
+}
