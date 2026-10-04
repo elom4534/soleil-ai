@@ -2,7 +2,10 @@
 
 /* ==========================================================================
    SOLEIL — Système de design
-   Thème clair/sombre, tokens sémantiques, esthétique premium & minimaliste.
+   Référence visuelle : panneau AlwaysData (capture fournie).
+   Feuille blanche arrondie · blocs gris plats · titres légers espacés ·
+   séparateurs pointillés · accent rose #E8548E · champs blancs bordés.
+   Aucune logique ici — présentation uniquement.
    ========================================================================== */
 
 @theme {
@@ -11,36 +14,36 @@
     "Segoe UI", Roboto, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
 
-  /* --- Rayons --- */
-  --radius-card: 1rem;
+  /* --- Rayons (capture : angles généreux, 8→16 px) --- */
+  --radius-card: 12px;
   --radius-pill: 999px;
 
-  /* --- Couleurs de marque SOLEIL (solaire, ambre → orange) --- */
-  --color-soleil-50: #fffbeb;
-  --color-soleil-100: #fef3c7;
-  --color-soleil-200: #fde68a;
-  --color-soleil-300: #fcd34d;
-  --color-soleil-400: #fbbf24;
-  --color-soleil-500: #f59e0b;
-  --color-soleil-600: #d97706;
-  --color-soleil-700: #b45309;
-  --color-soleil-800: #92400e;
-  --color-soleil-900: #78350f;
+  /* --- Accent rose AlwaysData (échantillonné sur les captures) --- */
+  --color-soleil-50: #fdf2f7;
+  --color-soleil-100: #fbe5ee;
+  --color-soleil-200: #f7c9dc;
+  --color-soleil-300: #f2a3c3;
+  --color-soleil-400: #ee7aa7;
+  --color-soleil-500: #e8548e;
+  --color-soleil-600: #d63a78;
+  --color-soleil-700: #b62c62;
+  --color-soleil-800: #952452;
+  --color-soleil-900: #7a1f44;
 
-  /* --- Accent secondaire : bleu nuit technologique --- */
-  --color-astro-50: #eff6ff;
-  --color-astro-100: #dbeafe;
-  --color-astro-200: #bfdbfe;
-  --color-astro-300: #93c5fd;
-  --color-astro-400: #60a5fa;
-  --color-astro-500: #3b82f6;
-  --color-astro-600: #2563eb;
-  --color-astro-700: #1d4ed8;
+  /* --- Neutres graphite (icônes, aplats secondaires) --- */
+  --color-astro-50: #f6f6f6;
+  --color-astro-100: #ececec;
+  --color-astro-200: #dcdcdc;
+  --color-astro-300: #c2c2c2;
+  --color-astro-400: #9a9a9a;
+  --color-astro-500: #767676;
+  --color-astro-600: #565656;
+  --color-astro-700: #3a3a3a;
 
-  /* --- Sémantique résultats --- */
-  --color-win: #10b981;
-  --color-draw: #94a3b8;
-  --color-loss: #ef4444;
+  /* --- Sémantique résultats (inchangés en logique) --- */
+  --color-win: #2f9e68;
+  --color-draw: #9a9a9a;
+  --color-loss: #d64545;
 
   /* --- Animations --- */
   --animate-shimmer: shimmer 1.6s linear infinite;
@@ -67,41 +70,41 @@
 }
 
 /* ==========================================================================
-   Tokens sémantiques — clair par défaut, sombre via .dark
+   Tokens sémantiques — clair par défaut (capture), sombre via .dark
    ========================================================================== */
 :root {
-  --bg: #fafafa;
-  --bg-elevated: #ffffff;
-  --bg-subtle: #f4f4f5;
-  --bg-inset: #f4f4f5;
+  --bg: #f0f0f0;            /* gris très clair autour de la feuille */
+  --bg-elevated: #ffffff;   /* feuille blanche */
+  --bg-subtle: #ececec;     /* blocs gris de la capture (Informations, Options) */
+  --bg-inset: #f6f6f6;      /* rehauts discrets */
 
-  --fg: #09090b;
-  --fg-muted: #71717a;
-  --fg-subtle: #a1a1aa;
+  --fg: #2b2b2b;
+  --fg-muted: #7c7c7c;
+  --fg-subtle: #9a9a9a;
 
-  --border: #e4e4e7;
-  --border-strong: #d4d4d8;
+  --border: #d2d2d2;
+  --border-strong: #bcbcbc;
 
-  --ring: #f59e0b;
-  --card-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.04), 0 1px 3px 0 rgb(0 0 0 / 0.06);
-  --card-shadow-hover: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+  --ring: #e8548e;
+  --card-shadow: none;
+  --card-shadow-hover: 0 1px 2px 0 rgb(0 0 0 / 0.05);
 }
 
 .dark {
-  --bg: #09090b;
-  --bg-elevated: #121215;
-  --bg-subtle: #18181b;
-  --bg-inset: #1c1c20;
+  --bg: #1b1b1e;
+  --bg-elevated: #242428;
+  --bg-subtle: #2e2e33;
+  --bg-inset: #26262b;
 
-  --fg: #fafafa;
-  --fg-muted: #a1a1aa;
-  --fg-subtle: #71717a;
+  --fg: #f2f2f2;
+  --fg-muted: #a8a8ae;
+  --fg-subtle: #7c7c84;
 
-  --border: #27272a;
-  --border-strong: #3f3f46;
+  --border: #3a3a40;
+  --border-strong: #4c4c54;
 
-  --card-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.4);
-  --card-shadow-hover: 0 4px 12px -2px rgb(0 0 0 / 0.5);
+  --card-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.35);
+  --card-shadow-hover: 0 4px 12px -2px rgb(0 0 0 / 0.45);
 }
 
 @theme inline {
@@ -140,7 +143,41 @@
     background-color: var(--color-soleil-800);
     color: var(--color-soleil-100);
   }
-  /* Scrollbar discrète */
+
+  /* Champs de formulaire — capture : blancs, bordure grise, angles 8 px */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+  select,
+  textarea {
+    background-color: var(--bg-elevated);
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    color: var(--fg);
+    padding: 0.55rem 0.85rem;
+    font-size: 0.9375rem;
+    line-height: 1.45;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):focus,
+  select:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--ring);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 18%, transparent);
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--fg-subtle);
+  }
+  select {
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, var(--fg-muted) 50%),
+      linear-gradient(135deg, var(--fg-muted) 50%, transparent 50%);
+    background-position: calc(100% - 18px) calc(50% + 1px), calc(100% - 12px) calc(50% + 1px);
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+    padding-right: 2.25rem;
+  }
+
   ::-webkit-scrollbar { width: 8px; height: 8px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb {
@@ -151,56 +188,68 @@
 }
 
 @layer utilities {
-  /* Effet verre — utilisé pour les barres de navigation */
+  /* Barre supérieure légère */
   .glass {
-    background-color: color-mix(in oklab, var(--bg-elevated) 78%, transparent);
-    backdrop-filter: saturate(180%) blur(20px);
-    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    background-color: color-mix(in oklab, var(--bg-elevated) 92%, transparent);
+    backdrop-filter: saturate(180%) blur(12px);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
   }
-  /* Texte dégradé solaire */
+  /* Accent texturé (ancien dégradé solaire → rose de la référence) */
   .text-solar {
-    background: linear-gradient(100deg, #f59e0b 0%, #fb923c 45%, #f59e0b 100%);
+    background: linear-gradient(100deg, #e8548e 0%, #ee7aa7 45%, #e8548e 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
-  /* Carte standard SOLEIL */
+  /* Bloc de section gris plat — blocs « Informations / Options » de la capture */
   .card {
-    background-color: var(--bg-elevated);
-    border: 1px solid var(--border);
+    background-color: var(--bg-subtle);
+    border: none;
     border-radius: var(--radius-card);
     box-shadow: var(--card-shadow);
   }
   .card-interactive {
-    transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
   }
   .card-interactive:hover {
+    background-color: color-mix(in oklab, var(--bg-subtle) 92%, var(--fg));
     box-shadow: var(--card-shadow-hover);
-    border-color: var(--border-strong);
   }
   .card-interactive:active {
     transform: scale(0.995);
+  }
+  /* Titre de page — capture : capitales espacées + filet pointillé */
+  .page-title {
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-weight: 300;
+    color: var(--fg);
+  }
+  .dotted-rule {
+    border: none;
+    border-top: 2px dotted var(--border-strong);
+    margin: 0.85rem 0 1.35rem;
   }
   /* Squelette de chargement */
   .skeleton {
     background: linear-gradient(
       90deg,
-      var(--bg-subtle) 25%,
-      var(--bg-inset) 50%,
-      var(--bg-subtle) 75%
+      var(--bg-inset) 25%,
+      color-mix(in oklab, var(--bg-inset) 70%, var(--fg) / 8%) 50%,
+      var(--bg-inset) 75%
     );
     background-size: 200% 100%;
     animation: var(--animate-shimmer);
   }
   /* Barre de progression accessible */
   .bar-track {
-    background-color: var(--bg-inset);
+    background-color: var(--bg-elevated);
+    border: 1px solid var(--border);
     border-radius: 999px;
     overflow: hidden;
   }
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-  /* Safe area iOS pour la nav basse */
   .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
 }
 

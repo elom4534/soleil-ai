@@ -12,7 +12,7 @@ export function CardHeader({ className, ...props }: HTMLAttributes<HTMLDivElemen
 export function CardTitle({ className, ...props }: HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h3
-      className={cn("text-[15px] font-semibold tracking-tight text-fg", className)}
+      className={cn("text-[19px] font-normal tracking-tight text-fg sm:text-[21px]", className)}
       {...props}
     />
   );
@@ -44,14 +44,17 @@ export function SectionHeader({
   className?: string;
 }) {
   return (
-    <div className={cn("mb-3 flex items-end justify-between gap-3", className)}>
-      <div>
-        <h2 className="text-lg font-semibold tracking-tight text-fg sm:text-xl">{title}</h2>
-        {subtitle ? (
-          <p className="mt-0.5 text-[13px] text-fg-muted">{subtitle}</p>
-        ) : null}
+    <div className={cn("mb-3", className)}>
+      <div className="flex items-end justify-between gap-3">
+        <div>
+          <h2 className="page-title text-[22px] leading-tight sm:text-[26px]">{title}</h2>
+          {subtitle ? (
+            <p className="mt-1 text-[13px] text-fg-muted">{subtitle}</p>
+          ) : null}
+        </div>
+        {action}
       </div>
-      {action}
+      <hr className="dotted-rule" />
     </div>
   );
 }

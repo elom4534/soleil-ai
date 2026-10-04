@@ -90,12 +90,12 @@ export function AppShell({
                 className={cn(
                   "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13.5px] font-medium transition-colors",
                   active
-                    ? "bg-soleil-500/10 text-soleil-700 dark:text-soleil-300"
+                    ? "bg-soleil-500 text-white"
                     : "text-fg-muted hover:bg-bg-subtle hover:text-fg",
                 )}
               >
                 <Icon
-                  className={cn("size-[18px]", active && "text-soleil-600 dark:text-soleil-400")}
+                  className={cn("size-[18px]", active && "text-white")}
                   strokeWidth={active ? 2.3 : 1.9}
                 />
                 {item.label}
@@ -125,7 +125,7 @@ export function AppShell({
             ) : (
               <Link
                 href="/connexion"
-                className="block rounded-xl bg-fg px-3 py-2.5 text-center text-[13px] font-medium text-bg transition-opacity hover:opacity-90"
+                className="block rounded-xl bg-soleil-500 px-3 py-2.5 text-center text-[13px] font-medium text-white transition-colors hover:bg-soleil-600"
               >
                 Se connecter
               </Link>
@@ -195,7 +195,7 @@ export function AppShell({
                     className={cn(
                       "flex items-center gap-2.5 rounded-xl border px-3 py-3 text-[13.5px] font-medium",
                       active
-                        ? "border-soleil-500/30 bg-soleil-500/10 text-soleil-700 dark:text-soleil-300"
+                        ? "border-soleil-500 bg-soleil-500 text-white"
                         : "border-border-subtle text-fg-muted",
                     )}
                   >
@@ -223,7 +223,7 @@ export function AppShell({
                 <Link
                   href="/connexion"
                   onClick={() => setDrawerOpen(false)}
-                  className="block rounded-xl bg-fg px-3 py-3 text-center text-[13.5px] font-medium text-bg"
+                  className="block rounded-xl bg-soleil-500 px-3 py-3 text-center text-[13.5px] font-medium text-white"
                 >
                   Se connecter
                 </Link>
@@ -233,9 +233,9 @@ export function AppShell({
         </div>
       ) : null}
 
-      {/* ---------------- Contenu ---------------- */}
+      {/* ---------------- Contenu (feuille blanche arrondie de la référence) ---------------- */}
       <div className="lg:pl-60">
-        <main className="mx-auto w-full max-w-5xl px-4 pt-4 pb-28 lg:px-8 lg:pt-8 lg:pb-12">
+        <main className="mx-auto my-2.5 w-full max-w-5xl rounded-2xl border border-border-subtle bg-bg-elevated px-4 pt-5 pb-28 sm:my-4 lg:px-8 lg:pt-8 lg:pb-12">
           {children}
         </main>
       </div>

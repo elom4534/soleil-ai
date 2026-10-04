@@ -39,12 +39,12 @@ export default async function HomePage() {
   return (
     <div className="space-y-9">
       {/* ============================= HERO (§18) ============================= */}
-      <section className="relative overflow-hidden rounded-2xl border border-border-subtle bg-bg-elevated px-5 py-7 sm:px-8 sm:py-9">
-        {/* Halo solaire décoratif — purement CSS, aucun impact sur les performances */}
+      <section className="relative overflow-hidden rounded-2xl bg-bg-subtle px-5 py-7 sm:px-8 sm:py-9">
+        {/* Halo décoratif — purement CSS, aucun impact sur les performances */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute -top-24 -right-16 size-64 rounded-full opacity-[0.16] blur-3xl"
-          style={{ background: "radial-gradient(circle, #f59e0b 0%, transparent 70%)" }}
+          style={{ background: "radial-gradient(circle, #e8548e 0%, transparent 70%)" }}
         />
         <div className="relative">
           <div className="flex items-center gap-3">
