@@ -35,6 +35,9 @@ const BASE_URL = "https://apiv3.apifootball.com/";
 const CACHE_FILE = path.join(process.cwd(), "stats-cache", "uefa-stats.ndjson");
 const REQUEST_DELAY_MS = 1200;
 
+/** Mode sans réseau : uniquement le cache déjà payé, aucun appel API. */
+let OFFLINE = false;
+
 // ---------------------------------------------------------------------------
 // Cache NDJSON unique et compact (~1-2 Mo) : chaque ligne = une réponse API
 // réduite à son utile. Ce format survit aux recyclages d'environnement,
@@ -283,6 +286,7 @@ async function fetchEvents(apiKey: string, leagueId: string, from: string, to: s
   const cacheKey = `apifb:${leagueId}_${from}_${to}`;
   const cached = cache.get(cacheKey);
   if (cached) return cached as ApiEvent[];
+  if (OFFLINE) return null; // mode sans réseau : jamais d'appel
   const qs = new URLSearchParams({
     action: "get_events",
     from,
@@ -303,8 +307,9 @@ async function fetchEvents(apiKey: string, leagueId: string, from: string, to: s
 
 async function main() {
   const check = process.argv.includes("--check");
+  OFFLINE = process.argv.includes("--offline");
   const apiKey = (process.env.APIFOOTBALL_KEY ?? "").trim();
-  if (!apiKey) {
+  if (!apiKey && !OFFLINE) {
     console.error("APIFOOTBALL_KEY absente de .env.");
     process.exit(1);
   }

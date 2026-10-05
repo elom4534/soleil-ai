@@ -35,6 +35,9 @@ const BASE_URL = "https://live-football-api.com/api/v1";
 const REQUEST_DELAY_MS = 450;
 const CACHE_FILE = path.join(process.cwd(), "stats-cache", "uefa-stats.ndjson");
 
+/** Mode sans réseau : uniquement le cache déjà payé, aucun appel API. */
+let OFFLINE = false;
+
 // ---------------------------------------------------------------------------
 // Cache NDJSON unique et compact, partagé avec enrich-uefa-stats-apifootball :
 // chaque réponse API déjà payée est conservée sous forme réduite et n'est
@@ -81,6 +84,7 @@ const TARGET_FIELDS = [
 
 interface Args {
   check: boolean;
+  offline: boolean;
   budget: number | null;
 }
 
@@ -88,6 +92,7 @@ function parseArgs(): Args {
   const argv = process.argv.slice(2);
   return {
     check: argv.includes("--check"),
+    offline: argv.includes("--offline"),
     budget: (() => {
       const m = argv.find((a) => a.startsWith("--budget="));
       return m ? Number(m.split("=")[1]) : null;
@@ -258,6 +263,7 @@ async function apiGet<T>(
   if (cacheKey && cache.has(cacheKey)) {
     return cache.get(cacheKey) as T;
   }
+  if (OFFLINE) return null; // mode sans réseau : jamais d'appel
   for (let attempt = 0; attempt < 5; attempt++) {
     const state = pool.current();
     if (!state) throw new Error("Aucune clé avec solde disponible.");
@@ -400,14 +406,15 @@ function pairLfaToTarget(lfa: LfaMatch, targets: TargetMatch[]): TargetMatch | n
 
 async function main() {
   const args = parseArgs();
+  OFFLINE = args.offline;
   const keys = loadKeys();
-  if (keys.length === 0) {
+  if (keys.length === 0 && !args.offline) {
     console.error("Aucune clé dans API_FOOTBALL_LIVE_KEYS (.env).");
     process.exit(1);
   }
   const pool = new KeyPool(keys);
   loadCache();
-  console.log(`Clés disponibles : ${keys.length} · budget : ${args.budget ?? "défaut (solde réel des clés)"} · cache : ${cache.size} entrée(s)`);
+  console.log(`Clés disponibles : ${keys.length} · mode : ${args.offline ? "OFFLINE (cache seul, 0 appel)" : "en ligne"} · cache : ${cache.size} entrée(s)`);
   if (args.budget) console.log(`Plafond de la session : ${args.budget} crédits`);
 
   const { byDate: targetsByDate, order } = await loadTargets();
