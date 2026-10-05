@@ -26,11 +26,14 @@
  */
 
 import "dotenv/config";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import path from "node:path";
 
 import { prisma } from "../src/lib/prisma";
 
 const BASE_URL = "https://live-football-api.com/api/v1";
 const REQUEST_DELAY_MS = 450;
+const CACHE_ROOT = path.join(process.cwd(), "data", "stats-uefa", "lfa");
 
 /** Champs de MatchLiveData alimentés par les statistiques LiveFootballApi. */
 const TARGET_FIELDS = [
@@ -198,6 +201,11 @@ class KeyPool {
     if (s.remaining !== null) s.remaining = Math.max(0, s.remaining - count);
   }
 
+  /** Marque la clé courante comme épuisée (bascule automatique ensuite). */
+  exhaustCurrent() {
+    this.states[this.index].remaining = 0;
+  }
+
   totals() {
     return this.states.map((s) => s.remaining).map((v) => (v === null ? "?" : String(v))).join(" · ");
   }
@@ -213,11 +221,25 @@ class KeyPool {
   }
 }
 
-async function apiGet<T>(pool: KeyPool, endpoint: string, params: Record<string, string>): Promise<T | null> {
-  const state = pool.current();
-  if (!state) throw new Error("Aucune clé avec solde disponible.");
-  const qs = new URLSearchParams({ api_key: state.key, lang: "en", ...params }).toString();
-  for (let attempt = 0; attempt < 3; attempt++) {
+async function apiGet<T>(
+  pool: KeyPool,
+  endpoint: string,
+  params: Record<string, string>,
+  cacheFile?: string,
+): Promise<T | null> {
+  // Cache disque durable : les réponses déjà payées ne sont jamais re-demandées,
+  // même après un recyclage de l'environnement.
+  if (cacheFile && existsSync(cacheFile)) {
+    try {
+      return JSON.parse(readFileSync(cacheFile, "utf8")) as T;
+    } catch {
+      /* cache illisible → nouvel appel */
+    }
+  }
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const state = pool.current();
+    if (!state) throw new Error("Aucune clé avec solde disponible.");
+    const qs = new URLSearchParams({ api_key: state.key, lang: "en", ...params }).toString();
     const res = await fetch(`${BASE_URL}${endpoint}?${qs}`);
     if (res.status === 429) {
       const wait = Number(res.headers.get("Retry-After") ?? 5);
@@ -228,10 +250,21 @@ async function apiGet<T>(pool: KeyPool, endpoint: string, params: Record<string,
     const body = (await res.json().catch(() => null)) as (T & { success?: boolean; message?: string; credits_remaining?: number }) | null;
     pool.noteBalance(body?.credits_remaining);
     if (!res.ok || !body || body.success === false) {
-      console.log(`   ⚠ réponse ${res.status} — ${String(body?.message ?? "illisible").slice(0, 80)}`);
+      const msg = String(body?.message ?? "");
+      if (res.status === 403 || /insufficient|access denied/i.test(msg)) {
+        // Clé épuisée/invalide : on la met à zéro pour basculer sur la suivante.
+        pool.exhaustCurrent();
+        console.log(`   ⚠ clé épuisée (${res.status}) — bascule sur la clé suivante`);
+        continue;
+      }
+      console.log(`   ⚠ réponse ${res.status} — ${msg.slice(0, 80)}`);
       return null;
     }
     pool.spend(1);
+    if (cacheFile) {
+      mkdirSync(path.dirname(cacheFile), { recursive: true });
+      writeFileSync(cacheFile, JSON.stringify(body));
+    }
     await sleep(REQUEST_DELAY_MS);
     return body;
   }
@@ -398,7 +431,12 @@ async function main() {
       break;
     }
 
-    const listRes = await apiGet<{ data?: { matches?: LfaMatch[] } }>(pool, "/matches", { date: day });
+    const listRes = await apiGet<{ data?: { matches?: LfaMatch[] } }>(
+      pool,
+      "/matches",
+      { date: day },
+      path.join(CACHE_ROOT, "listes", `${day}.json`),
+    );
     spentThisSession += 1;
     if (!listRes) {
       console.log(`  ${day} · liste illisible — date ignorée`);
@@ -416,6 +454,7 @@ async function main() {
         pool,
         "/live_match_details",
         { match_id: lfa.id },
+        path.join(CACHE_ROOT, "details", `${lfa.id}.json`),
       );
       spentThisSession += 1;
       if (!det) continue;
