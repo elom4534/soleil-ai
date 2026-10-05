@@ -86,11 +86,11 @@ test("§27 — une expression journalière avance bien d'un jour à chaque fois"
 /* Tâches planifiées : cadence et coût                                         */
 /* -------------------------------------------------------------------------- */
 
-test("§27 — quatre tâches sont créées, toutes actives, toutes valides", () => {
-  assert.equal(JOBS.length, 4);
+test("§27 — cinq tâches sont créées, toutes actives, toutes valides", () => {
+  assert.equal(JOBS.length, 5);
   assert.deepEqual(
     JOBS.map((job) => job.id).sort(),
-    ["alimentation-matchs-a-venir", "ingestion-calendrier", "maintenance-donnees", "rafraichissement-jour-j"],
+    ["alimentation-matchs-a-venir", "ingestion-calendrier", "maintenance-donnees", "rafraichissement-jour-j", "rafraichissement-predictions"],
   );
   for (const job of JOBS) {
     assert.equal(isValidCron(job.schedule), true, `${job.id} : expression valide`);

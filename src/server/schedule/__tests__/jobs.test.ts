@@ -74,17 +74,18 @@ test("§34 — une valeur fantaisiste n'ouvre rien", () => {
 /* Cohérence du registre                                                       */
 /* -------------------------------------------------------------------------- */
 
-test("§27 — les quatre tâches attendues sont présentes et planifiables", () => {
-  assert.equal(JOBS.length, 4);
+test("§27 — les cinq tâches attendues sont présentes et planifiables", () => {
+  assert.equal(JOBS.length, 5);
   const ids = JOBS.map((job) => job.id);
   assert.ok(ids.includes("ingestion-calendrier"));
   assert.ok(ids.includes("rafraichissement-jour-j"));
   assert.ok(ids.includes("maintenance-donnees"));
   assert.ok(ids.includes("alimentation-matchs-a-venir"));
+  assert.ok(ids.includes("rafraichissement-predictions"));
 });
 
 test("§27 — la maintenance et la source gratuite sont gratuites, les deux autres annoncent leur coût", () => {
-  for (const id of ["maintenance-donnees", "alimentation-matchs-a-venir"] as const) {
+  for (const id of ["maintenance-donnees", "alimentation-matchs-a-venir", "rafraichissement-predictions"] as const) {
     const free = JOBS.find((job) => job.id === id)!;
     assert.equal(free.usesNetwork, false);
     assert.equal(free.estimatedCredits, 0);

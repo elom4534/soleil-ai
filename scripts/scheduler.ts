@@ -25,7 +25,7 @@
 
 import "dotenv/config";
 import { prisma } from "../src/lib/prisma";
-import { JOBS, findJob, runJob, lastRun, networkAllowed, networkRefusalReason, totalDailyCredits } from "../src/server/schedule/jobs";
+import { JOBS, findJob, runJob, runDueJobs, lastRun, networkAllowed, networkRefusalReason, totalDailyCredits } from "../src/server/schedule/jobs";
 import { describeCron, nextRun, parseCron } from "../src/server/schedule/cron";
 
 const argv = process.argv.slice(2);
@@ -95,17 +95,8 @@ async function runOne(id: string, force: boolean): Promise<boolean> {
 
 /** Exécute les tâches dont l'échéance est passée depuis le dernier passage. */
 async function runDue(): Promise<void> {
-  const now = new Date();
-  for (const job of JOBS) {
-    const record = await lastRun(job.id);
-    const cursor = record ? new Date(record.completedAt) : new Date(now.getTime() - 86_400_000);
-    const due = nextRun(parseCron(job.schedule), cursor);
-    if (due && due.getTime() <= now.getTime()) {
-      await runOne(job.id, false);
-    } else {
-      log(`· ${job.id} : rien à faire (prochain ${due ? due.toISOString() : "—"})`);
-    }
-  }
+  // Logique unique : `runDueJobs` (jobs.ts) — partagée avec le cœur applicatif.
+  await runDueJobs({ onLog: (line) => log(`· ${line}`) });
 }
 
 async function daemon(): Promise<void> {
@@ -148,7 +139,7 @@ async function main(): Promise<void> {
     const { runUpcomingPipeline } = await import("../src/server/data/upcoming-pipeline");
     const report = await runUpcomingPipeline({
       dates,
-      competitionCodes: ["E0", "SP1"],
+      competitionCodes: ["E0", "SP1", "D1", "I1", "F1", "UCL", "UEL", "UNL"],
       allowNetwork: networkAllowed() || has("--network"),
       predict: true,
       log: (line) => console.log(`   ${line}`),

@@ -40,13 +40,16 @@ import { runUpcomingPipeline, type PipelineReport } from "@/server/data/upcoming
 import { ingestTsdbUpcoming } from "@/server/data/upcoming-tsdb";
 import { importWindows, utcDayKey, assertNoStartedMatchInFeed } from "./window";
 import { listUpcomingPredictions } from "@/server/predictions/upcoming";
+import { generateAndPersist } from "@/server/predictions/service";
+import { refreshReason } from "./freshness";
 import { nextRun, parseCron, type CronExpression } from "./cron";
 
 export type JobId =
   | "ingestion-calendrier"
   | "rafraichissement-jour-j"
   | "maintenance-donnees"
-  | "alimentation-matchs-a-venir";
+  | "alimentation-matchs-a-venir"
+  | "rafraichissement-predictions";
 
 export interface JobContext {
   now: Date;
@@ -185,7 +188,7 @@ export const ingestionJob: JobDefinition = {
 
     const report = await runUpcomingPipeline({
       dates: windows.map((w) => w.date),
-      competitionCodes: ["E0", "SP1"],
+      competitionCodes: ["E0", "SP1", "D1", "I1", "F1", "UCL", "UEL", "UNL"],
       allowNetwork: ctx.networkAllowed,
       predict: true,
       log: ctx.log,
@@ -223,7 +226,7 @@ export const refreshTodayJob: JobDefinition = {
 
     const report = await runUpcomingPipeline({
       dates: [today],
-      competitionCodes: ["E0", "SP1"],
+      competitionCodes: ["E0", "SP1", "D1", "I1", "F1", "UCL", "UEL", "UNL"],
       allowNetwork: ctx.networkAllowed,
       predict: true,
       log: ctx.log,
@@ -362,7 +365,132 @@ export const upcomingTsdbJob: JobDefinition = {
   },
 };
 
-export const JOBS: readonly JobDefinition[] = [ingestionJob, refreshTodayJob, maintenanceJob, upcomingTsdbJob];
+/* -------------------------------------------------------------------------- */
+/* Tâche 5 — Actualisation des prédictions (0 crédit, lecture/écriture base)   */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Dernière mise à jour des données utilisables par le contexte d'un match :
+ * ses matchs antérieurs (les deux équipes), leurs données live, et le match
+ * lui-même (report d'horaire, correction de statut).
+ */
+async function contextUpdatedAtFor(match: {
+  id: string;
+  homeTeamId: string;
+  awayTeamId: string;
+}): Promise<Date | null> {
+  const teamFilter = {
+    OR: [{ homeTeamId: match.homeTeamId }, { awayTeamId: match.awayTeamId }],
+  };
+  const [prior, live, own] = await Promise.all([
+    prisma.match.aggregate({
+      _max: { updatedAt: true },
+      where: { status: "FINISHED", ...teamFilter },
+    }),
+    prisma.matchLiveData.aggregate({
+      _max: { updatedAt: true },
+      where: { match: teamFilter },
+    }),
+    prisma.match.findUnique({ where: { id: match.id }, select: { updatedAt: true } }),
+  ]);
+  const times = [prior._max.updatedAt, live._max.updatedAt, own?.updatedAt].filter(
+    (d): d is Date => d instanceof Date,
+  );
+  if (times.length === 0) return null;
+  return new Date(Math.max(...times.map((d) => d.getTime())));
+}
+
+export const refreshPredictionsJob: JobDefinition = {
+  id: "rafraichissement-predictions",
+  label: "Actualisation des prédictions (contexte enrichi / périmées)",
+  purpose:
+    "Détecte les matchs SCHEDULED dont la prédiction n'est plus à jour — données historiques enrichies depuis la génération " +
+    "('context enriched') ou prédiction trop ancienne pour un match encore à jouer ('stale prediction') — et les recalcule. " +
+    "Protège définitivement les prédictions SETTLED, ne touche qu'aux matchs futurs, et ne consomme aucun crédit (aucun appel réseau).",
+  // Granularité de 30 min : la fraîcheur borne le travail réel (aucun recalcul
+  // sans changement de contexte ni sans âge dépassé).
+  schedule: "*/30 * * * *",
+  usesNetwork: false,
+  estimatedCredits: 0,
+
+  async handler(ctx) {
+    const upcoming = await prisma.match.findMany({
+      where: { status: "SCHEDULED", utcDate: { gt: ctx.now } },
+      orderBy: { utcDate: "asc" },
+      take: 200,
+      select: { id: true, homeTeamId: true, awayTeamId: true },
+    });
+    ctx.log(`${upcoming.length} match(s) SCHEDULED à venir examiné(s).`);
+
+    let created = 0;
+    let refreshedContextEnriched = 0;
+    let refreshedStale = 0;
+    let published = 0;
+    let settledProtected = 0;
+    let currentUntouched = 0;
+
+    for (const match of upcoming) {
+      try {
+        const existing = await prisma.prediction.findFirst({
+          where: { matchId: match.id },
+          orderBy: { generatedAt: "desc" },
+          select: { id: true, status: true, generatedAt: true },
+        });
+
+        // §22 — une prédiction réglée appartient à l'histoire : jamais touchée.
+        if (existing?.status === "SETTLED") {
+          settledProtected += 1;
+          continue;
+        }
+
+        if (!existing) {
+          const outcome = await generateAndPersist(match.id, { asOf: ctx.now });
+          if (outcome.status === "skipped") continue;
+          created += 1;
+          if (outcome.status === "published") published += 1;
+          ctx.log(`· ${match.id} : prédiction générée (match sans prédiction).`);
+          continue;
+        }
+
+        const contextUpdatedAt = await contextUpdatedAtFor(match);
+        const reason = refreshReason(existing.generatedAt, contextUpdatedAt, ctx.now);
+        if (!reason) {
+          currentUntouched += 1;
+          continue; // §11 — rien n'a changé : aucune écriture, aucune boucle.
+        }
+
+        const outcome = await generateAndPersist(match.id, { asOf: ctx.now });
+        if (outcome.status === "skipped") continue;
+        if (reason === "context enriched") refreshedContextEnriched += 1;
+        else refreshedStale += 1;
+        if (outcome.status === "published") published += 1;
+        ctx.log(`· ${match.id} : recalculée — motif « ${reason} ».`);
+      } catch (error) {
+        ctx.log(`· ${match.id} : erreur — ${(error as Error).message}`);
+      }
+    }
+
+    return {
+      ok: true,
+      summary:
+        `${created} créée(s), ${refreshedContextEnriched} rafraîchie(s) (context enriched), ` +
+        `${refreshedStale} rafraîchie(s) (stale prediction), ${published} publiée(s), ` +
+        `${settledProtected} SETTLED protégée(s), ${currentUntouched} inchangée(s)`,
+      creditsSpent: 0,
+      details: {
+        created,
+        refreshedContextEnriched,
+        refreshedStale,
+        published,
+        settledProtected,
+        currentUntouched,
+        motifs: ["context enriched", "stale prediction"],
+      },
+    };
+  },
+};
+
+export const JOBS: readonly JobDefinition[] = [ingestionJob, refreshTodayJob, maintenanceJob, upcomingTsdbJob, refreshPredictionsJob];
 
 export function findJob(id: string): JobDefinition | undefined {
   return JOBS.find((job) => job.id === id);
@@ -505,4 +633,25 @@ export async function runJob(
   await writeConfig(`scheduler:last:${job.id}`, record, `Dernière exécution — ${job.label}`);
 
   return record;
+}
+
+/**
+ * Exécute les tâches **dues** à l'instant `now`, puis rend la main. C'est la
+ * forme unique appelée aussi bien par `scripts/scheduler.ts --once` que par le
+ * cœur de l'ordonnanceur applicatif (AlwaysData : `crontab` interdit, le
+ * processus applicatif porte donc la planification).
+ */
+export async function runDueJobs(
+  options: { now?: Date; onLog?: (line: string) => void } = {},
+): Promise<void> {
+  const now = options.now ?? new Date();
+  for (const job of JOBS) {
+    const record = await lastRun(job.id);
+    const cursor = record ? new Date(record.completedAt) : new Date(now.getTime() - 86_400_000);
+    const due = nextRun(parseCron(job.schedule), cursor);
+    if (due && due.getTime() <= now.getTime()) {
+      const result = await runJob(job, { now, onLog: options.onLog });
+      options.onLog?.(`${job.id} : ${result.summary}`);
+    }
+  }
 }
