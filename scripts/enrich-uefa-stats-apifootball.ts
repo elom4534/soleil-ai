@@ -26,14 +26,67 @@
  */
 
 import "dotenv/config";
-import { mkdirSync, existsSync, readFileSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 import { prisma } from "../src/lib/prisma";
 
 const BASE_URL = "https://apiv3.apifootball.com/";
-const CACHE_DIR = path.join(process.cwd(), "data", "stats-uefa", "apifootball");
+const CACHE_FILE = path.join(process.cwd(), "stats-cache", "uefa-stats.ndjson");
 const REQUEST_DELAY_MS = 1200;
+
+// ---------------------------------------------------------------------------
+// Cache NDJSON unique et compact (~1-2 Mo) : chaque ligne = une réponse API
+// réduite à son utile. Ce format survit aux recyclages d'environnement,
+// contrairement à des centaines de fichiers dispersés.
+// ---------------------------------------------------------------------------
+const cache = new Map<string, unknown>();
+
+function loadCache() {
+  if (!existsSync(CACHE_FILE)) return;
+  for (const line of readFileSync(CACHE_FILE, "utf8").split("\n")) {
+    if (!line.trim()) continue;
+    try {
+      const row = JSON.parse(line) as { k: string; v: unknown };
+      cache.set(row.k, row.v);
+    } catch {
+      /* ligne corrompue ignorée */
+    }
+  }
+}
+
+function writeCache(key: string, value: unknown) {
+  cache.set(key, value);
+  mkdirSync(path.dirname(CACHE_FILE), { recursive: true });
+  appendFileSync(CACHE_FILE, JSON.stringify({ k: key, v: value }) + "\n");
+}
+
+/** Événement réduit à l'utile pour le mapping. */
+interface ApiEvent {
+  match_id: string;
+  match_date: string;
+  match_status: string;
+  match_hometeam_name: string;
+  match_awayteam_name: string;
+  match_hometeam_score: string;
+  match_awayteam_score: string;
+  statistics?: Array<{ type: string; home: string; away: string }>;
+  cards?: Array<{ home_fault?: string; away_fault?: string; card?: string }>;
+}
+
+function reduceEvent(ev: ApiEvent): ApiEvent {
+  return {
+    match_id: ev.match_id,
+    match_date: ev.match_date,
+    match_status: ev.match_status,
+    match_hometeam_name: ev.match_hometeam_name,
+    match_awayteam_name: ev.match_awayteam_name,
+    match_hometeam_score: ev.match_hometeam_score,
+    match_awayteam_score: ev.match_awayteam_score,
+    statistics: ev.statistics,
+    cards: ev.cards,
+  };
+}
 
 /** Ligues UEFA côté APIfootball. */
 const LEAGUE_PLAN = [
@@ -111,18 +164,6 @@ function namesSimilar(a: string, b: string): boolean {
     if (diff <= 2) return true;
   }
   return false;
-}
-
-interface ApiEvent {
-  match_id: string;
-  match_date: string;
-  match_status: string;
-  match_hometeam_name: string;
-  match_awayteam_name: string;
-  match_hometeam_score: string;
-  match_awayteam_score: string;
-  statistics?: Array<{ type: string; home: string; away: string }>;
-  cards?: Array<{ home_fault?: string; away_fault?: string; card?: string }>;
 }
 
 function statOf(stats: Array<{ type: string; home: string; away: string }>, re: RegExp) {
@@ -239,14 +280,9 @@ function pairEventToTarget(ev: ApiEvent, targets: TargetMatch[]): TargetMatch | 
 }
 
 async function fetchEvents(apiKey: string, leagueId: string, from: string, to: string): Promise<ApiEvent[] | null> {
-  const cacheFile = path.join(CACHE_DIR, `${leagueId}_${from}_${to}.json`);
-  if (existsSync(cacheFile)) {
-    try {
-      return JSON.parse(readFileSync(cacheFile, "utf8")) as ApiEvent[];
-    } catch {
-      /* cache illisible → nouvel appel */
-    }
-  }
+  const cacheKey = `apifb:${leagueId}_${from}_${to}`;
+  const cached = cache.get(cacheKey);
+  if (cached) return cached as ApiEvent[];
   const qs = new URLSearchParams({
     action: "get_events",
     from,
@@ -260,8 +296,7 @@ async function fetchEvents(apiKey: string, leagueId: string, from: string, to: s
     console.log(`   ⚠ réponse ${res.status} — ${JSON.stringify(body ?? "").slice(0, 80)}`);
     return null;
   }
-  mkdirSync(CACHE_DIR, { recursive: true });
-  writeFileSync(cacheFile, JSON.stringify(body));
+  writeCache(cacheKey, body.map(reduceEvent));
   await new Promise((r) => setTimeout(r, REQUEST_DELAY_MS));
   return body;
 }
@@ -273,6 +308,8 @@ async function main() {
     console.error("APIFOOTBALL_KEY absente de .env.");
     process.exit(1);
   }
+  loadCache();
+  console.log(`Cache disque : ${cache.size} entrée(s) déjà acquises (stats-cache/uefa-stats.ndjson)`);
   const targets = await loadTargets();
   console.log(`Matchs UEFA encore à enrichir : ${targets.length}`);
   if (check) {
@@ -325,7 +362,7 @@ async function main() {
     console.log(`${l.code} terminé · appariés ${paired} · enrichis ${enriched}`);
   }
   console.log("\n── résumé ──");
-  console.log(`appels API : ${calls} (réponses cachées dans data/stats-uefa/apifootball/)`);
+  console.log(`appels API : ${calls} (réponses réduites dans stats-cache/uefa-stats.ndjson)`);
   console.log(`matchs appariés : ${paired} · enrichis : ${enriched}`);
   await prisma.$disconnect();
 }

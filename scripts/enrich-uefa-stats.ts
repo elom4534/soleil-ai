@@ -26,14 +26,40 @@
  */
 
 import "dotenv/config";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 import { prisma } from "../src/lib/prisma";
 
 const BASE_URL = "https://live-football-api.com/api/v1";
 const REQUEST_DELAY_MS = 450;
-const CACHE_ROOT = path.join(process.cwd(), "data", "stats-uefa", "lfa");
+const CACHE_FILE = path.join(process.cwd(), "stats-cache", "uefa-stats.ndjson");
+
+// ---------------------------------------------------------------------------
+// Cache NDJSON unique et compact, partagé avec enrich-uefa-stats-apifootball :
+// chaque réponse API déjà payée est conservée sous forme réduite et n'est
+// jamais re-demandée, même après un recyclage de l'environnement.
+// ---------------------------------------------------------------------------
+const cache = new Map<string, unknown>();
+
+function loadCache() {
+  if (!existsSync(CACHE_FILE)) return;
+  for (const line of readFileSync(CACHE_FILE, "utf8").split("\n")) {
+    if (!line.trim()) continue;
+    try {
+      const row = JSON.parse(line) as { k: string; v: unknown };
+      cache.set(row.k, row.v);
+    } catch {
+      /* ligne corrompue ignorée */
+    }
+  }
+}
+
+function writeCache(key: string, value: unknown) {
+  cache.set(key, value);
+  mkdirSync(path.dirname(CACHE_FILE), { recursive: true });
+  appendFileSync(CACHE_FILE, JSON.stringify({ k: key, v: value }) + "\n");
+}
 
 /** Champs de MatchLiveData alimentés par les statistiques LiveFootballApi. */
 const TARGET_FIELDS = [
@@ -225,16 +251,12 @@ async function apiGet<T>(
   pool: KeyPool,
   endpoint: string,
   params: Record<string, string>,
-  cacheFile?: string,
+  cacheKey?: string,
+  reduce?: (body: T) => unknown,
 ): Promise<T | null> {
-  // Cache disque durable : les réponses déjà payées ne sont jamais re-demandées,
-  // même après un recyclage de l'environnement.
-  if (cacheFile && existsSync(cacheFile)) {
-    try {
-      return JSON.parse(readFileSync(cacheFile, "utf8")) as T;
-    } catch {
-      /* cache illisible → nouvel appel */
-    }
+  // Cache disque : les réponses déjà payées ne sont jamais re-demandées.
+  if (cacheKey && cache.has(cacheKey)) {
+    return cache.get(cacheKey) as T;
   }
   for (let attempt = 0; attempt < 5; attempt++) {
     const state = pool.current();
@@ -252,7 +274,6 @@ async function apiGet<T>(
     if (!res.ok || !body || body.success === false) {
       const msg = String(body?.message ?? "");
       if (res.status === 403 || /insufficient|access denied/i.test(msg)) {
-        // Clé épuisée/invalide : on la met à zéro pour basculer sur la suivante.
         pool.exhaustCurrent();
         console.log(`   ⚠ clé épuisée (${res.status}) — bascule sur la clé suivante`);
         continue;
@@ -261,10 +282,7 @@ async function apiGet<T>(
       return null;
     }
     pool.spend(1);
-    if (cacheFile) {
-      mkdirSync(path.dirname(cacheFile), { recursive: true });
-      writeFileSync(cacheFile, JSON.stringify(body));
-    }
+    if (cacheKey) writeCache(cacheKey, reduce ? reduce(body) : body);
     await sleep(REQUEST_DELAY_MS);
     return body;
   }
@@ -388,7 +406,8 @@ async function main() {
     process.exit(1);
   }
   const pool = new KeyPool(keys);
-  console.log(`Clés disponibles : ${keys.length} · budget : ${args.budget ?? "défaut (solde réel des clés)"}`);
+  loadCache();
+  console.log(`Clés disponibles : ${keys.length} · budget : ${args.budget ?? "défaut (solde réel des clés)"} · cache : ${cache.size} entrée(s)`);
   if (args.budget) console.log(`Plafond de la session : ${args.budget} crédits`);
 
   const { byDate: targetsByDate, order } = await loadTargets();
@@ -435,7 +454,17 @@ async function main() {
       pool,
       "/matches",
       { date: day },
-      path.join(CACHE_ROOT, "listes", `${day}.json`),
+      `list:${day}`,
+      (b) => ({
+        data: {
+          matches: (b.data?.matches ?? []).map((m) => ({
+            id: m.id,
+            status: m.status,
+            home: m.home,
+            away: m.away,
+          })),
+        },
+      }),
     );
     spentThisSession += 1;
     if (!listRes) {
@@ -454,7 +483,8 @@ async function main() {
         pool,
         "/live_match_details",
         { match_id: lfa.id },
-        path.join(CACHE_ROOT, "details", `${lfa.id}.json`),
+        `lfa:${lfa.id}`,
+        (b) => ({ data: { stats: b.data?.stats ?? [] } }),
       );
       spentThisSession += 1;
       if (!det) continue;
