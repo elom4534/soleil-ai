@@ -21,8 +21,12 @@ const nextConfig: NextConfig = {
 
   // Le rendu des pages dépend de données évolutives : pas de cache statique
   // agressif côté framework, le cache applicatif fait déjà ce travail.
+  // `webpackMemoryOptimizations` + `cpus: 1` : build dans la mémoire disponible
+  // (sandbox/AlwaysData) sans changer le comportement de l'application.
   experimental: {
     optimizePackageImports: ["lucide-react", "date-fns"],
+    webpackMemoryOptimizations: true,
+    cpus: 1,
   },
 
   images: {
