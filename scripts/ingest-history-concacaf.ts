@@ -1,19 +1,19 @@
 /**
  * ============================================================================
- * SOLEIL — Import de l'historique UEFA (Phase 2, 2026-10-05)
+ * SOLEIL — Import de l'historique CONCACAF Nations League
  * ============================================================================
- * Champions League (UCL), Europa League (UEL), Nations League (UNL) — matchs
- * TERMINÉS uniquement, via le quota gratuit API-Football (API-SPORTS).
+ * CONCACAF Nations League (CCNL) — matchs terminés et à venir, via le quota
+ * gratuit API-Football (API-SPORTS), league id 536.
  *
- *   GET https://v3.football.api-sports.io/fixtures?league=<id>&season=<YYYY>
+ *   GET https://v3.football.api-sports.io/fixtures?league=536&season=<YYYY>
  *   En-tête : x-apisports-key = API_FOOTBALL_FALLBACK_KEY
  *
  * 🔒 AUCUN crédit LFA. Aucun achat. Aucune modification des modèles IA,
- *    formules ou features de prédiction. Import ADDITIF et idempotent.
- *    Données minimales : résultat, buts D/E, score mi-temps, date, équipes,
- *    compétition, saison, journée/tour (quand fournis par la source).
+ *    formules ou features de prédiction. Import ADDITIF et idempotent
+ *    (mêmes règles que l'historique UEFA). Données minimales : résultat,
+ *    buts D/E, score mi-temps, date, équipes, compétition, saison, tour.
  *
- * Usage : npx tsx scripts/ingest-history-uefa.ts [--check]
+ * Usage : npx tsx scripts/ingest-history-concacaf.ts [--check]
  */
 
 import "dotenv/config";
@@ -26,10 +26,7 @@ const PROVIDER = "api-football";
 
 /** Ids API-SPORTS. */
 const COMPETITIONS: { code: string; name: string; leagueId: number; seasons: number[] }[] = [
-  { code: "UCL", name: "UEFA Champions League", leagueId: 2, seasons: Array.from({ length: 11 }, (_, i) => 2015 + i) },
-  { code: "UEL", name: "UEFA Europa League", leagueId: 3, seasons: Array.from({ length: 11 }, (_, i) => 2015 + i) },
-  // La Nations League n'existe que depuis 2018-19 : 4 éditions jouées.
-  { code: "UNL", name: "UEFA Nations League", leagueId: 5, seasons: [2018, 2020, 2022, 2024, 2026] },
+  { code: "CCNL", name: "CONCACAF Nations League", leagueId: 536, seasons: [2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026] },
 ];
 
 const FINISHED_SHORT = new Set(["FT", "AET", "PEN"]);
@@ -83,7 +80,7 @@ function toFixture(
     fixture: {
       externalId: `api-football:fixture:${raw.fixture.id}`,
       sourceRef: `api-football:fixture:${raw.fixture.id}`,
-      competition: { code, name, country: "Europe" },
+      competition: { code, name, country: "North & Central America" },
       utcDate: new Date(raw.fixture.date),
       status,
       homeTeamName: raw.teams.home.name,
