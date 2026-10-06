@@ -48,6 +48,7 @@ export type JobId =
   | "ingestion-calendrier"
   | "rafraichissement-jour-j"
   | "maintenance-donnees"
+  | "alimentation-premium"
   | "alimentation-matchs-a-venir"
   | "rafraichissement-predictions";
 
@@ -338,6 +339,57 @@ export const maintenanceJob: JobDefinition = {
 /* Tâche 4 — Matchs à venir via la source gratuite (0 crédit)                   */
 /* -------------------------------------------------------------------------- */
 
+/* -------------------------------------------------------------------------- */
+/* Tâche 4-bis — Alimentation premium (Live Football API, mission 21)         */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Source PRIORITAIRE des données récentes (mission 21) : saison courante des
+ * compétitions prioritaires, statistiques détaillées des matchs récents,
+ * logos/identité des équipes, contexte actuel des matchs à venir (H2H,
+ * blessures, compositions). La source gratuite (tâche suivante) ne prend le
+ * relais qu'en secours, jamais l'inverse.
+ */
+export const lfaPremiumJob: JobDefinition = {
+  id: "alimentation-premium",
+  label: "Alimentation premium (Live Football API)",
+  purpose:
+    "Synchronise la saison courante (résultats récents + à venir) des compétitions prioritaires depuis " +
+    "Live Football API, enrichit les matchs récents en statistiques détaillées, les équipes en logos " +
+    "et les matchs à venir en contexte actuel (H2H, blessures, compositions).",
+  // Avant la tâche gratuite (6h15) : si celle-ci réussit, la suivante est
+  // idempotente et n'ajoute rien.
+  schedule: "0 6 * * *",
+  usesNetwork: true,
+  estimatedCredits: 260,
+
+  async handler(ctx) {
+    const { syncLfaLeague, enrichRecentStats, refreshUpcomingContext, discoverUpcoming, syncTeamLogos } =
+      await import("@/server/data/lfaPremium");
+    const leagues = Object.keys((await import("@/server/data/lfaPremium")).LFA_LEAGUES);
+    const syncs = [];
+    for (const code of leagues) {
+      const s = await syncLfaLeague(code, ctx.now);
+      syncs.push(s);
+      ctx.log(`[premium] ${code} : ${s.received} reçus, ${s.inserted} créés, ${s.updated} mis à jour`);
+    }
+    const discovery = await discoverUpcoming(3);
+    const stats = await enrichRecentStats(45, 90);
+    const context = await refreshUpcomingContext(5, 18);
+    const logos = await syncTeamLogos(120);
+    const errors = [...syncs, ...discovery].flatMap((s) => s.errors);
+    return {
+      ok: errors.length === 0,
+      summary:
+        `${syncs.reduce((a, s) => a + s.inserted + s.updated, 0)} match(s) synchronisés, ` +
+        `${stats.enriched} enrichi(s) en statistiques, ${context.withInjuries} contexte(s) de blessures, ` +
+        `${logos.updated} logo(s), ${stats.creditsSpent + context.creditsSpent} crédits`,
+      creditsSpent: stats.creditsSpent + context.creditsSpent,
+      details: { syncs: syncs.map((s) => ({ league: s.league, inserted: s.inserted, updated: s.updated })), stats, context, logos },
+    };
+  },
+};
+
 export const upcomingTsdbJob: JobDefinition = {
   id: "alimentation-matchs-a-venir",
   label: "Alimentation des matchs à venir (source gratuite)",
@@ -490,7 +542,7 @@ export const refreshPredictionsJob: JobDefinition = {
   },
 };
 
-export const JOBS: readonly JobDefinition[] = [ingestionJob, refreshTodayJob, maintenanceJob, upcomingTsdbJob, refreshPredictionsJob];
+export const JOBS: readonly JobDefinition[] = [ingestionJob, refreshTodayJob, maintenanceJob, lfaPremiumJob, upcomingTsdbJob, refreshPredictionsJob];
 
 export function findJob(id: string): JobDefinition | undefined {
   return JOBS.find((job) => job.id === id);

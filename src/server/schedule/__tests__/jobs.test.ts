@@ -75,11 +75,12 @@ test("§34 — une valeur fantaisiste n'ouvre rien", () => {
 /* -------------------------------------------------------------------------- */
 
 test("§27 — les cinq tâches attendues sont présentes et planifiables", () => {
-  assert.equal(JOBS.length, 5);
+  assert.equal(JOBS.length, 6);
   const ids = JOBS.map((job) => job.id);
   assert.ok(ids.includes("ingestion-calendrier"));
   assert.ok(ids.includes("rafraichissement-jour-j"));
   assert.ok(ids.includes("maintenance-donnees"));
+  assert.ok(ids.includes("alimentation-premium"));
   assert.ok(ids.includes("alimentation-matchs-a-venir"));
   assert.ok(ids.includes("rafraichissement-predictions"));
 });
@@ -91,7 +92,7 @@ test("§27 — la maintenance et la source gratuite sont gratuites, les deux aut
     assert.equal(free.estimatedCredits, 0);
   }
 
-  for (const id of ["ingestion-calendrier", "rafraichissement-jour-j"] as const) {
+  for (const id of ["ingestion-calendrier", "rafraichissement-jour-j", "alimentation-premium"] as const) {
     const job = JOBS.find((j) => j.id === id)!;
     assert.equal(job.usesNetwork, true);
     assert.ok(job.estimatedCredits > 0);

@@ -87,10 +87,10 @@ test("§27 — une expression journalière avance bien d'un jour à chaque fois"
 /* -------------------------------------------------------------------------- */
 
 test("§27 — cinq tâches sont créées, toutes actives, toutes valides", () => {
-  assert.equal(JOBS.length, 5);
+  assert.equal(JOBS.length, 6);
   assert.deepEqual(
     JOBS.map((job) => job.id).sort(),
-    ["alimentation-matchs-a-venir", "ingestion-calendrier", "maintenance-donnees", "rafraichissement-jour-j", "rafraichissement-predictions"],
+    ["alimentation-matchs-a-venir", "alimentation-premium", "ingestion-calendrier", "maintenance-donnees", "rafraichissement-jour-j", "rafraichissement-predictions"],
   );
   for (const job of JOBS) {
     assert.equal(isValidCron(job.schedule), true, `${job.id} : expression valide`);
@@ -120,8 +120,9 @@ test("§27 — le nombre de déclenchements quotidiens est déduit de l'expressi
 test("§27 — le coût quotidien maximal correspond aux cadences réelles", () => {
   // Ingestion : 4 journées × 1 crédit × 1 passage = 4.
   // Rafraîchissement : 1 journée × 1 crédit × 4 passages = 4.
+  // Premium (Live Football API) : 1 passage × 260 crédits = 260.
   // Maintenance : 0.
-  assert.equal(totalDailyCredits(new Date("2026-10-01T00:00:00.000Z")), 8);
+  assert.equal(totalDailyCredits(new Date("2026-10-01T00:00:00.000Z")), 268);
 });
 
 test("§27 — l'ordonnanceur parle français à l'administrateur", () => {
