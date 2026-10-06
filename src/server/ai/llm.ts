@@ -75,6 +75,28 @@ export async function llmChat(
 ): Promise<LlmReply | null> {
   const { baseUrl, apiKey, model } = config();
   if (!apiKey) return null;
+
+  // Retry avec backoff : les tiers gratuits (Groq) limitent les tokens/minute.
+  // 429 → attente du délai suggéré (ou 5 s) → 2 tentives supplémentaires.
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const outcome = await llmAttempt(baseUrl, apiKey, model, messages, tools, options.temperature ?? 0.3);
+    if (outcome.retryAfterMs !== null) {
+      await new Promise((r) => setTimeout(r, outcome.retryAfterMs));
+      continue;
+    }
+    return outcome.reply;
+  }
+  return null;
+}
+
+async function llmAttempt(
+  baseUrl: string,
+  apiKey: string,
+  model: string,
+  messages: LlmMessage[],
+  tools: LlmToolSchema[],
+  temperature: number,
+): Promise<{ reply: LlmReply | null; retryAfterMs: number | null }> {
   try {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
@@ -89,35 +111,44 @@ export async function llmChat(
         model,
         messages,
         tools: tools.length > 0 ? tools : undefined,
-        temperature: options.temperature ?? 0.3,
+        temperature,
         // gpt-oss consomme une partie des tokens pour le raisonnement interne :
         // on alloue assez pour la réponse + le JSON final.
         max_tokens: 4_000,
       }),
     });
     clearTimeout(timer);
+    if (res.status === 429) {
+      const detail = await res.text().catch(() => "");
+      const wait = Number(detail.match(/try again in ([0-9.]+)s/i)?.[1] ?? "5");
+      console.error(`[soleil-llm] 429 rate limit — retry dans ${wait}s`);
+      return { reply: null, retryAfterMs: Math.ceil(wait * 1000) + 500 };
+    }
     if (!res.ok) {
       const detail = await res.text().catch(() => "");
       console.error(`[soleil-llm] HTTP ${res.status} : ${detail.slice(0, 300)}`);
-      return null;
+      return { reply: null, retryAfterMs: null };
     }
     const body = (await res.json()) as {
       choices?: { message?: { content?: string | null; tool_calls?: { id: string; function: { name: string; arguments: string } }[] } }[];
     };
     const msg = body.choices?.[0]?.message;
-    if (!msg) return null;
+    if (!msg) return { reply: null, retryAfterMs: null };
     return {
-      content: msg.content ?? null,
-      // Format API imbriqué strict (`type` + `function.name/arguments`) exigé
-      // par Groq comme par OpenAI quand on rejoue les tool_calls en historique.
-      toolCalls: (msg.tool_calls ?? []).map((t) => ({
-        id: t.id,
-        type: "function" as const,
-        function: { name: t.function.name, arguments: t.function.arguments },
-      })),
+      reply: {
+        content: msg.content ?? null,
+        // Format API imbriqué strict (`type` + `function.name/arguments`) exigé
+        // par Groq comme par OpenAI quand on rejoue les tool_calls en historique.
+        toolCalls: (msg.tool_calls ?? []).map((t) => ({
+          id: t.id,
+          type: "function" as const,
+          function: { name: t.function.name, arguments: t.function.arguments },
+        })),
+      },
+      retryAfterMs: null,
     };
   } catch (error) {
     console.error(`[soleil-llm] exception : ${(error as Error).message}`);
-    return null;
+    return { reply: null, retryAfterMs: null };
   }
 }
