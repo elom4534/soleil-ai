@@ -30,19 +30,80 @@ export function fact(label: string, value: string, ref: string, source: Fact["so
 /* Équipes et matchs                                                          */
 /* -------------------------------------------------------------------------- */
 
+/** Alias français → noms de la base (clubs et sélections). */
+const TEAM_ALIASES: Record<string, string> = {
+  // Sélections nationales
+  angleterre: "england", ecosse: "scotland", paysdegalles: "wales", irlande: "ireland",
+  irlandedunord: "northern ireland", france: "france", espagne: "spain", italie: "italy",
+  allemagne: "germany", portugal: "portugal", paysbas: "netherlands", belgique: "belgium",
+  suisse: "switzerland", autriche: "austria", grece: "greece", turquie: "turkey",
+  turkiye: "turkey", tchequie: "czech", tcheque: "czech", slovaquie: "slovakia",
+  slovenie: "slovenia", hongrie: "hungary", roumanie: "romania", bulgarie: "bulgaria",
+  serbie: "serbia", croatie: "croatia", bosnie: "bosnia", albanie: "albania",
+  ukraine: "ukraine", pologne: "poland", suede: "sweden", norvege: "norway",
+  danemark: "denmark", finlande: "finland", islande: "iceland",
+  russie: "russia", israel: "israel", kazakhstan: "kazakhstan",
+  georgie: "georgia", armenie: "armenia", azerbaidjan: "azerbaijan",
+  feroe: "faroe islands", ilesferoe: "faroe islands",
+  luxembourg: "luxembourg", moldavie: "moldova", bielorussie: "belarus",
+  estonie: "estonia", lettonie: "latvia", lituanie: "lithuania", chypre: "cyprus",
+  macedoine: "north macedonia",
+  kosovo: "kosovo", montenegro: "montenegro", andorre: "andorra",
+  saintmarin: "san marino", liechtenstein: "liechtenstein", gibraltar: "gibraltar",
+  malte: "malta",
+  // Sélections CONCACAF
+  mexique: "mexico", etatsunis: "united states", usa: "united states", canada: "canada",
+  jamaique: "jamaica", honduras: "honduras", costarica: "costa rica", panama: "panama",
+  salvador: "el salvador", guatemala: "guatemala", haiti: "haiti", cuba: "cuba",
+  trinite: "trinidad", suriname: "suriname", barbade: "barbados", bermudes: "bermuda",
+  grenade: "grenada", guyane: "guyana", martinique: "martinique", guadeloupe: "guadeloupe",
+  saintvinsaintvincent: "saint vincent", vincent: "saint vincent", maarten: "sint maarten",
+  bahamas: "bahamas", bonaire: "bonaire", caicos: "turks and caicos", montserrat: "montserrat",
+  dominican: "dominican", dominique: "dominica", nicaragua: "nicaragua", belize: "belize",
+  antigua: "antigua", kitts: "saint kitts", lucia: "saint lucia",
+  // Clubs (base EN/DE/IT/ES) — complément de la table d'alias historique
+  barcelone: "barcelona", real: "real madrid", madrid: "madrid", seville: "sevilla",
+  valence: "valencia", rome: "roma", naples: "napoli", turin: "torino",
+  munich: "munchen", francfort: "frankfurt", cologne: "koln", arsenal: "arsenal",
+  chelsea: "chelsea", liverpool: "liverpool", tottenham: "tottenham", mancity: "manchester city",
+  manunited: "manchester united", manchester: "manchester", newcastle: "newcastle",
+  bournemouth: "bournemouth", brighton: "brighton", everton: "everton", fulham: "fulham",
+  leeds: "leeds", leicester: "leicester", westham: "west ham", wolves: "wolves",
+  astonvilla: "aston villa", brentford: "brentford", crystalpalace: "crystal palace",
+  nottingham: "nottingham", ipswich: "ipswich", southampton: "southampton",
+  luton: "luton", sheffield: "sheffield", burnley: "burnley", malaga: "málaga",
+  espanyol: "espanyol", vallecano: "rayo vallecano", bilbao: "athletic bilbao",
+  alaves: "deportivo alavés", atletico: "atlético madrid",
+};
+
+function normKey(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]/g, "");
+}
+
+/** Clés d'alias normalisées une fois pour toutes. */
+const ALIAS_NORM = new Map(Object.entries(TEAM_ALIASES).map(([k, v]) => [normKey(k), v]));
+
 export async function findTeam(name: string) {
   const clean = name.trim();
   if (!clean) return null;
-  const all = await prisma.team.findMany({ select: { id: true, name: true, shortName: true } });
-  const norm = (s: string) =>
-    s
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9]/g, "");
+  const norm = normKey;
   const target = norm(clean);
-  const exact = all.find((t) => norm(t.name) === target || norm(t.shortName ?? "") === target);
+  // 1. Alias français explicites → on cherche le nom cible.
+  const alias = ALIAS_NORM.get(target);
+  const all = await prisma.team.findMany({ select: { id: true, name: true, shortName: true } });
+  const searchFor = alias ? norm(alias) : target;
+  const exact = all.find((t) => norm(t.name) === searchFor || norm(t.shortName ?? "") === searchFor);
   if (exact) return exact;
+  if (alias) {
+    const aliasPartial = all.filter((t) => norm(t.name).includes(searchFor) || searchFor.includes(norm(t.name)));
+    if (aliasPartial.length === 1) return aliasPartial[0];
+    if (aliasPartial.length > 1) return { ambiguous: aliasPartial };
+  }
+  // 2. Correspondance souple sur le nom donné.
   const partial = all.filter((t) => norm(t.name).includes(target) || target.includes(norm(t.name)));
   if (partial.length === 1) return partial[0];
   return partial.length > 1 ? { ambiguous: partial } : null;
