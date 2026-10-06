@@ -68,10 +68,14 @@ export function SoleilChat({ matchId, matchLabel }: { matchId?: string; matchLab
       setPending(true);
 
       try {
+        const history = messages
+          .filter((m) => !m.error)
+          .slice(-6)
+          .map((m) => ({ role: m.role, content: m.content.slice(0, 1500) }));
         const response = await fetch("/api/ai/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question: trimmed, matchId: matchId ?? null }),
+          body: JSON.stringify({ question: trimmed, matchId: matchId ?? null, history }),
         });
 
         const payload = await response.json();
@@ -122,7 +126,7 @@ export function SoleilChat({ matchId, matchLabel }: { matchId?: string; matchLab
         setPending(false);
       }
     },
-    [matchId, pending],
+    [matchId, pending, messages],
   );
 
   return (
@@ -195,6 +199,9 @@ export function SoleilChat({ matchId, matchLabel }: { matchId?: string; matchLab
                   <>
                     {message.sections ? (
                       <div className="space-y-2.5">
+                        {message.content ? (
+                          <p className="whitespace-pre-line text-[13px] leading-relaxed text-fg">{message.content}</p>
+                        ) : null}
                         {message.sections.data ? (
                           <div>
                             <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-fg-muted">Données</p>

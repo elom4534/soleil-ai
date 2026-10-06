@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { investigate } from "@/server/ai/agent";
+import { respond } from "@/server/ai/llmagent";
 import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
@@ -10,6 +10,10 @@ const BodySchema = z.object({
   question: z.string().min(2, "Question trop courte").max(500, "Question trop longue"),
   matchId: z.string().cuid().nullish(),
   conversationId: z.string().cuid().nullish(),
+  history: z
+    .array(z.object({ role: z.enum(["user", "assistant"]), content: z.string().max(2000) }))
+    .max(12)
+    .nullish(),
 });
 
 /**
@@ -41,7 +45,11 @@ export async function POST(request: Request) {
   }
 
   try {
-    const report = await investigate(parsed.data.question, parsed.data.matchId ?? null);
+    const report = await respond(
+      parsed.data.question,
+      (parsed.data.history ?? []).map((t) => ({ role: t.role, content: t.content })),
+      parsed.data.matchId ?? null,
+    );
 
     // Journalisation de la conversation si un utilisateur authentifié existe.
     // En l'absence de session, la conversation n'est pas persistée : aucune
@@ -62,7 +70,7 @@ export async function POST(request: Request) {
     ].join("\n");
 
     return NextResponse.json({
-      answer: flat,
+      answer: report.answer || flat,
       intent: report.intent,
       evidence: report.evidence,
       followUps: report.followUps,
@@ -74,6 +82,8 @@ export async function POST(request: Request) {
       missing: report.missing,
       sources: report.sources,
       trace: report.trace,
+      mode: report.mode,
+      model: report.model,
     });
   } catch (error) {
     console.error("[soleil-ai] erreur:", error);
