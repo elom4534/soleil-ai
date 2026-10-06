@@ -81,7 +81,7 @@ export async function llmChat(
   for (let attempt = 0; attempt < 3; attempt++) {
     const outcome = await llmAttempt(baseUrl, apiKey, model, messages, tools, options.temperature ?? 0.3);
     if (outcome.retryAfterMs !== null) {
-      await new Promise((r) => setTimeout(r, outcome.retryAfterMs));
+      await new Promise((r) => setTimeout(r, Math.max(outcome.retryAfterMs ?? 5_000, 1_000)));
       continue;
     }
     return outcome.reply;
