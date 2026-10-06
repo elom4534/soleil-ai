@@ -37,7 +37,7 @@ const TEAM_ALIASES: Record<string, string> = {
   irlandedunord: "northern ireland", france: "france", espagne: "spain", italie: "italy",
   allemagne: "germany", portugal: "portugal", paysbas: "netherlands", belgique: "belgium",
   suisse: "switzerland", autriche: "austria", grece: "greece", turquie: "turkey",
-  turkiye: "turkey", tchequie: "czech", tcheque: "czech", slovaquie: "slovakia",
+  turkiye: "turkey", tchequie: "czech republic", tcheque: "czech republic", slovaquie: "slovakia",
   slovenie: "slovenia", hongrie: "hungary", roumanie: "romania", bulgarie: "bulgaria",
   serbie: "serbia", croatie: "croatia", bosnie: "bosnia", albanie: "albania",
   ukraine: "ukraine", pologne: "poland", suede: "sweden", norvege: "norway",
@@ -101,7 +101,12 @@ export async function findTeam(name: string) {
   if (alias) {
     const aliasPartial = all.filter((t) => norm(t.name).includes(searchFor) || searchFor.includes(norm(t.name)));
     if (aliasPartial.length === 1) return aliasPartial[0];
-    if (aliasPartial.length > 1) return { ambiguous: aliasPartial };
+    if (aliasPartial.length > 1) {
+      // Plusieurs variantes (équipes jeunes/féminines, graphies) : on garde le
+      // nom principal — le plus court, le moins qualifié — jamais deviné au hasard.
+      aliasPartial.sort((a, b) => a.name.length - b.name.length || a.name.localeCompare(b.name));
+      return aliasPartial[0];
+    }
   }
   // 2. Correspondance souple sur le nom donné.
   const partial = all.filter((t) => norm(t.name).includes(target) || target.includes(norm(t.name)));
