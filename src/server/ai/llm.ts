@@ -90,11 +90,17 @@ export async function llmChat(
         messages,
         tools: tools.length > 0 ? tools : undefined,
         temperature: options.temperature ?? 0.3,
-        max_tokens: 1200,
+        // gpt-oss consomme une partie des tokens pour le raisonnement interne :
+        // on alloue assez pour la réponse + le JSON final.
+        max_tokens: 4_000,
       }),
     });
     clearTimeout(timer);
-    if (!res.ok) return null;
+    if (!res.ok) {
+      const detail = await res.text().catch(() => "");
+      console.error(`[soleil-llm] HTTP ${res.status} : ${detail.slice(0, 300)}`);
+      return null;
+    }
     const body = (await res.json()) as {
       choices?: { message?: { content?: string | null; tool_calls?: { id: string; function: { name: string; arguments: string } }[] } }[];
     };
@@ -104,7 +110,8 @@ export async function llmChat(
       content: msg.content ?? null,
       toolCalls: (msg.tool_calls ?? []).map((t) => ({ id: t.id, name: t.function.name, arguments: t.function.arguments })),
     };
-  } catch {
+  } catch (error) {
+    console.error(`[soleil-llm] exception : ${(error as Error).message}`);
     return null;
   }
 }

@@ -94,7 +94,7 @@ function extractResultJson(text: string): Record<string, unknown> | null {
   }
 }
 
-function fallbackResponse(question: string, report: AgentReport): AgentResponse {
+function fallbackResponse(question: string, report: AgentReport, reason = ""): AgentResponse {
   return {
     answer: [report.data, "", report.analysis, "", report.conclusion].filter(Boolean).join("\n"),
     data: report.data,
@@ -105,7 +105,7 @@ function fallbackResponse(question: string, report: AgentReport): AgentResponse 
     sources: report.sources,
     trace: report.trace,
     mode: "fallback",
-    model: null,
+    model: reason ? `fallback(${reason})` : null,
     followUps: report.followUps,
     evidence: report.evidence,
     intent: report.intent,
@@ -117,7 +117,7 @@ export async function respond(question: string, history: ChatTurn[] = [], matchI
   // ── Fallback déterministe : pas de clé LLM, ou échec garanti ─────────────
   if (!llmAvailable()) {
     const report = await investigate(question, matchId ?? null);
-    return fallbackResponse(question, report);
+    return fallbackResponse(question, report, "clé LLM absente de l'environnement");
   }
 
   const startedAt = Date.now();
@@ -143,13 +143,20 @@ export async function respond(question: string, history: ChatTurn[] = [], matchI
     if (!reply) {
       // Le LLM est en échec → fallback explicite.
       const report = await investigate(question, matchId ?? null);
-      return fallbackResponse(question, report);
+      return fallbackResponse(question, report, `appel LLM en échec (modèle ${llmModelName()})`);
     }
     lastReply = reply;
 
     if (reply.toolCalls.length === 0) {
       // Réponse finale.
       const text = reply.content ?? "";
+      // gpt-oss peut produire une réponse vide (tokens de réflexion épuisés) :
+      // on lui redonne la parole une fois avant de conclure.
+      if (text.trim().length === 0 && round < MAX_TOOL_ROUNDS - 1) {
+        messages.push({ role: "assistant", content: "" });
+        messages.push({ role: "user", content: "Ta réponse était vide. Réponds à la question avec les éléments collectés (et l'objet JSON [RESULT])." });
+        continue;
+      }
       const parsed = extractResultJson(text);
       const clean = text.replace(/\[RESULT\][\s\S]*?\[\/RESULT\]/g, "").trim();
       if (parsed) {
@@ -245,7 +252,7 @@ export async function respond(question: string, history: ChatTurn[] = [], matchI
     };
   }
   const report = await investigate(question, matchId ?? null);
-  return fallbackResponse(question, report);
+  return fallbackResponse(question, report, "enquête LLM interrompue (tours/temps)");
 }
 
 function traceFrom(messages: LlmMessage[]): string[] {
