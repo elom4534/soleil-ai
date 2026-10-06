@@ -10,12 +10,22 @@ interface Evidence {
   source: string;
 }
 
+interface AgentSections {
+  data?: string;
+  analysis?: string;
+  conclusion?: string;
+  confidence?: { score: number; level: string };
+  missing?: string[];
+  sources?: { label: string; url: string }[];
+}
+
 interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
   evidence?: Evidence[];
   followUps?: string[];
+  sections?: AgentSections;
   error?: boolean;
 }
 
@@ -87,6 +97,14 @@ export function SoleilChat({ matchId, matchLabel }: { matchId?: string; matchLab
             content: payload.answer,
             evidence: payload.evidence ?? [],
             followUps: payload.followUps ?? [],
+            sections: {
+              data: payload.data,
+              analysis: payload.analysis,
+              conclusion: payload.conclusion,
+              confidence: payload.confidence,
+              missing: payload.missing ?? [],
+              sources: payload.sources ?? [],
+            },
           },
         ]);
       } catch {
@@ -175,7 +193,64 @@ export function SoleilChat({ matchId, matchLabel }: { matchId?: string; matchLab
                   </p>
                 ) : (
                   <>
-                    <p className="text-[13px] leading-relaxed text-fg">{message.content}</p>
+                    {message.sections ? (
+                      <div className="space-y-2.5">
+                        {message.sections.data ? (
+                          <div>
+                            <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-fg-muted">Données</p>
+                            <p className="whitespace-pre-line text-[12.5px] leading-relaxed text-fg">{message.sections.data}</p>
+                          </div>
+                        ) : null}
+                        {message.sections.analysis ? (
+                          <div>
+                            <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-fg-muted">Analyse</p>
+                            <p className="whitespace-pre-line text-[12.5px] leading-relaxed text-fg">{message.sections.analysis}</p>
+                          </div>
+                        ) : null}
+                        {message.sections.conclusion ? (
+                          <div>
+                            <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-fg-muted">Conclusion</p>
+                            <p className="whitespace-pre-line text-[13px] leading-relaxed text-fg">{message.sections.conclusion}</p>
+                          </div>
+                        ) : null}
+                        {message.sections.missing && message.sections.missing.length > 0 ? (
+                          <div className="rounded-lg border border-amber-500/25 bg-amber-500/[0.06] px-2.5 py-2">
+                            <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">
+                              Limites — je ne sais pas
+                            </p>
+                            <ul className="list-disc space-y-0.5 pl-4 text-[12px] text-fg-muted">
+                              {message.sections.missing.map((m, i) => (
+                                <li key={i}>{m}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        ) : null}
+                        {message.sections.sources && message.sections.sources.length > 0 ? (
+                          <div>
+                            <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-fg-muted">Sources web</p>
+                            <ul className="space-y-0.5 text-[11.5px]">
+                              {message.sections.sources.map((s, i) => (
+                                <li key={i}>
+                                  <a href={s.url} target="_blank" rel="noreferrer" className="text-soleil-600 underline dark:text-soleil-400">
+                                    {s.label}
+                                  </a>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ) : null}
+                        {message.sections.confidence ? (
+                          <p className="text-[11.5px] text-fg-muted">
+                            Confiance de l'analyse :{" "}
+                            <span className="font-medium text-fg">
+                              {message.sections.confidence.level} ({message.sections.confidence.score}/100)
+                            </span>
+                          </p>
+                        ) : null}
+                      </div>
+                    ) : (
+                      <p className="text-[13px] leading-relaxed text-fg">{message.content}</p>
+                    )}
 
                     {message.evidence && message.evidence.length > 0 ? (
                       <div className="mt-3 border-t border-border-subtle pt-2.5">

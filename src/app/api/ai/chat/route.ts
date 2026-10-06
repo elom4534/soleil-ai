@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { answer } from "@/server/ai/engine";
+import { investigate } from "@/server/ai/agent";
 import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
@@ -41,22 +41,39 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = await answer({
-      question: parsed.data.question,
-      matchId: parsed.data.matchId ?? null,
-    });
+    const report = await investigate(parsed.data.question, parsed.data.matchId ?? null);
 
     // Journalisation de la conversation si un utilisateur authentifié existe.
     // En l'absence de session, la conversation n'est pas persistée : aucune
     // donnée personnelle n'est collectée sans compte (§30).
     void prisma;
 
+    // `answer` (texte plat) reste fourni pour compatibilité ; les blocs
+    // structurés (Données / Analyse / Conclusion) sont la forme de référence.
+    const flat = [
+      "Données —",
+      report.data,
+      "",
+      "Analyse —",
+      report.analysis,
+      "",
+      "Conclusion —",
+      report.conclusion,
+    ].join("\n");
+
     return NextResponse.json({
-      answer: result.answer,
-      intent: result.intent,
-      evidence: result.evidence,
-      followUps: result.followUps,
-      matchRef: result.matchRef ?? null,
+      answer: flat,
+      intent: report.intent,
+      evidence: report.evidence,
+      followUps: report.followUps,
+      matchRef: report.matchRef ?? null,
+      data: report.data,
+      analysis: report.analysis,
+      conclusion: report.conclusion,
+      confidence: report.confidence,
+      missing: report.missing,
+      sources: report.sources,
+      trace: report.trace,
     });
   } catch (error) {
     console.error("[soleil-ai] erreur:", error);
