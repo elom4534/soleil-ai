@@ -31,6 +31,7 @@ async function main() {
   const args = process.argv.slice(2);
   const all = args.includes("--all");
   const statsDays = Number(args.find((a) => a.startsWith("--stats="))?.split("=")[1] ?? 45);
+  const statsLimit = Number(args.find((a) => a.startsWith("--limit="))?.split("=")[1] ?? 90);
 
   console.log("═══ SOLEIL — synchronisation premium (Live Football API) ═══\n");
 
@@ -54,7 +55,7 @@ async function main() {
   }
 
   console.log("3. Statistiques détaillées des matchs récents…");
-  const stats = await enrichRecentStats(statsDays, 90);
+  const stats = await enrichRecentStats(statsDays, statsLimit);
   console.log(`   candidats=${stats.candidates} · enrichis=${stats.enriched} · crédits dépensés=${stats.creditsSpent}\n`);
 
   if (all || args.includes("--context")) {
@@ -65,8 +66,16 @@ async function main() {
 
   if (all || args.includes("--logos")) {
     console.log("5. Logos et identité des équipes…");
-    const logos = await syncTeamLogos(150);
-    console.log(`   scannées=${logos.scanned} · logos attribués=${logos.updated} · introuvables=${logos.missing}\n`);
+    const runs = Number(args.find((a) => a.startsWith("--logos="))?.split("=")[1] ?? 1);
+    let done = 0;
+    let missing = 0;
+    for (let i = 0; i < runs; i++) {
+      const logos = await syncTeamLogos(200);
+      done += logos.updated;
+      missing += logos.missing;
+      if (logos.scanned === 0) break;
+    }
+    console.log(`   logos attribués=${done} · introuvables=${missing}\n`);
   }
 
   // Contrôle qualité de mission : doublons, fraîcheur.
