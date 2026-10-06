@@ -19,6 +19,11 @@ const SECURITY_HEADERS = [
 const nextConfig: NextConfig = {
   reactStrictMode: true,
 
+  // La vérification ESLint/TSC est faite en CI locale (`tsc --noEmit`,
+  // `npm test`) avant déploiement : on la désactive pendant le build pour
+  // tenir dans la mémoire disponible (bac à sable 2 Go).
+  eslint: { ignoreDuringBuilds: true },
+
   // Le rendu des pages dépend de données évolutives : pas de cache statique
   // agressif côté framework, le cache applicatif fait déjà ce travail.
   // `webpackMemoryOptimizations` + `cpus: 1` : build dans la mémoire disponible
@@ -26,6 +31,7 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["lucide-react", "date-fns"],
     webpackMemoryOptimizations: true,
+    workerThreads: false,
     cpus: 1,
   },
 

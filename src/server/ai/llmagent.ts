@@ -199,7 +199,7 @@ export async function respond(question: string, history: ChatTurn[] = [], matchI
     // Exécution des appels d'outils (anti-boucle + bornes).
     messages.push({ role: "assistant", content: reply.content ?? null, tool_calls: reply.toolCalls });
     for (const call of reply.toolCalls) {
-      const key = `${call.name}:${call.arguments}`;
+      const key = `${call.function.name}:${call.function.arguments}`;
       const count = (seenCalls.get(key) ?? 0) + 1;
       seenCalls.set(key, count);
       let result: string;
@@ -208,11 +208,11 @@ export async function respond(question: string, history: ChatTurn[] = [], matchI
       } else {
         let args: Record<string, unknown> = {};
         try {
-          args = JSON.parse(call.arguments || "{}") as Record<string, unknown>;
+          args = JSON.parse(call.function.arguments || "{}") as Record<string, unknown>;
         } catch {
           args = {};
         }
-        result = await executeTool(call.name, args, ctx);
+        result = await executeTool(call.function.name, args, ctx);
       }
       messages.push({ role: "tool", content: result, tool_call_id: call.id });
     }
@@ -260,7 +260,7 @@ function traceFrom(messages: LlmMessage[]): string[] {
   for (const m of messages) {
     if (m.role === "tool") trace.push(`outil → ${String(m.content ?? "").slice(0, 80)}`);
     if (m.role === "assistant" && m.tool_calls) {
-      for (const c of m.tool_calls) trace.push(`appel ${c.name}(${c.arguments.slice(0, 80)})`);
+      for (const c of m.tool_calls) trace.push(`appel ${c.function.name}(${c.function.arguments.slice(0, 80)})`);
     }
   }
   return trace.slice(-16);

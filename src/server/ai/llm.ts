@@ -26,8 +26,8 @@ const TIMEOUT_MS = 45_000;
 
 export interface LlmToolCall {
   id: string;
-  name: string;
-  arguments: string;
+  type: "function";
+  function: { name: string; arguments: string };
 }
 
 export interface LlmMessage {
@@ -108,7 +108,13 @@ export async function llmChat(
     if (!msg) return null;
     return {
       content: msg.content ?? null,
-      toolCalls: (msg.tool_calls ?? []).map((t) => ({ id: t.id, name: t.function.name, arguments: t.function.arguments })),
+      // Format API imbriqué strict (`type` + `function.name/arguments`) exigé
+      // par Groq comme par OpenAI quand on rejoue les tool_calls en historique.
+      toolCalls: (msg.tool_calls ?? []).map((t) => ({
+        id: t.id,
+        type: "function" as const,
+        function: { name: t.function.name, arguments: t.function.arguments },
+      })),
     };
   } catch (error) {
     console.error(`[soleil-llm] exception : ${(error as Error).message}`);
