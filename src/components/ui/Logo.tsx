@@ -17,9 +17,9 @@ export function SoleilMark({ className, size = 32 }: { className?: string; size?
     >
       <defs>
         <linearGradient id={id} x1="8" y1="6" x2="40" y2="42" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#EE7AA7" />
-          <stop offset="0.55" stopColor="#E8548E" />
-          <stop offset="1" stopColor="#B62C62" />
+          <stop stopColor="#6EE7A0" />
+          <stop offset="0.55" stopColor="#24C767" />
+          <stop offset="1" stopColor="#128643" />
         </linearGradient>
       </defs>
       {/* Rayons : 8 directions, alternance courte/longue pour un rythme solaire */}

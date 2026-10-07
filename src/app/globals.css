@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
 /* ==========================================================================
-   SOLEIL — Système de design
-   Référence visuelle : panneau AlwaysData (capture fournie).
-   Feuille blanche arrondie · blocs gris plats · titres légers espacés ·
-   séparateurs pointillés · accent rose #E8548E · champs blancs bordés.
-   Aucune logique ici — présentation uniquement.
+   SOLEIL — Système de design « Neumorphism » (soft UI)
+   Référence visuelle : maquette e-learning neumorphic (capture fournie).
+   Fond bleu-gris clair · cartes gaufrées (ombres douces doubles) ·
+   accent vert menthe dégradé · boutons pilules · champs en creux ·
+   jauges arrondies. Aucune logique ici — présentation uniquement.
    ========================================================================== */
 
 @theme {
@@ -14,36 +14,53 @@
     "Segoe UI", Roboto, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
 
-  /* --- Rayons (capture : angles généreux, 8→16 px) --- */
-  --radius-card: 12px;
+  /* --- Rayons (maquette : angles généreux 12→20 px, pilules 999) --- */
+  --radius-card: 18px;
   --radius-pill: 999px;
+  --radius-field: 12px;
 
-  /* --- Accent rose AlwaysData (échantillonné sur les captures) --- */
-  --color-soleil-50: #fdf2f7;
-  --color-soleil-100: #fbe5ee;
-  --color-soleil-200: #f7c9dc;
-  --color-soleil-300: #f2a3c3;
-  --color-soleil-400: #ee7aa7;
-  --color-soleil-500: #e8548e;
-  --color-soleil-600: #d63a78;
-  --color-soleil-700: #b62c62;
-  --color-soleil-800: #952452;
-  --color-soleil-900: #7a1f44;
+  /* --- Accent vert menthe (échantillonné sur la maquette) --- */
+  --color-soleil-50: #eefdf4;
+  --color-soleil-100: #d3f9e2;
+  --color-soleil-200: #a6f2c4;
+  --color-soleil-300: #6ee7a0;
+  --color-soleil-400: #41d97f;
+  --color-soleil-500: #24c767;
+  --color-soleil-600: #16a854;
+  --color-soleil-700: #128643;
+  --color-soleil-800: #116a37;
+  --color-soleil-900: #0d542d;
 
-  /* --- Neutres graphite (icônes, aplats secondaires) --- */
-  --color-astro-50: #f6f6f6;
-  --color-astro-100: #ececec;
-  --color-astro-200: #dcdcdc;
-  --color-astro-300: #c2c2c2;
-  --color-astro-400: #9a9a9a;
-  --color-astro-500: #767676;
-  --color-astro-600: #565656;
-  --color-astro-700: #3a3a3a;
+  /* --- Neutres bleu-gris (ombres neumorphiques, texte secondaire) --- */
+  --color-astro-50: #f4f7fb;
+  --color-astro-100: #e8eef6;
+  --color-astro-200: #d5deec;
+  --color-astro-300: #b6c3d8;
+  --color-astro-400: #8fa0ba;
+  --color-astro-500: #6b7c99;
+  --color-astro-600: #4e5e78;
+  --color-astro-700: #36445c;
 
-  /* --- Sémantique résultats (inchangés en logique) --- */
-  --color-win: #2f9e68;
-  --color-draw: #9a9a9a;
+  /* --- Sémantiques résultats (logique inchangée) --- */
+  --color-win: #1fae62;
+  --color-draw: #8fa0ba;
   --color-loss: #d64545;
+
+  /* --- Dégradé primaire (boutons « TO BEGIN » de la maquette) --- */
+  --gradient-primary: linear-gradient(135deg, #55e08c 0%, #23c565 100%);
+
+  /* --- Ombres neumorphiques (double : sombre bas-droite, claire haut-gauche) --- */
+  --neu-out: 10px 10px 22px rgba(163, 177, 198, 0.52),
+    -10px -10px 22px rgba(255, 255, 255, 0.82);
+  --neu-out-soft: 6px 6px 14px rgba(163, 177, 198, 0.4),
+    -6px -6px 14px rgba(255, 255, 255, 0.75);
+  --neu-out-hover: 14px 14px 28px rgba(163, 177, 198, 0.58),
+    -14px -14px 28px rgba(255, 255, 255, 0.9);
+  --neu-in: inset 5px 5px 11px rgba(163, 177, 198, 0.5),
+    inset -5px -5px 11px rgba(255, 255, 255, 0.88);
+  --neu-in-soft: inset 3px 3px 7px rgba(163, 177, 198, 0.42),
+    inset -3px -3px 7px rgba(255, 255, 255, 0.8);
+  --neu-glow: 0 8px 20px rgba(36, 199, 103, 0.35);
 
   /* --- Animations --- */
   --animate-shimmer: shimmer 1.6s linear infinite;
@@ -70,41 +87,61 @@
 }
 
 /* ==========================================================================
-   Tokens sémantiques — clair par défaut (capture), sombre via .dark
+   Tokens sémantiques — neumorphism clair par défaut, sombre via .dark
    ========================================================================== */
 :root {
-  --bg: #f0f0f0;            /* gris très clair autour de la feuille */
-  --bg-elevated: #ffffff;   /* feuille blanche */
-  --bg-subtle: #ececec;     /* blocs gris de la capture (Informations, Options) */
-  --bg-inset: #f6f6f6;      /* rehauts discrets */
+  --bg: #e6ebf4;            /* fond bleu-gris de la maquette */
+  --bg-elevated: #edf1f8;   /* surface des cartes gaufrées */
+  --bg-subtle: #e0e7f2;     /* blocs alternés / en-têtes */
+  --bg-inset: #dfe6f1;      /* rehauts en creux */
 
-  --fg: #2b2b2b;
-  --fg-muted: #7c7c7c;
-  --fg-subtle: #9a9a9a;
+  --fg: #2b3a4e;
+  --fg-muted: #6b7c99;
+  --fg-subtle: #8fa0ba;
 
-  --border: #d2d2d2;
-  --border-strong: #bcbcbc;
+  --border: rgba(163, 177, 198, 0.28);
+  --border-strong: rgba(163, 177, 198, 0.45);
 
-  --ring: #e8548e;
-  --card-shadow: none;
-  --card-shadow-hover: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --ring: #24c767;
+  --card-shadow: var(--neu-out);
+  --card-shadow-hover: var(--neu-out-hover);
+
+  --neu-mode: light;
+  color-scheme: light;
 }
 
 .dark {
-  --bg: #1b1b1e;
-  --bg-elevated: #242428;
-  --bg-subtle: #2e2e33;
-  --bg-inset: #26262b;
+  --bg: #232b37;
+  --bg-elevated: #2a3341;
+  --bg-subtle: #27303d;
+  --bg-inset: #202733;
 
-  --fg: #f2f2f2;
-  --fg-muted: #a8a8ae;
-  --fg-subtle: #7c7c84;
+  --fg: #e9eef5;
+  --fg-muted: #a7b4c6;
+  --fg-subtle: #7c8aa0;
 
-  --border: #3a3a40;
-  --border-strong: #4c4c54;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
 
-  --card-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.35);
-  --card-shadow-hover: 0 4px 12px -2px rgb(0 0 0 / 0.45);
+  --ring: #41d97f;
+  --card-shadow: 10px 10px 22px rgba(15, 20, 28, 0.55),
+    -10px -10px 22px rgba(255, 255, 255, 0.05);
+  --card-shadow-hover: 14px 14px 28px rgba(15, 20, 28, 0.62),
+    -14px -14px 28px rgba(255, 255, 255, 0.07);
+
+  --neu-out: 10px 10px 22px rgba(15, 20, 28, 0.55),
+    -10px -10px 22px rgba(255, 255, 255, 0.05);
+  --neu-out-soft: 6px 6px 14px rgba(15, 20, 28, 0.45),
+    -6px -6px 14px rgba(255, 255, 255, 0.04);
+  --neu-out-hover: 14px 14px 28px rgba(15, 20, 28, 0.62),
+    -14px -14px 28px rgba(255, 255, 255, 0.07);
+  --neu-in: inset 5px 5px 11px rgba(15, 20, 28, 0.55),
+    inset -5px -5px 11px rgba(255, 255, 255, 0.05);
+  --neu-in-soft: inset 3px 3px 7px rgba(15, 20, 28, 0.45),
+    inset -3px -3px 7px rgba(255, 255, 255, 0.04);
+
+  --neu-mode: dark;
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -144,25 +181,25 @@
     color: var(--color-soleil-100);
   }
 
-  /* Champs de formulaire — capture : blancs, bordure grise, angles 8 px */
+  /* Champs de formulaire — maquette : creux gaufrés, angles 12 px, sans bordure */
   input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
   select,
   textarea {
-    background-color: var(--bg-elevated);
-    border: 1px solid var(--border-strong);
-    border-radius: 8px;
+    background-color: var(--bg-inset);
+    border: none;
+    border-radius: var(--radius-field);
+    box-shadow: var(--neu-in-soft);
     color: var(--fg);
-    padding: 0.55rem 0.85rem;
+    padding: 0.6rem 0.95rem;
     font-size: 0.9375rem;
     line-height: 1.45;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    transition: box-shadow 0.18s ease;
   }
   input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):focus,
   select:focus,
   textarea:focus {
     outline: none;
-    border-color: var(--ring);
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 18%, transparent);
+    box-shadow: var(--neu-in-soft), 0 0 0 3px color-mix(in oklab, var(--ring) 22%, transparent);
   }
   input::placeholder,
   textarea::placeholder {
@@ -190,44 +227,103 @@
 @layer utilities {
   /* Barre supérieure légère */
   .glass {
-    background-color: color-mix(in oklab, var(--bg-elevated) 92%, transparent);
-    backdrop-filter: saturate(180%) blur(12px);
-    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    background-color: color-mix(in oklab, var(--bg-elevated) 88%, transparent);
+    backdrop-filter: saturate(160%) blur(14px);
+    -webkit-backdrop-filter: saturate(160%) blur(14px);
+    box-shadow: 0 6px 18px rgba(163, 177, 198, 0.28);
   }
-  /* Accent texturé (ancien dégradé solaire → rose de la référence) */
+  /* Accent texturé vert menthe (dégradé primaire) */
   .text-solar {
-    background: linear-gradient(100deg, #e8548e 0%, #ee7aa7 45%, #e8548e 100%);
+    background: linear-gradient(100deg, #23c565 0%, #55e08c 45%, #23c565 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
-  /* Bloc de section gris plat — blocs « Informations / Options » de la capture */
+  /* Carte gaufrée — surface claire + ombres doubles */
   .card {
-    background-color: var(--bg-subtle);
+    background-color: var(--bg-elevated);
     border: none;
     border-radius: var(--radius-card);
     box-shadow: var(--card-shadow);
   }
   .card-interactive {
-    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    transition: box-shadow 0.22s ease, transform 0.22s ease;
   }
   .card-interactive:hover {
-    background-color: color-mix(in oklab, var(--bg-subtle) 92%, var(--fg));
     box-shadow: var(--card-shadow-hover);
+    transform: translateY(-1px);
   }
   .card-interactive:active {
     transform: scale(0.995);
+    box-shadow: var(--neu-in-soft);
   }
-  /* Titre de page — capture : capitales espacées + filet pointillé */
+  /* Surface en creux (pistes, panneaux internes) */
+  .neu-inset {
+    background-color: var(--bg-inset);
+    border-radius: var(--radius-card);
+    box-shadow: var(--neu-in);
+  }
+  /* Bouton pilule gaufré (secondaire : « CANCEL » de la maquette) */
+  .btn-neu {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: var(--radius-pill);
+    background-color: var(--bg-elevated);
+    box-shadow: var(--neu-out-soft);
+    color: var(--fg);
+    transition: box-shadow 0.18s ease, transform 0.18s ease;
+  }
+  .btn-neu:hover {
+    box-shadow: var(--neu-out);
+  }
+  .btn-neu:active {
+    transform: scale(0.98);
+    box-shadow: var(--neu-in-soft);
+  }
+  /* Bouton primaire dégradé vert (« TO BEGIN » de la maquette) */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: var(--radius-pill);
+    background: var(--gradient-primary);
+    color: #ffffff;
+    box-shadow: var(--neu-glow), var(--neu-out-soft);
+    transition: box-shadow 0.18s ease, transform 0.18s ease;
+  }
+  .btn-primary:hover {
+    box-shadow: 0 10px 26px rgba(36, 199, 103, 0.45), var(--neu-out-soft);
+  }
+  .btn-primary:active {
+    transform: scale(0.98);
+    box-shadow: 0 4px 12px rgba(36, 199, 103, 0.3), var(--neu-in-soft);
+  }
+  /* Pastille / chip (style boutons icônes de la maquette) */
+  .chip-neu {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background-color: var(--bg-elevated);
+    box-shadow: var(--neu-out-soft);
+  }
+  .chip-neu-active {
+    box-shadow: var(--neu-in-soft);
+  }
+  /* Titre de page — maquette : capitales espacées */
   .page-title {
     text-transform: uppercase;
-    letter-spacing: 0.14em;
-    font-weight: 300;
+    letter-spacing: 0.12em;
+    font-weight: 500;
     color: var(--fg);
   }
+  /* Filet de séparation discret (la maquette sépare par cartes, pas de pointillés) */
   .dotted-rule {
     border: none;
-    border-top: 2px dotted var(--border-strong);
+    border-top: 1px solid var(--border);
     margin: 0.85rem 0 1.35rem;
   }
   /* Squelette de chargement */
@@ -241,11 +337,12 @@
     background-size: 200% 100%;
     animation: var(--animate-shimmer);
   }
-  /* Barre de progression accessible */
+  /* Barre de progression — piste en creux, remplissage vert dégradé */
   .bar-track {
-    background-color: var(--bg-elevated);
-    border: 1px solid var(--border);
+    background-color: var(--bg-inset);
+    border: none;
     border-radius: 999px;
+    box-shadow: var(--neu-in-soft);
     overflow: hidden;
   }
   .no-scrollbar::-webkit-scrollbar { display: none; }

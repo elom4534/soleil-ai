@@ -44,7 +44,7 @@ export default async function HomePage() {
         <div
           aria-hidden="true"
           className="pointer-events-none absolute -top-24 -right-16 size-64 rounded-full opacity-[0.16] blur-3xl"
-          style={{ background: "radial-gradient(circle, #e8548e 0%, transparent 70%)" }}
+          style={{ background: "radial-gradient(circle, #24c767 0%, transparent 70%)" }}
         />
         <div className="relative">
           <div className="flex items-center gap-3">
