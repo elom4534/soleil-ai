@@ -14,7 +14,7 @@
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { generatePrediction, evaluatePredictions } from "@/server/engine";
-import { CONFIDENCE_THRESHOLDS, OUTCOME_SOURCE, ENGINE_VERSION } from "@/lib/constants";
+import { CONFIDENCE_THRESHOLDS, PREDICTOR_VERSION } from "@/lib/constants";
 import type { PredictionResult } from "@/server/engine/types";
 import { serializeView } from "./presenter";
 import { buildMatchContext } from "./context";
@@ -85,7 +85,7 @@ async function persistPrediction(matchId: string, result: PredictionResult): Pro
         matchId,
         // La provenance est écrite dans la ligne elle-même : on peut donc
         // toujours savoir avec quelle source de 1X2 elle a été produite.
-        modelVersion: `${ENGINE_VERSION}-${OUTCOME_SOURCE}-ensemble`,
+        modelVersion: PREDICTOR_VERSION,
         status: published ? "PUBLISHED" : "GENERATED",
         confidenceScore: result.confidence.score,
         dataQuality: result.dataQuality.grade,

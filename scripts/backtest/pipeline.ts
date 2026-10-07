@@ -34,6 +34,7 @@ import {
   type ModelContext,
 } from "../../src/server/engine/models";
 import { consensusLambdas, runEnsemble } from "../../src/server/engine/ensemble";
+import { calibrateOneXTwo } from "../../src/server/engine/calibration";
 import { consensusLambdasLab, runEnsembleLab } from "./ensemble-lab";
 import { halfSplitRatios } from "../../src/server/engine/ratings";
 import { teamGoalsDistribution } from "../../src/server/engine/math";
@@ -226,7 +227,7 @@ export function runPipeline(context: MatchContext, options: PipelineOptions = {}
     // `outcomes` = ce que publie le moteur (suit le commutateur §1, pour le
     // contrôle de fidélité). Les deux autres lectures sont toujours fournies,
     // ce qui permet de comparer les sources SANS changer de configuration.
-    outcomes: OUTCOME_SOURCE === "matrix" ? outcomeProbabilities(matrix) : ensemble.outcomes,
+    outcomes: calibrateOneXTwo(OUTCOME_SOURCE === "matrix" ? outcomeProbabilities(matrix) : ensemble.outcomes),
     consensusOutcomes: ensemble.outcomes,
     totals: TOTAL_LINES.map((line) => {
       const { over, under } = overUnderProbability(matrix, line);

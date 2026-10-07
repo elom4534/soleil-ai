@@ -5,7 +5,15 @@ export const APP_TAGLINE = "L'intelligence qui lit le football.";
 export const APP_SUBTITLE = "Analysez. Comprenez. Anticipez.";
 
 /** Version du moteur de prédiction — stockée avec chaque prédiction (§22). */
-export const ENGINE_VERSION = "1.0.0";
+export const ENGINE_VERSION = "1.0.1";
+
+/**
+ * Identité publiée des prédictions (Prediction.modelVersion).
+ * `1.0.1-calibrated` — Mission 26 : recalibration du 1X2 publié (calibrateur
+ * vectoriel, `src/server/engine/calibration.ts`). Rollback = réactiver
+ * `1.0.0-matrix-ensemble` sans toucher aux prédictions SETTLED (règle M17).
+ */
+export const PREDICTOR_VERSION = "1.0.1-calibrated";
 
 /**
  * §1 (Phase 15) — Origine du 1X2 publié.

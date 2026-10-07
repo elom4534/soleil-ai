@@ -38,7 +38,6 @@ import {
 } from "./math";
 import { buildModelContext, formModel, homeAwayModel, mlModel, poissonModel, shotsModel, statisticalModel, xgModel } from "./models";
 import { consensusLambdas, runEnsemble } from "./ensemble";
-import { calibrateOneXTwo } from "./calibration";
 import { assessDataQuality, computeConfidence, detectAnomalies } from "./quality";
 import { halfSplitRatios } from "./ratings";
 import { ENGINE_VERSION, OUTCOME_SOURCE } from "@/lib/constants";
@@ -118,14 +117,8 @@ export function generatePrediction(
   // lieu de dépendre de deux chemins de calcul distincts.
   // Le commutateur `OUTCOME_SOURCE` rétablit en une ligne le comportement
   // précédent si le backtest ne confirme pas le gain.
-  const rawPublishedOutcomes =
+  const publishedOutcomes =
     OUTCOME_SOURCE === "matrix" ? outcomeProbabilitiesFromMatrix : ensemble.outcomes;
-  // Mission 26 — recalibration du 1X2 PUBLIÉ (calibrateur vectoriel Phase 12,
-  // ajusté sur la série A, validé sur le hold-out B : décision C §21 de la
-  // Mission 25). Seul le 1X2 publié est recalibré : les autres marchés et le
-  // contrôle de cohérence matrice/consensus restent basés sur les valeurs
-  // brutes. Rollback : CALIBRATOR neutre (T=1, c=[1,1,1]).
-  const publishedOutcomes = calibrateOneXTwo(rawPublishedOutcomes);
   const consensusPick = pickOutcome(publishedOutcomes);
 
   const totalGoals = TOTAL_LINES.map((line) => {

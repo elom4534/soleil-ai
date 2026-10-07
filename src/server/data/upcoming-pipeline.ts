@@ -22,7 +22,7 @@
  */
 
 import { prisma } from "@/lib/prisma";
-import { CONFIDENCE_THRESHOLDS, ENGINE_VERSION, OUTCOME_SOURCE } from "@/lib/constants";
+import { CONFIDENCE_THRESHOLDS, PREDICTOR_VERSION } from "@/lib/constants";
 import { generateAndPersist } from "@/server/predictions/service";
 import { utcDayKey, utcDayBounds } from "@/server/schedule/window";
 import { teamSlug, resolveTeamId } from "./teams";
@@ -231,7 +231,20 @@ async function applyTeamIdentities(
 
     // 2 — slug canonique, puis 3 — similarité contrôlée.
     const slug = `slug:${teamSlug(team.providerName)}`;
-    const byCanonicalSlug = bySlug.get(slug) ?? byRelaxedKey.get(`slug:${relaxedTeamKey(team.providerName)}`) ?? null;
+    let byCanonicalSlug = bySlug.get(slug) ?? byRelaxedKey.get(`slug:${relaxedTeamKey(team.providerName)}`) ?? null;
+    // Jonction trans-compétitions (§12) : le slug canonique est unique en base.
+    // Une équipe déjà ingérée par une autre compétition (un club national
+    // rencontré en coupe d'Europe) ne figure pas dans `known`, borné à la
+    // compétition courante ; sans cette recherche, la création ci-dessous
+    // violerait l'unicité de `Team.externalId`.
+    if (!byCanonicalSlug) {
+      const globalMatch = await prisma.team.findUnique({ where: { externalId: slug } });
+      if (globalMatch) {
+        byCanonicalSlug = globalMatch;
+        known.push(globalMatch);
+        bySlug.set(globalMatch.externalId, globalMatch);
+      }
+    }
     const matched = byProviderRef ?? byCanonicalSlug;
     const resolvedId = matched
       ? matched.id
@@ -803,7 +816,7 @@ async function logSync(dataSourceId: string, report: DayReport, startedAt: Date,
 
 /** Version de moteur attendue dans `Prediction.modelVersion`. */
 function currentModelVersion(): string {
-  return `${ENGINE_VERSION}-${OUTCOME_SOURCE}-ensemble`;
+  return PREDICTOR_VERSION;
 }
 
 /* -------------------------------------------------------------------------- */
