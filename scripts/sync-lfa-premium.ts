@@ -37,7 +37,7 @@ async function main() {
 
   let inserted = 0;
   let updated = 0;
-  if (all || args.includes("--sync") || (!args.some((a) => a.startsWith("--")))) {
+  if (all || args.some((a) => a.startsWith("--sync")) || (!args.some((a) => a.startsWith("--")))) {
   console.log("1. Saisons courantes des compétitions prioritaires…");
   for (const code of Object.keys(LFA_LEAGUES)) {
     const s = await syncLfaLeague(code);
@@ -50,25 +50,25 @@ async function main() {
   console.log(`   → ${inserted} création(s), ${updated} mise(s) à jour\n`);
   }
 
-  if (all || args.includes("--discover")) {
+  if (all || args.some((a) => a.startsWith("--discover"))) {
     console.log("2. Découverte des jours à venir…");
     const disc = await discoverUpcoming(3);
     console.log(`   ${disc.reduce((a, s) => a + s.inserted + s.updated, 0)} match(s) traités\n`);
   }
 
-  if (all || args.includes("--stats")) {
+  if (all || args.some((a) => a.startsWith("--stats"))) {
   console.log("3. Statistiques détaillées des matchs récents…");
   const stats = await enrichRecentStats(statsDays, statsLimit);
   console.log(`   candidats=${stats.candidates} · enrichis=${stats.enriched} · crédits dépensés=${stats.creditsSpent}\n`);
   }
 
-  if (all || args.includes("--context")) {
+  if (all || args.some((a) => a.startsWith("--context"))) {
     console.log("4. Contexte des matchs à venir (H2H, blessures, compositions)…");
     const ctx = await refreshUpcomingContext(5, 18);
     console.log(`   matchs=${ctx.matches} · h2h=${ctx.withH2h} · blessures=${ctx.withInjuries}\n`);
   }
 
-  if (all || args.includes("--logos")) {
+  if (all || args.some((a) => a.startsWith("--logos"))) {
     console.log("5. Logos et identité des équipes…");
     const runs = Number(args.find((a) => a.startsWith("--logos="))?.split("=")[1] ?? 1);
     let done = 0;
