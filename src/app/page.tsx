@@ -3,7 +3,7 @@ import { ArrowRight, Database, ShieldCheck, Sparkles, Target, TrendingUp, AlertT
 import { APP_SUBTITLE, APP_TAGLINE, CONFIDENCE_THRESHOLDS } from "@/lib/constants";
 import { Card, CardBody, SectionHeader } from "@/components/ui/Card";
 import { MatchCard } from "@/components/match/MatchCard";
-import { SoleilMark } from "@/components/ui/Logo";
+import { BallMark } from "@/components/ui/Logo";
 import { pct } from "@/lib/utils";
 import { getPlatformStats, listLeagues } from "@/server/predictions/queries";
 import { listUpcomingPredictions, upcomingVisibilityReport } from "@/server/predictions/upcoming";
@@ -39,42 +39,42 @@ export default async function HomePage() {
   return (
     <div className="space-y-9">
       {/* ============================= HERO (§18) ============================= */}
-      <section className="relative overflow-hidden rounded-2xl bg-bg-subtle px-5 py-7 sm:px-8 sm:py-9">
+      <section className="relative overflow-hidden rounded-[22px] bg-gradient-to-br from-soleil-400 via-soleil-500 to-soleil-600 px-5 py-8 shadow-[0_12px_32px_rgba(36,199,103,0.35)] sm:px-8 sm:py-10">
         {/* Halo décoratif — purement CSS, aucun impact sur les performances */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -top-24 -right-16 size-64 rounded-full opacity-[0.16] blur-3xl"
-          style={{ background: "radial-gradient(circle, #24c767 0%, transparent 70%)" }}
+          className="pointer-events-none absolute -top-24 -right-16 size-64 rounded-full opacity-[0.22] blur-3xl"
+          style={{ background: "radial-gradient(circle, #ffffff 0%, transparent 70%)" }}
         />
         <div className="relative">
-          <div className="flex items-center gap-3">
-            <SoleilMark size={40} className="animate-[sun-pulse_4s_ease-in-out_infinite]" />
+          <div className="flex items-center gap-4">
+            <BallMark size={92} className="animate-[sun-pulse_4s_ease-in-out_infinite]" />
             <div>
-              <p className="text-[11px] font-semibold tracking-[0.22em] text-soleil-600 uppercase dark:text-soleil-400">
+              <p className="text-[11.5px] font-semibold tracking-[0.22em] text-white/85 uppercase">
                 Moteur d&apos;analyse footballistique
               </p>
-              <h1 className="text-[26px] leading-tight font-semibold tracking-tight text-fg sm:text-[34px]">
+              <h1 className="mt-1 text-[48px] leading-none font-extrabold tracking-[0.05em] text-white drop-shadow-[0_2px_10px_rgba(18,134,67,0.35)] sm:text-[72px]">
                 SOLEIL
               </h1>
             </div>
           </div>
 
-          <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-fg-muted sm:text-[17px]">
-            <span className="font-medium text-fg">{APP_TAGLINE}</span>
+          <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-white sm:text-[17px]">
+            <span className="font-semibold">{APP_TAGLINE}</span>
           </p>
-          <p className="mt-1.5 text-[13.5px] text-fg-subtle sm:text-[14.5px]">{APP_SUBTITLE}</p>
+          <p className="mt-1.5 text-[13.5px] text-white/75 sm:text-[14.5px]">{APP_SUBTITLE}</p>
 
           <div className="mt-6 flex flex-wrap items-center gap-2.5">
             <Link
               href="/matchs"
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-soleil-400 to-soleil-600 px-4 py-2.5 text-[13.5px] font-semibold text-white shadow-sm transition-transform active:scale-[0.98]"
+              className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-[13.5px] font-semibold text-soleil-700 shadow-[0_6px_16px_rgba(18,134,67,0.3)] transition-transform active:scale-[0.98]"
             >
               Explorer les prédictions
               <ArrowRight className="size-4" strokeWidth={2.4} />
             </Link>
             <Link
               href="/top-picks"
-              className="inline-flex items-center gap-2 rounded-xl border border-border-strong px-4 py-2.5 text-[13.5px] font-medium text-fg transition-colors hover:bg-bg-subtle"
+              className="inline-flex items-center gap-2 rounded-full border border-white/45 px-5 py-2.5 text-[13.5px] font-medium text-white transition-colors hover:bg-white/15"
             >
               Voir les Top Picks
             </Link>
@@ -290,9 +290,9 @@ export default async function HomePage() {
 function Stat({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
     <div>
-      <dt className="text-[11px] font-medium tracking-wide text-fg-subtle uppercase">{label}</dt>
-      <dd className="mt-0.5 font-mono text-[19px] font-semibold tabular-nums text-fg">{value}</dd>
-      {hint ? <dd className="text-[11.5px] text-soleil-600 dark:text-soleil-400">{hint}</dd> : null}
+      <dt className="text-[11px] font-medium tracking-wide text-white/70 uppercase">{label}</dt>
+      <dd className="mt-0.5 font-mono text-[19px] font-semibold tabular-nums text-white">{value}</dd>
+      {hint ? <dd className="text-[11.5px] text-white/85">{hint}</dd> : null}
     </div>
   );
 }
