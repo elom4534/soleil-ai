@@ -367,12 +367,24 @@ function rebuildFromColumns(prediction: MinimalPrediction): PredictionView | nul
       confidence: prediction.btts?.confidence ?? 0,
     },
     exactScore: {
-      mostLikely: topScores[0] ?? {
-        score: es?.mostLikelyScore ?? "—",
-        home: 0,
-        away: 0,
-        probability: es?.mostLikelyProb ?? 0,
-      },
+      // Mission 23 — le score suggéré est celui persisté par le moteur
+      // (sélection « top-k pondérée ») ; le premier du classement ne sert
+      // que de repli pour les anciennes prédictions.
+      mostLikely:
+        topScores.find((s) => s.score === es?.mostLikelyScore) ??
+        (es?.mostLikelyScore
+          ? {
+              score: es.mostLikelyScore,
+              home: Number(es.mostLikelyScore.split("-")[0]) || 0,
+              away: Number(es.mostLikelyScore.split("-")[1]) || 0,
+              probability: es.mostLikelyProb ?? 0,
+            }
+          : topScores[0] ?? {
+              score: "—",
+              home: 0,
+              away: 0,
+              probability: 0,
+            }),
       top: topScores,
       disclaimer:
         "Le score exact est intrinsèquement plus incertain que les marchés agrégés. " +

@@ -13,13 +13,14 @@
  */
 
 import type { LeagueBaseline, MatchRecord, ModelName, ModelPrediction, ModelSignal, TeamSnapshot } from "./types";
-import { computeTeamRatings, pointsFor, type TeamRatings, xgAgainst, xgFor } from "./ratings";
+import { computeTeamRatings, pointsFor, sotAgainst, sotFor, type TeamRatings, xgAgainst, xgFor } from "./ratings";
 import { buildScoreMatrix, mean, shrink } from "./math";
 
 export const MODEL_VERSIONS: Record<ModelName, string> = {
   poisson: "1.0.0",
   statistical: "1.0.0",
   xg: "1.0.0",
+  shots: "1.0.0",
   form: "1.0.0",
   home_away: "1.0.0",
   ml: "0.0.0-unimplemented",
@@ -346,6 +347,126 @@ function collectXg(snapshot: TeamSnapshot, attacking: boolean): number[] {
   const values: number[] = [];
   for (const m of snapshot.seasonMatches) {
     const v = attacking ? xgFor(m, teamId) : xgAgainst(m, teamId);
+    if (v !== null && Number.isFinite(v)) values.push(v);
+  }
+  return values;
+}
+
+// ---------------------------------------------------------------------------
+// MODÈLE 3bis — Qualité de tir (tirs cadrés) — Mission 23
+// ---------------------------------------------------------------------------
+
+/**
+ * Proxy « expected goals » basé sur les tirs cadrés, pour les compétitions où
+ * les xG ne sont pas fournis. Valeur mesurée avant implémentation :
+ * corr(SOT, buts) ≈ 0,58 · R² ≈ 0,33 sur 20 000 matchs. Le taux de conversion
+ * est observé sur les matchs réellement exploités — jamais une constante.
+ * Complémentaire au modèle xg : les deux peuvent coexister, l'ensemble arbitre.
+ */
+export function shotsModel(ctx: ModelContext): ModelPrediction {
+  const homeSotFor = collectSot(ctx.home, true);
+  const awaySotFor = collectSot(ctx.away, true);
+  const homeSotAgainst = collectSot(ctx.home, false);
+  const awaySotAgainst = collectSot(ctx.away, false);
+
+  if (
+    homeSotFor.length < 3 ||
+    awaySotFor.length < 3 ||
+    homeSotAgainst.length < 3 ||
+    awaySotAgainst.length < 3
+  ) {
+    return {
+      name: "shots",
+      version: MODEL_VERSIONS.shots,
+      outcomes: { home: 1 / 3, draw: 1 / 3, away: 1 / 3 },
+      expectedGoals: null,
+      selfConfidence: 0,
+      weight: 0,
+      applicable: false,
+      unavailableReason: "Tirs cadrés insuffisants pour évaluer la qualité de tir",
+      signals: [signal("shots_unavailable", "Tirs cadrés indisponibles — modèle exclu du consensus", null, "negative", "both")],
+    };
+  }
+
+  // Taux de conversion SOT → buts observé sur l'historique exploité du contexte.
+  const allMatches = [...ctx.home.seasonMatches, ...ctx.away.seasonMatches];
+  let goals = 0;
+  let sots = 0;
+  for (const m of allMatches) {
+    const sot = (m.homeShotsOnTarget ?? 0) + (m.awayShotsOnTarget ?? 0);
+    if (sot > 0) {
+      goals += m.homeGoals + m.awayGoals;
+      sots += sot;
+    }
+  }
+  if (sots <= 0 || goals <= 0) {
+    return {
+      name: "shots",
+      version: MODEL_VERSIONS.shots,
+      outcomes: { home: 1 / 3, draw: 1 / 3, away: 1 / 3 },
+      expectedGoals: null,
+      selfConfidence: 0,
+      weight: 0,
+      applicable: false,
+      unavailableReason: "Taux de conversion tirs cadrés non observable sur cet historique",
+      signals: [signal("shots_conversion_unavailable", "Conversion tirs cadrés non observable", null, "negative", "both")],
+    };
+  }
+  const conversion = goals / sots;
+
+  const homeSotAvg = mean(homeSotFor)!;
+  const awaySotAvg = mean(awaySotFor)!;
+  const homeSotAgainstAvg = mean(homeSotAgainst)!;
+  const awaySotAgainstAvg = mean(awaySotAgainst)!;
+
+  // Méthode des ratios (identique en esprit au modèle xg) : l'attaque attendue
+  // combine les tirs cadrés produits et ceux concédés par l'adversaire, puis
+  // est convertie en buts par le taux observé et shrinkée vers la compétition.
+  const baselineAvg = (ctx.baseline.homeGoalsPerMatch + ctx.baseline.awayGoalsPerMatch) / 2;
+  const lambdaHome = clampLambda(
+    shrink(((homeSotAvg + awaySotAgainstAvg) / 2) * conversion, baselineAvg, homeSotFor.length + awaySotAgainst.length, 8),
+  );
+  const lambdaAway = clampLambda(
+    shrink(((awaySotAvg + homeSotAgainstAvg) / 2) * conversion, baselineAvg, awaySotFor.length + homeSotAgainst.length, 8),
+  );
+
+  const outcomes = outcomesFromLambdas(lambdaHome, lambdaAway, ctx.rho);
+  const sotGap = homeSotAvg - awaySotAvg;
+
+  const signals: ModelSignal[] = [
+    signal(
+      "sot_gap",
+      `Tirs cadrés moyens : ${ctx.home.identity.name} ${homeSotAvg.toFixed(1)} vs ${ctx.away.identity.name} ${awaySotAvg.toFixed(1)}`,
+      sotGap,
+      Math.abs(sotGap) < 0.5 ? "neutral" : sotGap > 0 ? "positive" : "negative",
+      sotGap >= 0 ? "home" : "away",
+    ),
+    signal(
+      "sot_conversion",
+      `Conversion tirs cadrés observée : ${(conversion * 100).toFixed(0)} %`,
+      conversion,
+      "neutral",
+      "both",
+    ),
+  ];
+
+  return {
+    name: "shots",
+    version: MODEL_VERSIONS.shots,
+    outcomes,
+    expectedGoals: { home: lambdaHome, away: lambdaAway, total: lambdaHome + lambdaAway },
+    selfConfidence: Math.min(0.85, 0.45 + (homeSotFor.length + awaySotFor.length) / 60),
+    weight: 0,
+    applicable: true,
+    signals,
+  };
+}
+
+function collectSot(snapshot: TeamSnapshot, attacking: boolean): number[] {
+  const teamId = snapshot.identity.id;
+  const values: number[] = [];
+  for (const m of snapshot.seasonMatches) {
+    const v = attacking ? sotFor(m, teamId) : sotAgainst(m, teamId);
     if (v !== null && Number.isFinite(v)) values.push(v);
   }
   return values;

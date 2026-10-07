@@ -122,6 +122,7 @@ export type ModelName =
   | "poisson"
   | "statistical"
   | "xg"
+  | "shots"
   | "form"
   | "home_away"
   | "ml"

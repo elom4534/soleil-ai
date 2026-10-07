@@ -69,13 +69,24 @@ export function xgAgainst(match: MatchRecord, teamId: string): number | null {
   return match.homeXg;
 }
 
+/** Tirs cadrés de l'équipe dans un match, `null` si la source ne les fournit pas. */
+export function sotFor(match: MatchRecord, teamId: string): number | null {
+  if (match.homeTeamId === teamId) return match.homeShotsOnTarget;
+  return match.awayShotsOnTarget;
+}
+/** Tirs cadrés encaissés par l'équipe dans un match. */
+export function sotAgainst(match: MatchRecord, teamId: string): number | null {
+  if (match.homeTeamId === teamId) return match.awayShotsOnTarget;
+  return match.homeShotsOnTarget;
+}
+
 /** Résultat du match du point de vue de `teamId`. */
 export function matchOutcome(match: MatchRecord, teamId: string): "WIN" | "DRAW" | "LOSS" {
   const gf = goalsFor(match, teamId);
   const ga = goalsAgainst(match, teamId);
   if (gf > ga) return "WIN";
-  if (gf < ga) return "DRAW";
-  return "LOSS";
+  if (gf < ga) return "LOSS";
+  return "DRAW";
 }
 
 export function pointsFor(match: MatchRecord, teamId: string): number {

@@ -198,14 +198,24 @@ function checkExactScore(view: PredictionView, report: CoherenceReport) {
   const top = view.exactScore.top ?? [];
   if (top.length === 0) return;
 
-  // 1 — Le score « le plus probable » doit être le premier du classement.
+  // 1 — Mission 23 : le score suggéré (« top-k pondéré ») doit figurer au
+  // classement et rester dans le plateau des scores probables (≥ 92 % du max).
   const first = top[0];
-  if (first && view.exactScore.mostLikely.score !== first.score) {
+  const entry = top.find((s) => s.score === view.exactScore.mostLikely.score);
+  if (first && !entry) {
     report.critical.push({
       code: "exactScore.mostLikely",
       severity: "critical",
       label: "Score le plus probable incohérent",
-      detail: `« ${view.exactScore.mostLikely.score} » annoncé alors que le classement commence par « ${first.score} »`,
+      detail: `« ${view.exactScore.mostLikely.score} » annoncé alors qu'il ne figure pas au classement (« ${first.score} » en tête)`,
+      deviation: 0,
+    });
+  } else if (first && entry && entry.probability < first.probability * 0.92 - DERIVED_TOLERANCE) {
+    report.critical.push({
+      code: "exactScore.mostLikely",
+      severity: "critical",
+      label: "Score le plus probable incohérent",
+      detail: `« ${view.exactScore.mostLikely.score} » hors du plateau des scores probables (max « ${first.score} »)`,
       deviation: 0,
     });
   }

@@ -36,7 +36,7 @@ import {
   teamGoalsDistribution,
   totalGoalsDistribution,
 } from "./math";
-import { buildModelContext, formModel, homeAwayModel, mlModel, poissonModel, statisticalModel, xgModel } from "./models";
+import { buildModelContext, formModel, homeAwayModel, mlModel, poissonModel, shotsModel, statisticalModel, xgModel } from "./models";
 import { consensusLambdas, runEnsemble } from "./ensemble";
 import { assessDataQuality, computeConfidence, detectAnomalies } from "./quality";
 import { halfSplitRatios } from "./ratings";
@@ -79,6 +79,7 @@ export function generatePrediction(
     poissonModel(ctx),
     statisticalModel(ctx),
     xgModel(ctx),
+    shotsModel(ctx),
     homeAwayModel(ctx),
     formModel(ctx),
     ...(includeMlModel ? [mlModel()] : []),
@@ -155,6 +156,14 @@ export function generatePrediction(
     away: s.away,
     probability: s.probability,
   }));
+
+  // §1 — Sélection du score suggéré (Mission 23, « top-k pondéré »).
+  // Les probabilités de la matrice ne sont jamais modifiées : quand plusieurs
+  // scores forment un plateau de probabilités quasi équivalentes, le score
+  // retenu est celui dont les buts sont les plus proches des intensités du
+  // match (λD, λA). Cela différencie les profils de rencontre sans toucher à
+  // la distribution (cf. mesure Brier avant/après).
+  const mostLikelyEntry = pickMostLikely(exactScoreEntries, lambdaHome, lambdaAway, consensusPick);
 
   const goalsDistribution = totalGoalsDistribution(matrix, 5).map((probability, goals) => ({
     goals: goals === 5 ? -1 : goals, // -1 : sentinelle « 5+ »
@@ -235,7 +244,7 @@ export function generatePrediction(
     confidence: confidence.score,
     agreement: ensemble.agreement,
     bttsYes: bttsProbs.yes,
-    topScore: exactScoreEntries[0],
+    topScore: mostLikelyEntry,
     publishable,
     blocking,
   });
@@ -262,7 +271,7 @@ export function generatePrediction(
       halfTime,
       bothTeamsToScore: btts,
       exactScore: {
-        mostLikely: exactScoreEntries[0],
+        mostLikely: mostLikelyEntry,
         top: exactScoreEntries,
         disclaimer:
           "Le score exact est intrinsèquement plus incertain que les marchés agrégés. " +
@@ -418,6 +427,50 @@ function halfBlock(matrix: number[][], expected: number) {
     overUnder,
     probAtLeastOneGoal: overUnderProbability(matrix, 0.5).over,
   };
+}
+
+/**
+ * Sélection « top-k pondérée » du score suggéré (Mission 23).
+ *
+ * 1. Plateau : scores à probabilités quasi équivalentes (≥ 92 % du max).
+ * 2. Cohérence : on retient d'abord les scores du plateau situés du bon côté
+ *    de l'issue publiée (un score suggéré ne contredit pas le 1X2).
+ * 3. Tie-break : entre candidats, le score dont les buts sont les plus proches
+ *    des intensités (λD, λA) du match.
+ * Aucune probabilité n'est modifiée : seul le score mis en avant change.
+ */
+function pickMostLikely(
+  entries: ExactScoreEntry[],
+  lambdaHome: number,
+  lambdaAway: number,
+  pick: Outcome,
+): ExactScoreEntry {
+  const first = entries[0];
+  if (!first) return first;
+  const isConsistent = (e: ExactScoreEntry) => {
+    const [h, a] = e.score.split("-").map(Number);
+    return pick === "HOME_WIN" ? h > a : pick === "AWAY_WIN" ? h < a : h === a;
+  };
+  const maxP = first.probability;
+  const plateau = entries.filter((e) => e.probability >= maxP * 0.92);
+  // 1 — candidats cohérents avec l'issue dans le plateau ; sinon le plateau.
+  // Le score suggéré reste ainsi TOUJOURS dans le plateau des scores probables
+  // (règle de cohérence d'affichage).
+  const consistent = plateau.filter(isConsistent);
+  const pool = consistent.length > 0 ? consistent : plateau;
+  if (pool.length === 1) return pool[0];
+  // 2 — tie-break : le plus proche des intensités (λD, λA) du match.
+  let best = pool[0];
+  let bestDist = Number.POSITIVE_INFINITY;
+  for (const e of pool) {
+    const [h, a] = e.score.split("-").map(Number);
+    const dist = Math.abs(h - lambdaHome) + Math.abs(a - lambdaAway);
+    if (dist < bestDist) {
+      bestDist = dist;
+      best = e;
+    }
+  }
+  return best;
 }
 
 /** Décide si une prédiction peut être publiée, et pourquoi sinon (§15). */

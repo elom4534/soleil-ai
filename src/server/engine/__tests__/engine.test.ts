@@ -157,7 +157,27 @@ describe("Générateur de prédiction", () => {
     const { mostLikely, top, disclaimer } = result.markets.exactScore;
 
     assert.ok(top.length > 0);
-    assert.equal(mostLikely.score, top[0].score);
+    // Mission 23 — le score suggéré appartient au plateau des scores probables
+    // et ne contredit jamais l'issue publiée.
+    assert.ok(top.some((s) => s.score === mostLikely.score), "mostLikely doit figurer dans le top");
+    const [mh, ma] = mostLikely.score.split("-").map(Number);
+    // Si le plateau des scores probables contient un score cohérent avec
+    // l'issue, le score suggéré en est un (règle « top-k pondérée »).
+    const maxP = top[0].probability;
+    const plateau = top.filter((s) => s.probability >= maxP * 0.92);
+    const consistentExists = plateau.some((s) => {
+      const [h, a] = s.score.split("-").map(Number);
+      return result.consensusPick === "HOME_WIN" ? h > a : result.consensusPick === "AWAY_WIN" ? h < a : h === a;
+    });
+    if (consistentExists) {
+      if (result.consensusPick === "HOME_WIN") assert.ok(mh > ma, "score doit être du côté domicile");
+      else if (result.consensusPick === "AWAY_WIN") assert.ok(mh < ma, "score doit être du côté extérieur");
+      else assert.equal(mh, ma, "score doit être un nul");
+    }
+    assert.ok(
+      mostLikely.probability >= top[0].probability * 0.92,
+      "mostLikely doit appartenir au plateau de probabilités (≥ 92 % du max)",
+    );
     assert.ok(mostLikely.probability < 0.5, "aucun score exact ne peut être majoritaire");
     assert.ok(top.every((s) => s.probability > 0));
 

@@ -29,6 +29,7 @@ import {
   formModel,
   homeAwayModel,
   poissonModel,
+  shotsModel,
   statisticalModel,
   type ModelContext,
 } from "../../src/server/engine/models";
@@ -201,6 +202,7 @@ export function runPipeline(context: MatchContext, options: PipelineOptions = {}
     poissonModel(ctx),
     statisticalModel(ctx),
     xgPart,
+    shotsModel(ctx),
     homeAwayModel(ctx),
     formModel(ctx),
   ];

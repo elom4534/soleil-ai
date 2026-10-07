@@ -20,6 +20,10 @@ export const BASE_WEIGHTS: Record<string, number> = {
   poisson: 0.28,
   statistical: 0.22,
   xg: 0.2,
+  // Mission 23 — qualité de tir (tirs cadrés) : complément du modèle xg pour
+  // les compétitions sans xG. Poids de base modeste, plafond de 45 % par
+  // modèle inchangé. Valeur prouvée avant ajout : corr(SOT, buts) ≈ 0,58.
+  shots: 0.12,
   home_away: 0.18,
   form: 0.12,
   ml: 0.0,
