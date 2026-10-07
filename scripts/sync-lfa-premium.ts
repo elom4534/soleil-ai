@@ -35,9 +35,10 @@ async function main() {
 
   console.log("═══ SOLEIL — synchronisation premium (Live Football API) ═══\n");
 
-  console.log("1. Saisons courantes des compétitions prioritaires…");
   let inserted = 0;
   let updated = 0;
+  if (all || args.includes("--sync") || (!args.some((a) => a.startsWith("--")))) {
+  console.log("1. Saisons courantes des compétitions prioritaires…");
   for (const code of Object.keys(LFA_LEAGUES)) {
     const s = await syncLfaLeague(code);
     inserted += s.inserted;
@@ -47,6 +48,7 @@ async function main() {
     );
   }
   console.log(`   → ${inserted} création(s), ${updated} mise(s) à jour\n`);
+  }
 
   if (all || args.includes("--discover")) {
     console.log("2. Découverte des jours à venir…");
@@ -54,9 +56,11 @@ async function main() {
     console.log(`   ${disc.reduce((a, s) => a + s.inserted + s.updated, 0)} match(s) traités\n`);
   }
 
+  if (all || args.includes("--stats")) {
   console.log("3. Statistiques détaillées des matchs récents…");
   const stats = await enrichRecentStats(statsDays, statsLimit);
   console.log(`   candidats=${stats.candidates} · enrichis=${stats.enriched} · crédits dépensés=${stats.creditsSpent}\n`);
+  }
 
   if (all || args.includes("--context")) {
     console.log("4. Contexte des matchs à venir (H2H, blessures, compositions)…");
