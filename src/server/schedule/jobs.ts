@@ -355,18 +355,26 @@ export const lfaPremiumJob: JobDefinition = {
   label: "Alimentation premium (Live Football API)",
   purpose:
     "Synchronise la saison courante (résultats récents + à venir) des compétitions prioritaires depuis " +
-    "Live Football API, enrichit les matchs récents en statistiques détaillées, les équipes en logos " +
-    "et les matchs à venir en contexte actuel (H2H, blessures, compositions).",
+    "Live Football API, enrichit les matchs récents en statistiques détaillées et en xG, complète " +
+    "arbitre et lieu, et associe leurs logos aux équipes. Le contexte des matchs à venir (H2H, " +
+    "blessures, compositions) est désactivé par défaut : son cache n'a aucun lecteur.",
   // Avant la tâche gratuite (6h15) : si celle-ci réussit, la suivante est
   // idempotente et n'ajoute rien.
   schedule: "0 6 * * *",
   usesNetwork: true,
+  // Chiffre PLAFOND : le client LFA refuse tout appel au-delà de
+  // `SOLEIL_API_DAILY_BUDGET`. En régime établi (retard xG résorbé, logos
+  // complets), la consommation réelle retombe à environ 25 crédits/jour.
   estimatedCredits: 260,
 
   async handler(ctx) {
     const { syncLfaLeague, enrichRecentStats, refreshUpcomingContext, discoverUpcoming, syncTeamLogos } =
       await import("@/server/data/lfaPremium");
+    const { lfaCreditsToday, lfaDailyBudget, lfaBudgetRefusals } = await import(
+      "@/server/data/providers/liveFootballApiV1"
+    );
     const leagues = Object.keys((await import("@/server/data/lfaPremium")).LFA_LEAGUES);
+    ctx.log(`[premium] plafond du jour : ${lfaDailyBudget()} crédit(s) · déjà dépensés : ${lfaCreditsToday()}`);
     const syncs = [];
     for (const code of leagues) {
       const s = await syncLfaLeague(code, ctx.now);
@@ -374,18 +382,49 @@ export const lfaPremiumJob: JobDefinition = {
       ctx.log(`[premium] ${code} : ${s.received} reçus, ${s.inserted} créés, ${s.updated} mis à jour`);
     }
     const discovery = await discoverUpcoming(3);
-    const stats = await enrichRecentStats(45, 90);
-    const context = await refreshUpcomingContext(5, 18);
+    // Fenêtre 90 jours et lot 400 : le plafond quotidien arrête la boucle, et le
+    // retard xG accumulé (0 xG sur 771 matchs au 2026-10-09) se résorbe de lui-
+    // même, les matchs les plus récents étant servis en premier.
+    const stats = await enrichRecentStats(90, 400);
+    if (stats.errors.length > 0) {
+      ctx.log(
+        `[premium] ${stats.errors.length} match(s) sans détail renvoyé (erreur fournisseur ou plafond atteint).`,
+      );
+    }
+    // `stats-cache/lfa-context.ndjson` n'a AUCUN lecteur dans le dépôt : il est
+    // seulement écrit par `appendContextCache`. Chaque match y coûte 3 crédits
+    // (H2H + blessures + compositions) pour un bénéfice nul, et le moteur calcule
+    // déjà le H2H depuis la base. Désactivé par défaut, réactivable par
+    // `SOLEIL_LFA_CONTEXT_MATCHES` sans redéploiement.
+    const contextLimit = Number(process.env.SOLEIL_LFA_CONTEXT_MATCHES ?? 0);
+    const context =
+      contextLimit > 0
+        ? await refreshUpcomingContext(Number(process.env.SOLEIL_LFA_CONTEXT_DAYS ?? 5), contextLimit)
+        : { matches: 0, withH2h: 0, withInjuries: 0, creditsSpent: 0 };
     const logos = await syncTeamLogos(120);
+    // `lfaCreditsSpent()` est un compteur global : l'additionner entre étapes le
+    // comptait deux fois. Le chiffre du jour fait foi.
+    const credits = lfaCreditsToday();
+    const refusals = lfaBudgetRefusals();
+    if (refusals > 0) {
+      ctx.log(`[premium] ${refusals} appel(s) refusé(s) par le plafond quotidien de ${lfaDailyBudget()} crédit(s).`);
+    }
     const errors = [...syncs, ...discovery].flatMap((s) => s.errors);
     return {
       ok: errors.length === 0,
       summary:
         `${syncs.reduce((a, s) => a + s.inserted + s.updated, 0)} match(s) synchronisés, ` +
-        `${stats.enriched} enrichi(s) en statistiques, ${context.withInjuries} contexte(s) de blessures, ` +
-        `${logos.updated} logo(s), ${stats.creditsSpent + context.creditsSpent} crédits`,
-      creditsSpent: stats.creditsSpent + context.creditsSpent,
-      details: { syncs: syncs.map((s) => ({ league: s.league, inserted: s.inserted, updated: s.updated })), stats, context, logos },
+        `${stats.enriched} enrichi(s) dont ${stats.withXg} avec xG et ${stats.withIdentity} arbitre/lieu complété(s), ` +
+        `${context.withInjuries} contexte(s) de blessures, ${logos.updated} logo(s), ` +
+        `${credits}/${lfaDailyBudget()} crédits du jour`,
+      creditsSpent: credits,
+      details: {
+        syncs: syncs.map((s) => ({ league: s.league, inserted: s.inserted, updated: s.updated })),
+        stats: { ...stats, errors: stats.errors.slice(0, 20) },
+        context,
+        logos,
+        budget: { daily: lfaDailyBudget(), spent: credits, refusals },
+      },
     };
   },
 };

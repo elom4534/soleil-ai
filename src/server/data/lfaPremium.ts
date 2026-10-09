@@ -32,6 +32,7 @@ import {
   lfaInjuries,
   lfaLineups,
   lfaCreditsSpent,
+  lfaBudgetExhausted,
   lfaStatusToInternal,
   num,
   type LfaMatch,
@@ -155,21 +156,33 @@ export async function syncLfaLeague(competitionCode: string, now = new Date()): 
 // Stats détaillées (xG, tirs, corners, possession…) des matchs récents
 // ---------------------------------------------------------------------------
 
-function parseStat(stats: LfaStatLine[], ...labels: string[]): number | null {
-  for (const s of stats) {
-    const l = s.label.toLowerCase();
-    if (labels.some((want) => l === want || l.includes(want))) {
-      const h = num(s.home);
-      if (h !== null) return h;
-    }
+/**
+ * Retrouve une paire domicile/extérieur dans les lignes de statistiques.
+ *
+ * Appariement **exact d'abord**, sous-chaîne ensuite : sans cette priorité,
+ * « shots » capturait aussi « Shots on Target » et « Blocked Shots », et
+ * « red card » capturait « Direct Red Card » — au gré de l'ordre renvoyé par le
+ * fournisseur. `exclude` écarte les libellés voisins qui contiennent le motif
+ * sans le désigner (ex. « xG from Set Pieces » ne doit jamais être pris pour
+ * le xG total du match) : à défaut de donnée sûre, on renvoie `null`.
+ */
+export function parsePair(
+  stats: LfaStatLine[],
+  labels: string[],
+  exclude: string[] = [],
+): [number | null, number | null] {
+  const wanted = labels.map((l) => l.toLowerCase().trim());
+  const rejected = exclude.map((l) => l.toLowerCase().trim());
+  const usable = stats.filter((s) => {
+    const l = s.label.toLowerCase().trim();
+    return !rejected.some((bad) => l.includes(bad));
+  });
+  for (const s of usable) {
+    if (wanted.includes(s.label.toLowerCase().trim())) return [num(s.home), num(s.away)];
   }
-  return null;
-}
-
-function parsePair(stats: LfaStatLine[], labels: string[]): [number | null, number | null] {
-  for (const s of stats) {
-    const l = s.label.toLowerCase();
-    if (labels.some((want) => l === want || l.includes(want))) return [num(s.home), num(s.away)];
+  for (const s of usable) {
+    const l = s.label.toLowerCase().trim();
+    if (wanted.some((want) => l.includes(want))) return [num(s.home), num(s.away)];
   }
   return [null, null];
 }
@@ -177,69 +190,129 @@ function parsePair(stats: LfaStatLine[], labels: string[]): [number | null, numb
 export interface EnrichSummary {
   candidates: number;
   enriched: number;
+  /** Matchs pour lesquels le fournisseur a publié un xG exploitable. */
+  withXg: number;
+  /** Matchs dont l'arbitre ou le lieu a été complété (champ vide au départ). */
+  withIdentity: number;
   errors: string[];
   creditsSpent: number;
 }
 
-/** Enrichit les matchs TERMINÉS récents sans statistiques détaillées. */
+/**
+ * Marqueur d'idempotence : ce match a déjà été interrogé via
+ * `/live_match_details`. Sans lui, un match dont le fournisseur ne publie pas
+ * de xG serait racheté chaque jour, indéfiniment.
+ */
+const XG_CHECKED = "lfa:xg-checked";
+
+/**
+ * Enrichit les matchs TERMINÉS récents : statistiques détaillées, **xG**,
+ * cartons rouges, arbitre et lieu.
+ *
+ * Sont éligibles les matchs sans `MatchLiveData` **et** ceux dont les
+ * statistiques existent mais sans xG : cette seconde population a déjà été
+ * achetée une fois, à l'époque où le xG renvoyé par le fournisseur était jeté
+ * (272 matchs concernés en production au 2026-10-09).
+ *
+ * Le marqueur `lfa:xg-checked` rend l'opération idempotente — un match sans xG
+ * publié n'est jamais racheté. Aucune valeur `null` n'écrase une donnée déjà en
+ * base, et arbitre/lieu ne sont posés que si le champ est vide : jamais
+ * d'écrasement d'une autre source, jamais d'invention.
+ */
 export async function enrichRecentStats(days = 45, limit = 120): Promise<EnrichSummary> {
   const since = new Date(Date.now() - days * 86_400_000);
   const candidates = await prisma.match.findMany({
     where: {
       status: "FINISHED",
       utcDate: { gte: since },
-      liveData: null,
       dataSources: { has: "lfa" },
+      NOT: { dataSources: { has: XG_CHECKED } },
+      OR: [{ liveData: null }, { liveData: { is: { homeXg: null } } }],
     },
     orderBy: { utcDate: "desc" },
     take: limit,
     select: { id: true, externalId: true, homeTeamId: true, awayTeamId: true },
   });
-  const summary: EnrichSummary = { candidates: candidates.length, enriched: 0, errors: [], creditsSpent: 0 };
+  const summary: EnrichSummary = {
+    candidates: candidates.length,
+    enriched: 0,
+    withXg: 0,
+    withIdentity: 0,
+    errors: [],
+    creditsSpent: 0,
+  };
   for (const m of candidates) {
     // `externalId` du match = identifiant LFA (posé à l'ingestion).
     const details = await lfaMatchStats(m.externalId);
-    if (!details || details.stats.length === 0) continue;
-    const [homeShots, awayShots] = parsePair(details.stats, ["shots", "total shots"]);
+    if (!details) {
+      summary.errors.push(`${m.externalId} : aucun détail renvoyé`);
+      // Plafond quotidien atteint : inutile de parcourir les candidats restants,
+      // chaque appel serait refusé. On reprendra demain.
+      if (lfaBudgetExhausted()) break;
+      continue;
+    }
+    const [homeShots, awayShots] = parsePair(
+      details.stats,
+      ["total shots", "shots"],
+      ["on target", "off target", "blocked", "woodwork"],
+    );
     const [homeSot, awaySot] = parsePair(details.stats, ["shots on target"]);
     const [homeCorners, awayCorners] = parsePair(details.stats, ["corners"]);
-    const [homeYellow, awayYellow] = parsePair(details.stats, ["yellow", "yellow cards"]);
+    const [homeYellow, awayYellow] = parsePair(details.stats, ["yellow cards", "yellow"], ["second"]);
     const [homePoss, awayPoss] = parsePair(details.stats, ["possession"]);
-    await prisma.matchLiveData.upsert({
-      where: { matchId: m.id },
-      create: {
-        matchId: m.id,
-        homeShots,
-        awayShots,
-        homeShotsOnTarget: homeSot,
-        awayShotsOnTarget: awaySot,
-        homeCorners,
-        awayCorners,
-        homeYellowCards: homeYellow,
-        awayYellowCards: awayYellow,
-        homePossession: homePoss,
-        awayPossession: awayPoss,
-      },
-      update: {
-        homeShots,
-        awayShots,
-        homeShotsOnTarget: homeSot,
-        awayShotsOnTarget: awaySot,
-        homeCorners,
-        awayCorners,
-        homeYellowCards: homeYellow,
-        awayYellowCards: awayYellow,
-        homePossession: homePoss,
-        awayPossession: awayPoss,
-      },
-    });
-    summary.enriched += 1;
-    if (details.referee || details.venue) {
-      // Traçabilité (additif — jamais d'écrasement d'une source existante).
-      const row = await prisma.match.findUnique({ where: { id: m.id }, select: { dataSources: true } });
-      const sources: string[] = Array.isArray(row?.dataSources) ? (row!.dataSources as string[]) : [];
-      if (!sources.includes("lfa:details")) await prisma.match.update({ where: { id: m.id }, data: { dataSources: [...sources, "lfa:details"] } });
+    const [homeRed, awayRed] = parsePair(details.stats, ["red cards", "red card"], ["second yellow", "direct"]);
+    // xG total du match. « xG from Set Pieces » et toute variante partielle sont
+    // explicitement écartées : mieux vaut `null` qu'une fraction prise pour le tout.
+    const [homeXg, awayXg] = parsePair(details.stats, ["expected goals (xg)", "expected goals"], [
+      "set piece",
+      "half",
+      "penalt",
+    ]);
+
+    const livePatch = {
+      ...(homeShots !== null ? { homeShots } : {}),
+      ...(awayShots !== null ? { awayShots } : {}),
+      ...(homeSot !== null ? { homeShotsOnTarget: homeSot } : {}),
+      ...(awaySot !== null ? { awayShotsOnTarget: awaySot } : {}),
+      ...(homeCorners !== null ? { homeCorners } : {}),
+      ...(awayCorners !== null ? { awayCorners } : {}),
+      ...(homeYellow !== null ? { homeYellowCards: homeYellow } : {}),
+      ...(awayYellow !== null ? { awayYellowCards: awayYellow } : {}),
+      ...(homeRed !== null ? { homeRedCards: homeRed } : {}),
+      ...(awayRed !== null ? { awayRedCards: awayRed } : {}),
+      ...(homePoss !== null ? { homePossession: homePoss } : {}),
+      ...(awayPoss !== null ? { awayPossession: awayPoss } : {}),
+      ...(homeXg !== null ? { homeXg } : {}),
+      ...(awayXg !== null ? { awayXg } : {}),
+    };
+    if (Object.keys(livePatch).length > 0) {
+      await prisma.matchLiveData.upsert({
+        where: { matchId: m.id },
+        create: { matchId: m.id, ...livePatch },
+        update: livePatch,
+      });
+      summary.enriched += 1;
+      if (homeXg !== null && awayXg !== null) summary.withXg += 1;
     }
+
+    // Arbitre + lieu : remplissage des champs VIDES uniquement, puis marquage.
+    const row = await prisma.match.findUnique({
+      where: { id: m.id },
+      select: { dataSources: true, referee: true, venue: true },
+    });
+    const sources: string[] = Array.isArray(row?.dataSources) ? (row!.dataSources as string[]) : [];
+    const matchPatch: { referee?: string; venue?: string; dataSources?: string[] } = {};
+    if (details.referee && !row?.referee) matchPatch.referee = details.referee;
+    if (details.venue && !row?.venue) matchPatch.venue = details.venue;
+    if (matchPatch.referee || matchPatch.venue) summary.withIdentity += 1;
+    const nextSources = new Set(sources);
+    if (details.referee || details.venue) nextSources.add("lfa:details");
+    nextSources.add(XG_CHECKED);
+    if (nextSources.size !== sources.length) matchPatch.dataSources = [...nextSources];
+    if (Object.keys(matchPatch).length > 0) {
+      await prisma.match.update({ where: { id: m.id }, data: matchPatch });
+    }
+
     // Pause légère : respect du débit du fournisseur.
     await new Promise((r) => setTimeout(r, 120));
   }

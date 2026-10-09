@@ -58,6 +58,12 @@ let keyIndex = 0;
 let creditsSpent = 0;
 const callCache = new Map<string, unknown>();
 
+// Plafond quotidien : compteur distinct de `creditsSpent` (qui reste la somme
+// depuis le démarrage du processus, utilisée dans les bilans de tâche).
+let dailySpent = 0;
+let dailyDay = "";
+let budgetRefusals = 0;
+
 export function lfaKeys(): string[] {
   return (process.env.LFA_API_KEYS ?? "")
     .split(",")
@@ -69,11 +75,63 @@ export function lfaCreditsSpent(): number {
   return creditsSpent;
 }
 
+/**
+ * Plafond quotidien de crédits LFA. 0 (ou variable absente) signifie
+ * « aucune requête payante » — c'est le contrat déjà documenté par le
+ * fournisseur gratuit (`liveFootballApi.ts`) et par `networkAllowed()`.
+ */
+export function lfaDailyBudget(): number {
+  const n = Number(process.env.SOLEIL_API_DAILY_BUDGET ?? 0);
+  return Number.isFinite(n) && n > 0 ? n : 0;
+}
+
+/** Remet le compteur du jour à zéro au passage de minuit UTC. */
+function rollBudgetDay(): void {
+  const day = new Date().toISOString().slice(0, 10);
+  if (day !== dailyDay) {
+    dailyDay = day;
+    dailySpent = 0;
+  }
+}
+
+/** Crédits LFA dépensés depuis minuit UTC. */
+export function lfaCreditsToday(): number {
+  rollBudgetDay();
+  return dailySpent;
+}
+
+/**
+ * Vrai quand aucune requête payante ne peut plus partir aujourd'hui (plafond
+ * absent ou atteint). Permet aux boucles d'enrichissement de s'arrêter net au
+ * lieu d'accumuler des centaines d'erreurs identiques.
+ */
+export function lfaBudgetExhausted(): boolean {
+  rollBudgetDay();
+  const budget = lfaDailyBudget();
+  return budget === 0 || dailySpent >= budget;
+}
+
+/** Appels refusés par le plafond (plafond absent ou atteint) : à journaliser. */
+export function lfaBudgetRefusals(): number {
+  return budgetRefusals;
+}
+
 export async function lfaGet<T>(endpoint: string, params: Record<string, string>): Promise<T | null> {
   const keys = lfaKeys();
   if (keys.length === 0) return null;
   const cacheKey = endpoint + ":" + JSON.stringify(params);
   if (callCache.has(cacheKey)) return callCache.get(cacheKey) as T;
+
+  // 🔒 Plafond quotidien, vérifié APRÈS le cache (un appel en cache coûte 0) et
+  //    AVANT toute requête : la rotation des clés ne doit jamais permettre de le
+  //    dépasser. Sans ce garde-fou, une clé épuisée (403) faisait passer à la
+  //    suivante indéfiniment.
+  rollBudgetDay();
+  const budget = lfaDailyBudget();
+  if (budget === 0 || dailySpent >= budget) {
+    budgetRefusals += 1;
+    return null;
+  }
 
   for (let attempt = 0; attempt < keys.length; attempt++) {
     const key = keys[(keyIndex + attempt) % keys.length];
@@ -93,6 +151,7 @@ export async function lfaGet<T>(endpoint: string, params: Record<string, string>
       const body = (await res.json()) as { success?: boolean; data?: T; message?: string };
       if (!res.ok || body.success === false) return null;
       creditsSpent += 1;
+      dailySpent += 1;
       keyIndex = (keyIndex + attempt) % keys.length;
       callCache.set(cacheKey, body.data ?? null);
       return (body.data ?? null) as T;
