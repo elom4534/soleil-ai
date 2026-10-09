@@ -189,7 +189,7 @@ export const ingestionJob: JobDefinition = {
 
     const report = await runUpcomingPipeline({
       dates: windows.map((w) => w.date),
-      competitionCodes: ["E0", "SP1", "D1", "I1", "F1", "UCL", "UEL", "UNL"],
+      competitionCodes: ["E0", "SP1", "D1", "I1", "F1", "UCL", "UEL", "UNL", "N1", "P1", "BRA1", "RU1"],
       allowNetwork: ctx.networkAllowed,
       predict: true,
       log: ctx.log,
@@ -227,7 +227,7 @@ export const refreshTodayJob: JobDefinition = {
 
     const report = await runUpcomingPipeline({
       dates: [today],
-      competitionCodes: ["E0", "SP1", "D1", "I1", "F1", "UCL", "UEL", "UNL"],
+      competitionCodes: ["E0", "SP1", "D1", "I1", "F1", "UCL", "UEL", "UNL", "N1", "P1", "BRA1", "RU1"],
       allowNetwork: ctx.networkAllowed,
       predict: true,
       log: ctx.log,

@@ -139,7 +139,7 @@ async function main(): Promise<void> {
     const { runUpcomingPipeline } = await import("../src/server/data/upcoming-pipeline");
     const report = await runUpcomingPipeline({
       dates,
-      competitionCodes: ["E0", "SP1", "D1", "I1", "F1", "UCL", "UEL", "UNL"],
+      competitionCodes: ["E0", "SP1", "D1", "I1", "F1", "UCL", "UEL", "UNL", "N1", "P1", "BRA1", "RU1"],
       allowNetwork: networkAllowed() || has("--network"),
       predict: true,
       log: (line) => console.log(`   ${line}`),
