@@ -38,6 +38,9 @@ import { ProviderError, type DataProvider, type NormalizedFixture } from "./type
  */
 export const LFA_PROVIDER_NAME = PROVIDER_NAME;
 
+/** Identifiant du preset du service (registre `PROVIDER_PRESETS`). */
+export const LFA_SERVICE_PRESET = "live-football-api";
+
 /**
  * Correspondance entre les codes internes de compétition (ceux de
  * football-data.co.uk, utilisés par tout l'historique) et les identifiants
@@ -273,7 +276,9 @@ let sharedClient: ApiFootballLiveClient | null = null;
 /** Client partagé : un seul portefeuille de clés pour toute l'application. */
 export async function lfaClient(): Promise<ApiFootballLiveClient> {
   if (!sharedClient) {
-    sharedClient = new ApiFootballLiveClient(resolvePreset(LFA_PROVIDER_NAME));
+    // Le nom `api-football-live` désigne le portefeuille de clés ; le service
+    // interrogé est LiveFootballApi, dont le preset porte l'identifiant `live-football-api`.
+    sharedClient = new ApiFootballLiveClient(resolvePreset(LFA_SERVICE_PRESET));
     await sharedClient.init();
   }
   return sharedClient;
