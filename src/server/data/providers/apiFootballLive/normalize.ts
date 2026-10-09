@@ -338,7 +338,7 @@ export function normalizeMatchList(payload: unknown): NormalizedMatch[] {
   const data = root.data && typeof root.data === "object" ? (root.data as Record<string, unknown>) : {};
 
   const direct = Array.isArray(data.matches) ? data.matches : [];
-  if (direct.length > 0) return direct.map(normalizeMatch).filter(hasIdentity);
+  if (direct.length > 0) return direct.map((m) => normalizeMatch(withDay(m, data))).filter(hasIdentity);
 
   const weeks = Array.isArray(data.weeks) ? data.weeks : [];
   const out: NormalizedMatch[] = [];
@@ -348,6 +348,18 @@ export function normalizeMatchList(payload: unknown): NormalizedMatch[] {
     for (const match of matches) out.push(normalizeMatch(match));
   }
   return out.filter(hasIdentity);
+}
+
+/**
+ * `/matches` publie la date de la journée une seule fois, au niveau de la
+ * réponse (`data.date`), et l'heure de chaque rencontre (`kickoff`) sans date.
+ * Sans cette reprise, toute rencontre serait écartée (date absente).
+ */
+function withDay(match: unknown, data: Record<string, unknown>): unknown {
+  if (!match || typeof match !== "object") return match;
+  const obj = match as Record<string, unknown>;
+  if (typeof obj.date === "string" && obj.date !== "") return obj;
+  return typeof data.date === "string" ? { ...obj, date: data.date } : obj;
 }
 
 /** Une rencontre sans identifiant ou sans équipes n'est pas exploitable. */
