@@ -228,6 +228,14 @@ export async function enrichRecentStats(days = 45, limit = 120): Promise<EnrichS
       dataSources: { has: "lfa" },
       NOT: { dataSources: { has: XG_CHECKED } },
       OR: [{ liveData: null }, { liveData: { is: { homeXg: null } } }],
+      // `toNormalized` pose `externalId = m.id` SANS préfixe : un identifiant
+      // contenant « : » vient d'un autre fournisseur (apifootball:event:…,
+      // the-sports-db:…) et n'a aucune signification pour /live_match_details.
+      // 84 matchs des 90 derniers jours sont dans ce cas — ils portent la source
+      // `lfa` parce qu'une ingestion ultérieure l'a ajoutée à `dataSources`
+      // (union, `ingest.ts:270`) sans pouvoir changer l'`externalId` unique.
+      // `Match` n'a pas de `providerRefs` : les résoudre exigerait une migration.
+      externalId: { not: { contains: ":" } },
     },
     orderBy: { utcDate: "desc" },
     take: limit,
@@ -242,7 +250,8 @@ export async function enrichRecentStats(days = 45, limit = 120): Promise<EnrichS
     creditsSpent: 0,
   };
   for (const m of candidates) {
-    // `externalId` du match = identifiant LFA (posé à l'ingestion).
+    // `externalId` du match = identifiant LFA (posé à l'ingestion, sans préfixe).
+    if (m.externalId.includes(":")) continue;
     const details = await lfaMatchStats(m.externalId);
     if (!details) {
       summary.errors.push(`${m.externalId} : aucun détail renvoyé`);
@@ -394,7 +403,14 @@ export async function refreshUpcomingContext(days = 5, limit = 24): Promise<Upco
   const now = new Date();
   const until = new Date(now.getTime() + days * 86_400_000);
   const matches = await prisma.match.findMany({
-    where: { status: "SCHEDULED", utcDate: { gte: now, lte: until }, dataSources: { has: "lfa" } },
+    where: {
+      status: "SCHEDULED",
+      utcDate: { gte: now, lte: until },
+      dataSources: { has: "lfa" },
+      // Même garde qu'`enrichRecentStats` : un `externalId` préfixé vient d'un
+      // autre fournisseur et ferait échouer les 3 appels payants par match.
+      externalId: { not: { contains: ":" } },
+    },
     orderBy: { utcDate: "asc" },
     take: limit,
     select: {
