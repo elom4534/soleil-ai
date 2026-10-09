@@ -54,7 +54,23 @@ export const LFA_LEAGUES: Record<string, string> = {
   UCL: "4oogyu6o156iphvdvphwpck10", // UEFA Champions League
   UEL: "4c1nfi2j1m731hcay25fcgndq", // UEFA Europa League
   ECL: "c7b8o53flg36wbuevfzy3lb10", // UEFA Conference League
+  // Ajoutées le 2026-10-09 — identifiants lus dans le catalogue /leagues et
+  // confirmés par les équipes des rencontres du jour (voir rapport).
+  N1: "akmkihra9ruad09ljapsm84b3", // Eredivisie (Pays-Bas) — PSV–Heerenveen
+  P1: "8yi6ejjd1zudcqtbn07haahg6", // Primeira Liga (Portugal) — Braga–Sporting, Moreirense–Gil Vicente
+  BRA1: "scf9p4y91yjvqvg5jndxzhxj", // Série A (Brésil) — Flamengo, Palmeiras, Santos
+  RU1: "3ab1uwtoyjopdj1y1fynyy9jg", // Premier League (Russie) — Rostov–Akron
 };
+
+/**
+ * Code interne d'une compétition LFA, ou `null` si elle n'est pas cartographiée.
+ * `null` doit faire ignorer la rencontre : jamais de compétition créée à partir
+ * d'un identifiant brut.
+ */
+export function lfaInternalCode(lfaLeagueId: string): string | null {
+  const entry = Object.entries(LFA_LEAGUES).find(([, v]) => v === lfaLeagueId);
+  return entry ? entry[0] : null;
+}
 
 const CONTEXT_CACHE = path.join(process.cwd(), "stats-cache", "lfa-context.ndjson");
 
@@ -458,7 +474,11 @@ export async function discoverUpcoming(days = 7): Promise<SyncSummary[]> {
       byLeague.set(m.league.id, arr);
     }
     for (const [lfaLeagueId, list] of byLeague) {
-      const code = Object.entries(LFA_LEAGUES).find(([, v]) => v === lfaLeagueId)?.[0] ?? lfaLeagueId;
+      // Garde-fou : seules les compétitions cartographiées entrent en base.
+      // Sans ce filtre, toutes les ligues du monde seraient créées avec leur
+      // identifiant brut comme code (163 ligues et 412 matchs le 2026-10-09).
+      const code = lfaInternalCode(lfaLeagueId);
+      if (!code) continue;
       const fixtures = list.map((m) => toNormalized(m, "lfa")).filter((x): x is NormalizedFixture => x !== null);
       if (fixtures.length === 0) continue;
       const stats = await ingestFixtures({ provider: "lfa", competitionCode: code, season: lfaSeasonLabel(), fixtures });

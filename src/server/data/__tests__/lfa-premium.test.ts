@@ -16,7 +16,7 @@ import {
   lfaBudgetExhausted,
   type LfaStatLine,
 } from "../providers/liveFootballApiV1";
-import { lfaSeasonLabel, LFA_LEAGUES, parsePair } from "../lfaPremium";
+import { lfaSeasonLabel, LFA_LEAGUES, parsePair, lfaInternalCode } from "../lfaPremium";
 
 test("statuts LFA → statuts internes", () => {
   assert.equal(lfaStatusToInternal({ status: "finished", state: "postGame" }), "finished");
@@ -41,9 +41,9 @@ test("saison LFA : juillet bascule sur la nouvelle saison", () => {
   assert.equal(lfaSeasonLabel(new Date("2026-02-10")), "2025/2026");
 });
 
-test("cartographie des compétitions prioritaires complète (10)", () => {
-  assert.equal(Object.keys(LFA_LEAGUES).length, 10);
-  for (const code of ["UNL", "CCNL", "E0", "SP1", "I1", "D1", "F1", "UCL", "UEL", "ECL"]) {
+test("cartographie des compétitions prioritaires complète (14)", () => {
+  assert.equal(Object.keys(LFA_LEAGUES).length, 14);
+  for (const code of ["UNL", "CCNL", "E0", "SP1", "I1", "D1", "F1", "UCL", "UEL", "ECL", "N1", "P1", "BRA1", "RU1"]) {
     assert.ok(LFA_LEAGUES[code], `compétition ${code} cartographiée`);
     assert.ok(LFA_LEAGUES[code].length > 10, `identifiant LFA réel pour ${code}`);
   }
@@ -136,4 +136,18 @@ test("plafond quotidien : absent, nul ou fantaisiste ferme toute requête payant
   assert.equal(lfaDailyBudget(), 0, "une valeur non numérique ne débloque rien");
   if (saved === undefined) delete process.env.SOLEIL_API_DAILY_BUDGET;
   else process.env.SOLEIL_API_DAILY_BUDGET = saved;
+});
+
+test("ligue non cartographiée : aucun code, la rencontre doit être ignorée", () => {
+  // Identifiant réel d'une ligue hors périmètre (Algérie, « League 2 ») : la découverte
+  // quotidienne ne doit JAMAIS créer une compétition à partir de cet identifiant brut.
+  assert.equal(lfaInternalCode("9hh6n2f84k31zmlcxyvmc1w2y"), null);
+  assert.equal(lfaInternalCode(""), null);
+});
+
+test("ligues ajoutées : chaque identifiant renvoie son code interne", () => {
+  assert.equal(lfaInternalCode("akmkihra9ruad09ljapsm84b3"), "N1");
+  assert.equal(lfaInternalCode("8yi6ejjd1zudcqtbn07haahg6"), "P1");
+  assert.equal(lfaInternalCode("scf9p4y91yjvqvg5jndxzhxj"), "BRA1");
+  assert.equal(lfaInternalCode("3ab1uwtoyjopdj1y1fynyy9jg"), "RU1");
 });
