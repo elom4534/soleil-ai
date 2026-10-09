@@ -235,7 +235,11 @@ const XG_CHECKED = "lfa:xg-checked";
  * base, et arbitre/lieu ne sont posés que si le champ est vide : jamais
  * d'écrasement d'une autre source, jamais d'invention.
  */
-export async function enrichRecentStats(days = 45, limit = 120): Promise<EnrichSummary> {
+export async function enrichRecentStats(
+  days = 45,
+  limit = 120,
+  leagueIds?: string[],
+): Promise<EnrichSummary> {
   const since = new Date(Date.now() - days * 86_400_000);
   const candidates = await prisma.match.findMany({
     where: {
@@ -252,6 +256,8 @@ export async function enrichRecentStats(days = 45, limit = 120): Promise<EnrichS
       // (union, `ingest.ts:270`) sans pouvoir changer l'`externalId` unique.
       // `Match` n'a pas de `providerRefs` : les résoudre exigerait une migration.
       externalId: { not: { contains: ":" } },
+      // Restriction facultative aux ligues demandées (`externalId` de League = `code:XX`).
+      ...(leagueIds && leagueIds.length > 0 ? { league: { externalId: { in: leagueIds } } } : {}),
     },
     orderBy: { utcDate: "desc" },
     take: limit,

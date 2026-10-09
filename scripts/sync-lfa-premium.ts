@@ -2,7 +2,7 @@
  * SOLEIL — Import premium (Live Football API)
  *
  * Usage :
- *   npx tsx scripts/sync-lfa-premium.ts [--stats=90] [--context] [--logos] [--all]
+ *   npx tsx scripts/sync-lfa-premium.ts [--stats=90] [--stats-ligues=E0,D1] [--context] [--logos] [--all]
  *
  * Source PRIORITAIRE des données récentes (mission 21). Aucune donnée
  * historique existante n'est supprimée : uniquement de l'UPSERT.
@@ -58,7 +58,9 @@ async function main() {
 
   if (all || args.some((a) => a.startsWith("--stats"))) {
   console.log("3. Statistiques détaillées des matchs récents…");
-  const stats = await enrichRecentStats(statsDays, statsLimit);
+  // --stats-ligues=E0,D1,... : restreint l'enrichissement aux codes demandés (facultatif).
+  const statsLeagues = args.find((a) => a.startsWith("--stats-ligues="))?.split("=")[1]?.split(",").filter(Boolean);
+  const stats = await enrichRecentStats(statsDays, statsLimit, statsLeagues?.map((c) => `code:${c}`));
   console.log(`   candidats=${stats.candidates} · enrichis=${stats.enriched} · crédits dépensés=${stats.creditsSpent}\n`);
   }
 
