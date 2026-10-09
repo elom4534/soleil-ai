@@ -26,7 +26,7 @@ import { CONFIDENCE_THRESHOLDS, PREDICTOR_VERSION } from "@/lib/constants";
 import { generateAndPersist } from "@/server/predictions/service";
 import { utcDayKey, utcDayBounds } from "@/server/schedule/window";
 import { teamSlug, resolveTeamId } from "./teams";
-import { decideMatch, fallbackMatchKeys, isTestFixture, relaxedTeamKey } from "./identity";
+import { canonicalMatchKeys, decideMatch, fallbackMatchKeys, fixtureUniquenessKey, isTestFixture, relaxedTeamKey } from "./identity";
 import { LFA_PROVIDER_NAME, fetchFixturesForDate, type SideloadTeam } from "./providers/liveFootballApi";
 import type { NormalizedFixture } from "./providers/types";
 
@@ -323,6 +323,13 @@ async function applyTeamIdentities(
 interface MatchIndex {
   byExternalId: Map<string, string>;
   byFallbackKey: Map<string, string[]>;
+  /**
+   * Garde-fou inter-fournisseurs : mêmes clés que `byFallbackKey`, mais bâties
+   * sur les **noms canoniques** au lieu des identifiants d'équipes. Sans lui,
+   * deux fournisseurs qui ont créé chacun leur ligne d'équipe pour le même club
+   * produisent deux rencontres distinctes.
+   */
+  byCanonicalKey: Map<string, string[]>;
 }
 
 async function loadMatchIndex(dayKeys: string[]): Promise<MatchIndex> {
@@ -334,11 +341,21 @@ async function loadMatchIndex(dayKeys: string[]): Promise<MatchIndex> {
 
   const matches = await prisma.match.findMany({
     where: { utcDate: { gte: new Date(min), lte: new Date(max) } },
-    select: { id: true, externalId: true, leagueId: true, homeTeamId: true, awayTeamId: true, utcDate: true },
+    select: {
+      id: true,
+      externalId: true,
+      leagueId: true,
+      homeTeamId: true,
+      awayTeamId: true,
+      utcDate: true,
+      homeTeam: { select: { name: true } },
+      awayTeam: { select: { name: true } },
+    },
   });
 
   const byExternalId = new Map<string, string>();
   const byFallbackKey = new Map<string, string[]>();
+  const byCanonicalKey = new Map<string, string[]>();
   for (const m of matches) {
     byExternalId.set(m.externalId, m.id);
     for (const key of fallbackMatchKeys({
@@ -351,9 +368,19 @@ async function loadMatchIndex(dayKeys: string[]): Promise<MatchIndex> {
       list.push(m.id);
       byFallbackKey.set(key, list);
     }
+    for (const key of canonicalMatchKeys({
+      competition: m.leagueId,
+      homeTeamName: m.homeTeam.name,
+      awayTeamName: m.awayTeam.name,
+      dayKey: utcDayKey(m.utcDate),
+    })) {
+      const list = byCanonicalKey.get(key) ?? [];
+      list.push(m.id);
+      byCanonicalKey.set(key, list);
+    }
   }
 
-  return { byExternalId, byFallbackKey };
+  return { byExternalId, byFallbackKey, byCanonicalKey };
 }
 
 const STATUS_MAP = {
@@ -389,6 +416,13 @@ async function persistFixture(input: {
       dayKey: utcDayKey(fixture.utcDate),
     }),
     existingFallbackKeys: new Set(index.byFallbackKey.keys()),
+    canonicalKeys: canonicalMatchKeys({
+      competition: leagueId,
+      homeTeamName: fixture.homeTeamName,
+      awayTeamName: fixture.awayTeamName,
+      dayKey: utcDayKey(fixture.utcDate),
+    }),
+    existingCanonicalKeys: new Set(index.byCanonicalKey.keys()),
   });
 
   const status = STATUS_MAP[fixture.status as keyof typeof STATUS_MAP] ?? null;
@@ -398,7 +432,10 @@ async function persistFixture(input: {
   }
 
   if (decision.action === "update") {
-    const matchId = index.byExternalId.get(decision.matchedKey) ?? index.byFallbackKey.get(decision.matchedKey)?.[0];
+    const matchId =
+      index.byExternalId.get(decision.matchedKey) ??
+      index.byFallbackKey.get(decision.matchedKey)?.[0] ??
+      index.byCanonicalKey.get(decision.matchedKey)?.[0];
     if (matchId) {
       const existing = await prisma.match.findUnique({
         where: { id: matchId },
@@ -430,6 +467,28 @@ async function persistFixture(input: {
     }
   }
 
+  // GARDE-FOU DUR — règle d'unicité : une même affiche ne peut exister qu'une
+  // fois par compétition et par instant. Dernier filet, indépendant de tous les
+  // rapprochements ci-dessus : si la ligne existe déjà, on la met à jour au lieu
+  // d'en créer une seconde.
+  const cleUnicite = fixtureUniquenessKey({ competition: leagueId, homeTeamId, awayTeamId, utcDate: fixture.utcDate });
+  const dejaPresent = await prisma.match.findFirst({
+    where: { leagueId, homeTeamId, awayTeamId, utcDate: fixture.utcDate },
+    select: { id: true, externalId: true, dataSources: true },
+  });
+  if (dejaPresent) {
+    const sources = new Set([...(dejaPresent.dataSources ?? []), LFA_PROVIDER_NAME]);
+    await prisma.match.update({
+      where: { id: dejaPresent.id },
+      data: { status, dataSources: [...sources], lastDataUpdate: new Date() },
+    });
+    index.byExternalId.set(fixture.externalId, dejaPresent.id);
+    console.warn(
+      `[garde-fou] rencontre déjà présente (${cleUnicite}) : ${dejaPresent.id} mise à jour au lieu d'être recréée`,
+    );
+    return { matchId: dejaPresent.id, created: false, approximate: true };
+  }
+
   const created = await prisma.match.create({
     data: {
       externalId: fixture.externalId,
@@ -458,6 +517,16 @@ async function persistFixture(input: {
   });
 
   index.byExternalId.set(fixture.externalId, created.id);
+  for (const key of canonicalMatchKeys({
+    competition: leagueId,
+    homeTeamName: fixture.homeTeamName,
+    awayTeamName: fixture.awayTeamName,
+    dayKey: utcDayKey(fixture.utcDate),
+  })) {
+    const liste = index.byCanonicalKey.get(key) ?? [];
+    liste.push(created.id);
+    index.byCanonicalKey.set(key, liste);
+  }
   for (const key of fallbackMatchKeys({
     competition: leagueId,
     homeTeamId,

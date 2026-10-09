@@ -46,6 +46,8 @@ export interface NormalizedFixture {
   awayCorners: number | null;
   homeYellowCards: number | null;
   awayYellowCards: number | null;
+  homeRedCards: number | null;
+  awayRedCards: number | null;
   venue: string | null;
   referee: string | null;
 }

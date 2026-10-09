@@ -102,6 +102,10 @@ function toFixture(m: LocalMatch, xgApplied: boolean): NormalizedFixture {
     awayCorners: m.awayCorners,
     homeYellowCards: m.homeYellowCards,
     awayYellowCards: m.awayYellowCards,
+    // bootstrap-local ne relit que le minimum ; les cartons rouges viennent
+    // de l'ingestion fdcouk, pas de cette amorce.
+    homeRedCards: null,
+    awayRedCards: null,
     venue: null,
     referee: null,
   };

@@ -135,6 +135,56 @@ export interface FallbackKeyInput {
   dayKey: string;
 }
 
+/**
+ * Clés de rapprochement **inter-fournisseurs**, indépendantes des identifiants
+ * d'équipes.
+ *
+ * `fallbackMatchKeys` compare des `teamId`. Or deux fournisseurs qui résolvent
+ * le même club chacun de leur côté créent deux lignes d'équipe distinctes : les
+ * identifiants diffèrent, la clé de secours ne matche pas, et la rencontre est
+ * créée une seconde fois. C'est exactement le mécanisme qui a produit les
+ * doublons `the-sports-db` / `lfa` (Ipswich Town–Fulham publié deux fois).
+ *
+ * Cette clé compare les **clés canoniques** des noms (`canonicalTeamKey`), donc
+ * « Nott'm Forest » et « Nottingham Forest » donnent la même clé.
+ *
+ * Doctrine respectée : la clé canonique sert à RECONNAÎTRE une rencontre déjà
+ * présente pour la mettre à jour au lieu d'en créer une seconde. Elle ne sert
+ * jamais à fusionner deux équipes — un nom n'est pas un identifiant (§10).
+ */
+export interface CanonicalKeyInput {
+  competition: string;
+  homeTeamName: string;
+  awayTeamName: string;
+  /** Journée UTC de la rencontre, `YYYY-MM-DD`. */
+  dayKey: string;
+}
+
+export function canonicalMatchKeys(input: CanonicalKeyInput): string[] {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(input.dayKey)) return [];
+  const base = Date.parse(`${input.dayKey}T00:00:00.000Z`);
+  if (!Number.isFinite(base)) return [];
+  const home = canonicalTeamKey(input.homeTeamName);
+  const away = canonicalTeamKey(input.awayTeamName);
+  if (!home || !away) return [];
+  const prefix = `${input.competition}|${home}|${away}`;
+  return [-1, 0, 1].map((offset) => `${prefix}|${new Date(base + offset * 86_400_000).toISOString().slice(0, 10)}`);
+}
+
+/**
+ * Règle d'unicité d'une rencontre : une même affiche ne peut exister qu'une
+ * fois par compétition et par instant. Sert de dernier filet avant toute
+ * création, quel que soit le résultat du rapprochement.
+ */
+export function fixtureUniquenessKey(input: {
+  competition: string;
+  homeTeamId: string;
+  awayTeamId: string;
+  utcDate: Date;
+}): string {
+  return `${input.competition}|${input.homeTeamId}|${input.awayTeamId}|${input.utcDate.toISOString()}`;
+}
+
 export function fallbackMatchKeys(input: FallbackKeyInput): string[] {
   // `Date.parse` accepte des formes surprenantes (« 3 octobre » devient une
   // date valide en 2001). On exige donc explicitement la forme `AAAA-MM-JJ`
@@ -160,6 +210,7 @@ export function fallbackMatchKeys(input: FallbackKeyInput): string[] {
 export type MatchDecision =
   | { action: "update"; reason: "IDENTIFIANT_FOURNISSEUR"; matchedKey: string; approximate: false }
   | { action: "update"; reason: "CLE_DE_SECOURS"; matchedKey: string; approximate: true }
+  | { action: "update"; reason: "CLE_CANONIQUE"; matchedKey: string; approximate: true }
   | { action: "create"; reason: "NOUVELLE_RENCONTRE"; matchedKey: null; approximate: false };
 
 export function decideMatch(input: {
@@ -167,6 +218,12 @@ export function decideMatch(input: {
   existingByProviderKey: boolean;
   fallbackKeys: string[];
   existingFallbackKeys: Set<string>;
+  /**
+   * Garde-fou inter-fournisseurs. Facultatif : les appelants existants
+   * conservent leur comportement exact.
+   */
+  canonicalKeys?: string[];
+  existingCanonicalKeys?: Set<string>;
 }): MatchDecision {
   if (input.providerKey && input.existingByProviderKey) {
     return {
@@ -180,6 +237,13 @@ export function decideMatch(input: {
   const matched = input.fallbackKeys.find((key) => input.existingFallbackKeys.has(key));
   if (matched) {
     return { action: "update", reason: "CLE_DE_SECOURS", matchedKey: matched, approximate: true };
+  }
+
+  // Troisième niveau : la rencontre est déjà présente sous un autre fournisseur,
+  // avec des identifiants d'équipes différents mais la même affiche canonique.
+  const canonique = (input.canonicalKeys ?? []).find((key) => input.existingCanonicalKeys?.has(key));
+  if (canonique) {
+    return { action: "update", reason: "CLE_CANONIQUE", matchedKey: canonique, approximate: true };
   }
 
   return { action: "create", reason: "NOUVELLE_RENCONTRE", matchedKey: null, approximate: false };

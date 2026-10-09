@@ -108,6 +108,8 @@ function toFixture(ev: ApiEvent, competition: { code: string; name: string; coun
     awayCorners: played ? stat(ev, "Corners", "away") : null,
     homeYellowCards: played ? stat(ev, "Yellow Cards", "home") : null,
     awayYellowCards: played ? stat(ev, "Yellow Cards", "away") : null,
+    homeRedCards: played ? stat(ev, "Red Cards", "home") : null,
+    awayRedCards: played ? stat(ev, "Red Cards", "away") : null,
     venue: null,
     referee: null,
   };

@@ -14,7 +14,7 @@ export function normalizeTeamName(raw: string): string {
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
-    .replace(/\b(fc|cf|ac|sc|afc|cfc|as|ss|ssc|sv|vfl|vfb|tsg|bsc|us|ud|rc|cd|club|de|futbol|football|calcio|sport|sporting|atletico|atl|real|rcd|sl|fk|sk|bk|if|ff)\b/g, " ")
+    .replace(/\b(fc|cf|ac|sc|afc|cfc|as|ss|ssc|sv|vfl|vfb|tsg|bsc|us|ud|rc|cd|club|de|futbol|football|calcio|sport|sporting|rcd|sl|fk|sk|bk|if|ff)\b/g, " ")
     .replace(/[^a-z0-9\s]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
@@ -72,9 +72,98 @@ const ALIASES: Record<string, string> = {
   "az alkmaar": "az",
 };
 
+/**
+ * Alias ajoutés après l'audit des identités scindées (2026-10-08).
+ *
+ * Chaque entrée est vérifiable : elle rapproche deux libellés désignant la même
+ * entité réelle, constatés dans la base (deux lignes `Team` pour une seule
+ * équipe, dont l'une presque vide). Les cas douteux sont volontairement absents
+ * (§34 : en cas de doute, on ne fusionne PAS) — par exemple « AEK » seul, qui
+ * peut désigner AEK Athènes ou AEK Larnaca, ou « Paris FC » / « Paris SG »,
+ * « Dinamo Batumi » / « Dinamo Zagreb », « Partizani » / « FK Partizan »,
+ * « Tre Penne » / « Tre Fiori », qui sont des clubs distincts.
+ *
+ * Les clés et les valeurs sont normalisées au chargement : une entrée ne peut
+ * donc plus devenir silencieusement inatteignable (c'était le cas de
+ * « atletico madrid », « real betis », « real sociedad » et « sp Lisbon »,
+ * dont la clé brute ne survivait pas à `normalizeTeamName`).
+ */
+const ALIAS_ETENDUS_BRUTS: Record<string, string> = {
+  // La Liga — formes courtes football-data.co.uk
+  "Ath Madrid": "Atlético Madrid",
+  "Atl. Madrid": "Atlético Madrid",
+  "Ath Bilbao": "Athletic Bilbao",
+  "Celta Vigo": "Celta",
+  "Espanyol": "Espanol",
+  "R. Sociedad": "Sociedad",
+  "Rayo Vallecano": "Vallecano",
+  "Deportivo Alavés": "Alaves",
+  "A Coruña": "La Coruna",
+  "Deportivo de A Coruña": "La Coruna",
+  // Bundesliga
+    "Mainz 05": "Mainz",
+    "Leipzig": "RB Leipzig",
+    "E. Frankfurt": "Eintracht Frankfurt",
+    "B. Leverkusen": "Bayer Leverkusen",
+  // Premier League
+  "Coventry": "Coventry City",
+  "Ipswich": "Ipswich Town",
+  "Not. Forest": "Nottingham Forest",
+  "Nott'm Forest": "Nottingham Forest",
+  "Hull": "Hull City",
+  // Compétitions UEFA
+  "Club Brugge": "Club Brugge KV",
+  "Shakhtar": "Shakhtar Donetsk",
+  "Shamrock": "Shamrock Rovers",
+  "Slavia Prag": "Slavia Praha",
+  "Union SG": "Union St. Gilloise",
+  "Olympiacos": "Olympiakos Piraeus",
+  "Red Imps": "Lincoln Red Imps FC",
+  "Egnatia Rrogozhinë": "Egnatia",
+  "Inter Club d'Escaldes": "Inter Escaldes",
+    "Flora Tallinn": "Flora",
+    "Stade Brestois 29": "Brest",
+    "Red Bull Salzburg": "Salzburg",
+  // Sélections nationales
+  "Türkiye": "Turkey",
+  "Czechia": "Czech Republic",
+  "Rep. Of Ireland": "Republic of Ireland",
+  "N. Macedonia": "North Macedonia",
+  "N. Ireland": "Northern Ireland",
+  "Cayman": "Cayman Islands",
+  "St. Kitts": "St. Kitts and Nevis",
+  "Saint Kitts and Nevis": "St. Kitts and Nevis",
+  "Trinidad": "Trinidad and Tobago",
+  "Trinidad & Tobago": "Trinidad and Tobago",
+  "Antigua": "Antigua and Barbuda",
+    "British VI": "British Virgin Islands",
+    "USVI": "US Virgin Islands",
+    "USA": "United States",
+    "Turks and Caicos Islands": "Turks & Caicos",
+  "Dominican Rep": "Dominican Republic",
+  "French Guyana": "French Guiana",
+  "Saint Lucia": "St. Lucia",
+  "Saint Vincent and the Grenadines": "St. Vincent / Grenadines",
+  // Forme courte publiée par LiveFootballApi pour la même sélection.
+  "St. Vincent": "St. Vincent / Grenadines",
+  "St. Vincent and the Grenadines": "St. Vincent / Grenadines",
+};
+
+const ALIAS_ETENDUS: Record<string, string> = Object.fromEntries(
+  Object.entries(ALIAS_ETENDUS_BRUTS).map(([cle, valeur]) => [
+    normalizeTeamName(cle),
+    normalizeTeamName(valeur),
+  ]),
+);
+
 export function canonicalTeamKey(raw: string): string {
   const n = normalizeTeamName(raw);
-  return ALIASES[n] ?? n;
+  // La table historique reste prioritaire : son comportement est inchangé.
+  const direct = ALIASES[n] ?? ALIAS_ETENDUS[n];
+  if (direct === undefined) return n;
+  // Une seconde passe résout les chaînes d'alias (« Rayo Vallecano » →
+  // « Vallecano » → …) sans jamais boucler : profondeur maximale de 2.
+  return ALIASES[direct] ?? ALIAS_ETENDUS[direct] ?? direct;
 }
 
 /** Génère un identifiant stable à partir du nom canonique. */

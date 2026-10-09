@@ -141,9 +141,14 @@ function parseFixtures(
       awayScore,
       halfTimeHomeScore: num(row.HTHG),
       halfTimeAwayScore: num(row.HTAG),
-      // La source ne publie pas de xG : on déclare `null`, on n'invente rien.
-      homeXg: null,
-      awayXg: null,
+        // football-data.co.uk publie `HxG`/`AxG` sur les saisons récentes, et pas
+        // sur les anciennes. `num()` renvoie `null` quand la colonne est absente,
+        // vide ou vaut « - » : une saison sans xG reste sans xG, rien n'est inventé.
+        // (Le commentaire précédent affirmait à tort que la source n'en publie
+        // jamais : c'est ce `null` codé en dur qui laissait le modèle xG à poids 0
+        // en Bundesliga, Ligue 1 et Serie A.)
+        homeXg: num(row.HxG),
+        awayXg: num(row.AxG),
       homeShots: num(row.HS),
       awayShots: num(row.AS),
       homeShotsOnTarget: num(row.HST),
@@ -152,6 +157,10 @@ function parseFixtures(
       awayCorners: num(row.AC),
       homeYellowCards: num(row.HY),
       awayYellowCards: num(row.AY),
+      // `HR`/`AR` étaient publiés par la source mais jamais lus : c'est ce qui
+      // laissait les cartons rouges à 0 en Premier League et en La Liga.
+      homeRedCards: num(row.HR),
+      awayRedCards: num(row.AR),
       venue: null,
       referee: row.Referee || null,
     });

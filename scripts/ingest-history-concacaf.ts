@@ -99,6 +99,8 @@ function toFixture(
       awayCorners: null,
       homeYellowCards: null,
       awayYellowCards: null,
+      homeRedCards: null,
+      awayRedCards: null,
       venue: null,
       referee: null,
     },

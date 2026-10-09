@@ -18,6 +18,7 @@
  *    Fautes (HF/AF) et cotes : aucune colonne dans le schéma → non importées.
  *
  * Usage : npx tsx scripts/ingest-history-fdcouk.ts [--check]
+ *        npx tsx scripts/ingest-history-fdcouk.ts --enrich [--check]
  */
 
 import "dotenv/config";
@@ -50,6 +51,26 @@ const SEASON_CODES: { season: string; label: string; code: string }[] = [
   { season: "2023-2024", label: "2023/2024", code: "2324" },
   { season: "2024-2025", label: "2024/2025", code: "2425" },
   { season: "2025-2026", label: "2025/2026", code: "2526" },
+];
+
+/**
+ * Périmètre de la passe d'enrichissement `--enrich`.
+ *
+ * Elle couvre les cinq ligues déjà présentes en base (l'import historique ci-dessus
+ * ne traite que D1, I1 et F1) et ajoute la saison courante, seule saison pour
+ * laquelle football-data.co.uk publie le xG.
+ */
+const ENRICH_COMPETITIONS: { code: string; name: string; country: string }[] = [
+  { code: "E0", name: "Premier League", country: "England" },
+  { code: "SP1", name: "La Liga", country: "Spain" },
+  { code: "D1", name: "Bundesliga", country: "Germany" },
+  { code: "I1", name: "Serie A", country: "Italy" },
+  { code: "F1", name: "Ligue 1", country: "France" },
+];
+
+const ENRICH_SEASONS: { season: string; label: string; code: string }[] = [
+  ...SEASON_CODES,
+  { season: "2026-2027", label: "2026/2027", code: "2627" },
 ];
 
 interface LocalMatch {
@@ -149,8 +170,8 @@ function toFixture(m: LocalMatch): NormalizedFixture {
     awayScore: m.awayGoals,
     halfTimeHomeScore: m.halfTimeHomeGoals,
     halfTimeAwayScore: m.halfTimeAwayGoals,
-    homeXg: null,
-    awayXg: null,
+    homeXg: m.homeXg,
+    awayXg: m.awayXg,
     homeShots: m.homeShots,
     awayShots: m.awayShots,
     homeShotsOnTarget: m.homeShotsOnTarget,
@@ -159,6 +180,8 @@ function toFixture(m: LocalMatch): NormalizedFixture {
     awayCorners: m.awayCorners,
     homeYellowCards: m.homeYellowCards,
     awayYellowCards: m.awayYellowCards,
+    homeRedCards: m.homeRedCards,
+    awayRedCards: m.awayRedCards,
     venue: null,
     referee: m.referee,
   };
@@ -199,8 +222,10 @@ function parseCsv(path: string, competition: string, seasonLabel: string): Local
       awayGoals,
       halfTimeHomeGoals: num(get("HTHG")),
       halfTimeAwayGoals: num(get("HTAG")),
-      homeXg: null,
-      awayXg: null,
+      // `HxG`/`AxG` ne sont publiés que sur les saisons récentes : `num()`
+      // renvoie null si la colonne est absente, donc rien n'est inventé.
+      homeXg: num(get("HxG")),
+      awayXg: num(get("AxG")),
       homeShots: num(get("HS")),
       awayShots: num(get("AS")),
       homeShotsOnTarget: num(get("HST")),
@@ -218,8 +243,139 @@ function parseCsv(path: string, competition: string, seasonLabel: string): Local
   return matches;
 }
 
+/**
+ * Passe d'enrichissement — gratuite, sans création de rencontre.
+ *
+ * football-data.co.uk publie, selon la ligue et la saison, des colonnes que
+ * l'import historique ne remplissait pas :
+ *   • `HR`/`AR`   cartons rouges — toutes ligues, toutes saisons ;
+ *   • `Referee`   arbitre        — Premier League uniquement ;
+ *   • `HxG`/`AxG` xG             — saison courante uniquement.
+ *
+ * Chaque rencontre est retrouvée par son `externalId` fdcouk, et seules les cases
+ * VIDES sont remplies (§34) : rien n'est écrasé, et une colonne absente du CSV
+ * laisse la case à `null` — aucune valeur n'est inventée.
+ */
+async function enrich(check: boolean): Promise<void> {
+  console.log("═".repeat(78));
+  console.log("SOLEIL — ENRICHISSEMENT fdcouk : cartons rouges · arbitre · xG (cases vides)");
+  console.log(check ? "═".repeat(78) + "\n  MODE LECTURE SEULE (--check) : aucune écriture." : "═".repeat(78));
+
+  type Existant = {
+    cle: string;
+    id: string;
+    referee: string | null;
+    ld: string | null;
+    homeRedCards: number | null;
+    awayRedCards: number | null;
+    homeXg: number | null;
+    awayXg: number | null;
+  };
+  // Une seule requête pour tout l'état existant : éviter 40 000 allers-retours.
+  const existants = await prisma.$queryRawUnsafe<Existant[]>(`
+    select m."externalId" as cle, m.id, m.referee, ld."matchId" as ld,
+           ld."homeRedCards", ld."awayRedCards", ld."homeXg", ld."awayXg"
+    from "Match" m left join "MatchLiveData" ld on ld."matchId" = m.id
+    where m."externalId" like 'fdcouk:%'`);
+  const parCle = new Map(existants.map((e) => [e.cle, e]));
+  console.log(`  Rencontres fdcouk en base : ${existants.length}`);
+
+  const ecrasements = new Map<string, number>();
+  const operations: unknown[] = [];
+  let lues = 0;
+  let trouvees = 0;
+  const details: string[] = [];
+
+  for (const comp of ENRICH_COMPETITIONS) {
+    let compRouges = 0;
+    let compArbitres = 0;
+    let compXg = 0;
+    for (const s of ENRICH_SEASONS) {
+      const csvPath = join(DATA_ROOT, "raw", "fdcouk", s.code, `${comp.code}.csv`);
+      if (!(await ensureCsv(csvPath, s.code, comp.code))) continue;
+      const matches = parseCsv(csvPath, comp.code, s.label);
+      for (const m of matches) {
+        lues += 1;
+        const e = parCle.get(m.id);
+        if (!e) continue;
+        trouvees += 1;
+
+        // Arbitre : la colonne n'existe qu'en Premier League.
+        const arbitreManquant = e.referee === null || e.referee.trim() === "";
+        if (m.referee !== null && arbitreManquant) {
+          if (!check) operations.push(prisma.match.update({ where: { id: e.id }, data: { referee: m.referee } }));
+          compArbitres += 1;
+        }
+
+        // Statistiques : uniquement les cases vides.
+        const patch: {
+          homeRedCards?: number;
+          awayRedCards?: number;
+          homeXg?: number;
+          awayXg?: number;
+        } = {};
+        if (m.homeRedCards !== null && e.homeRedCards === null) patch.homeRedCards = m.homeRedCards;
+        if (m.awayRedCards !== null && e.awayRedCards === null) patch.awayRedCards = m.awayRedCards;
+        if (m.homeXg !== null && e.homeXg === null) patch.homeXg = m.homeXg;
+        if (m.awayXg !== null && e.awayXg === null) patch.awayXg = m.awayXg;
+        if (Object.keys(patch).length > 0) {
+          if (!check) {
+            operations.push(
+              e.ld === null
+                ? prisma.matchLiveData.create({ data: { matchId: e.id, ...patch } })
+                : prisma.matchLiveData.update({ where: { matchId: e.id }, data: patch }),
+            );
+          }
+          if ("homeRedCards" in patch || "awayRedCards" in patch) compRouges += 1;
+          if ("homeXg" in patch || "awayXg" in patch) compXg += 1;
+        }
+
+        // Une case déjà remplie avec une valeur DIFFÉRENTE est signalée, jamais écrasée.
+        if (m.homeRedCards !== null && e.homeRedCards !== null && m.homeRedCards !== e.homeRedCards) {
+          ecrasements.set("cartons rouges", (ecrasements.get("cartons rouges") ?? 0) + 1);
+        }
+        if (m.homeXg !== null && e.homeXg !== null && Math.abs(m.homeXg - e.homeXg) > 0.01) {
+          ecrasements.set("xG", (ecrasements.get("xG") ?? 0) + 1);
+        }
+      }
+    }
+    if (compRouges + compArbitres + compXg > 0) {
+      details.push(
+        `  ${comp.code.padEnd(4)} ${comp.name.padEnd(16)} cartons rouges ${String(compRouges).padStart(5)} · ` +
+          `arbitres ${String(compArbitres).padStart(5)} · xG ${String(compXg).padStart(4)}`,
+      );
+    }
+  }
+
+  // Exécution par lots : une transaction interactive ligne à ligne est trop lente.
+  if (!check && operations.length > 0) {
+    for (let i = 0; i < operations.length; i += 400) {
+      await prisma.$transaction(operations.slice(i, i + 400) as never[]);
+    }
+  }
+
+  console.log("");
+  for (const d of details) console.log(d);
+  console.log("─".repeat(78));
+  console.log(`Lignes CSV lues        : ${lues}`);
+  console.log(`Retrouvées en base     : ${trouvees}`);
+  console.log(`Écritures              : ${check ? 0 : operations.length}${check ? " (mode lecture seule)" : ""}`);
+  if (ecrasements.size > 0) {
+    for (const [champ, n] of ecrasements) {
+      console.log(`⚠ ${n} différence(s) sur « ${champ} » : valeur en base CONSERVÉE, non écrasée (§34).`);
+    }
+  }
+  console.log("🔒 Aucune rencontre créée, aucune valeur écrasée, aucune valeur inventée.");
+}
+
 async function main() {
   const check = process.argv.includes("--check");
+
+  if (process.argv.includes("--enrich")) {
+    await enrich(check);
+    await prisma.$disconnect();
+    return;
+  }
 
   console.log("═".repeat(78));
   console.log("SOLEIL — HISTORIQUE football-data.co.uk : D1 · I1 · F1 (additif, idempotent)");

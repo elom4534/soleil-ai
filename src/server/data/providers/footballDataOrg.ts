@@ -149,6 +149,8 @@ function normalize(m: FdoMatch, competitionCode: string): NormalizedFixture {
     homeCorners: null,
     awayCorners: null,
     homeYellowCards: null,
+    homeRedCards: null,
+    awayRedCards: null,
     awayYellowCards: null,
     venue: m.venue ?? null,
     referee: m.referees?.[0]?.name ?? null,

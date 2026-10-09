@@ -132,6 +132,8 @@ export function tsdbEventToFixture(event: TsdbEvent): NormalizedFixture | null {
     homeCorners: null,
     awayCorners: null,
     homeYellowCards: null,
+    homeRedCards: null,
+    awayRedCards: null,
     awayYellowCards: null,
     venue: null,
     referee: null,

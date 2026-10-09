@@ -113,6 +113,8 @@ function toNormalized(m: LfaMatch, providerId: string): NormalizedFixture | null
     awayCorners: null,
     homeYellowCards: null,
     awayYellowCards: null,
+    homeRedCards: null,
+    awayRedCards: null,
     venue: null,
     referee: null,
   };

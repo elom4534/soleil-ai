@@ -83,6 +83,9 @@ function asFixture(match: BacktestMatch): NormalizedFixture {
     awayCorners: match.awayCorners,
     homeYellowCards: match.homeYellowCards,
     awayYellowCards: match.awayYellowCards,
+    // Cette source de backtest ne publie pas les cartons rouges.
+    homeRedCards: null,
+    awayRedCards: null,
     venue: null,
     referee: null,
   };

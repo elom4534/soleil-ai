@@ -12,7 +12,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { HISTORICAL_LEAGUES } from "@/lib/constants";
-import { resolveTeamId, teamSlug } from "./teams";
+import { canonicalTeamKey, resolveTeamId, teamSlug } from "./teams";
 import type { NormalizedFixture } from "./providers/types";
 
 export interface IngestStats {
@@ -172,17 +172,37 @@ export async function ingestFixtures(input: {
   // ---------------------------------------------------------------------
   const knownMatches = await prisma.match.findMany({
     where: { leagueId: league.id },
-    select: { id: true, homeTeamId: true, awayTeamId: true, utcDate: true },
+    select: {
+      id: true,
+      homeTeamId: true,
+      awayTeamId: true,
+      utcDate: true,
+      homeTeam: { select: { name: true } },
+      awayTeam: { select: { name: true } },
+    },
   });
 
   const matchIndex = new Map<string, string[]>();
+  /**
+   * GARDE-FOU inter-fournisseurs : même index, mais bâti sur les **noms
+   * canoniques** au lieu des identifiants d'équipes. Deux fournisseurs qui
+   * résolvent le même club sur deux lignes différentes produisent malgré tout
+   * la même clé — c'est ce qui manquait pour empêcher les doublons.
+   */
+  const matchIndexCanonique = new Map<string, string[]>();
   const dayKey = (d: Date) => Math.floor(d.getTime() / 86_400_000);
+  const cleCanonique = (dom: string, ext: string, k: number) =>
+    `${canonicalTeamKey(dom)}|${canonicalTeamKey(ext)}|${k}`;
   for (const m of knownMatches) {
     for (const k of [dayKey(m.utcDate) - 1, dayKey(m.utcDate), dayKey(m.utcDate) + 1]) {
       const key = `${m.homeTeamId}|${m.awayTeamId}|${k}`;
       const list = matchIndex.get(key) ?? [];
       list.push(m.id);
       matchIndex.set(key, list);
+      const keyC = cleCanonique(m.homeTeam.name, m.awayTeam.name, k);
+      const listC = matchIndexCanonique.get(keyC) ?? [];
+      listC.push(m.id);
+      matchIndexCanonique.set(keyC, listC);
     }
   }
 
@@ -215,7 +235,11 @@ export async function ingestFixtures(input: {
 
       // --- Déduplication : fenêtre de ±1 jour autour de la date ---
       const indexKey = `${home.id}|${away.id}|${dayKey(fixture.utcDate)}`;
-      const existingId = matchIndex.get(indexKey)?.[0];
+      const existingId =
+        matchIndex.get(indexKey)?.[0] ??
+        matchIndexCanonique.get(
+          cleCanonique(fixture.homeTeamName, fixture.awayTeamName, dayKey(fixture.utcDate)),
+        )?.[0];
       const existing = existingId
         ? await prisma.match.findUnique({ where: { id: existingId } })
         : null;
@@ -292,6 +316,10 @@ export async function ingestFixtures(input: {
           const list = matchIndex.get(key) ?? [];
           list.push(createdMatch.id);
           matchIndex.set(key, list);
+          const keyC = cleCanonique(fixture.homeTeamName, fixture.awayTeamName, k + offset);
+          const listC = matchIndexCanonique.get(keyC) ?? [];
+          listC.push(createdMatch.id);
+          matchIndexCanonique.set(keyC, listC);
         }
       }
 
@@ -299,7 +327,9 @@ export async function ingestFixtures(input: {
       if (
         fixture.homeShots !== null ||
         fixture.homeCorners !== null ||
-        fixture.homeXg !== null
+        fixture.homeXg !== null ||
+        fixture.homeRedCards !== null ||
+        fixture.awayRedCards !== null
       ) {
         // Les stats détaillées ne sont conservées que pour les matchs terminés ;
         // pour un match à venir, elles n'ont pas de sens.
@@ -317,6 +347,8 @@ export async function ingestFixtures(input: {
                   awayCorners: fixture.awayCorners,
                   homeYellowCards: fixture.homeYellowCards,
                   awayYellowCards: fixture.awayYellowCards,
+                  homeRedCards: fixture.homeRedCards,
+                  awayRedCards: fixture.awayRedCards,
                   homeXg: fixture.homeXg,
                   awayXg: fixture.awayXg,
                 },

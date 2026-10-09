@@ -47,5 +47,7 @@ next-env.d.ts
 .env.local
 .env*.local
 
-# Donnees locales / historiques / backtests
+# SOLEIL — données volumineuses reconstruites localement (jamais suivies)
 /data/
+/stats-cache/
+/bin/cloudflared

@@ -248,7 +248,7 @@ export function SoleilChat({ matchId, matchLabel }: { matchId?: string; matchLab
                         ) : null}
                         {message.sections.confidence ? (
                           <p className="text-[11.5px] text-fg-muted">
-                            Confiance de l'analyse :{" "}
+                            Confiance de l&apos;analyse :{" "}
                             <span className="font-medium text-fg">
                               {message.sections.confidence.level} ({message.sections.confidence.score}/100)
                             </span>

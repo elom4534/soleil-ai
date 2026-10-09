@@ -110,6 +110,8 @@ function toFixture(e: TsdbEvent, code: string, name: string, country: string): N
     homeCorners: null,
     awayCorners: null,
     homeYellowCards: null,
+    homeRedCards: null,
+    awayRedCards: null,
     awayYellowCards: null,
     venue: e.strVenue || null,
     referee: null,

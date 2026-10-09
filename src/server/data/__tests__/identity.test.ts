@@ -17,8 +17,10 @@ import assert from "node:assert/strict";
 
 import {
   buildTeamIdentity,
+  canonicalMatchKeys,
   decideMatch,
   fallbackMatchKeys,
+  fixtureUniquenessKey,
   isTestFixture,
   providerMatchKey,
   providerRef,
@@ -164,10 +166,15 @@ test("§17 — le slug canonique est identique à celui de l'ingestion historiqu
   // « Manchester United » (calendrier) de désigner la même équipe.
   assert.equal(teamSlug("Man United"), teamSlug("Manchester United"));
   assert.equal(teamSlug("Arsenal"), "arsenal");
-  // L'apostrophe sépare les jetons : la clé canonique de « Nott'm Forest » ne
-  // peut pas rejoindre l'alias « nottm forest ». La clé relâchée, elle, les
-  // réunit — c'est ce qui évite une équipe dupliquée sans historique (§12).
-  assert.notEqual(teamSlug("Nott'm Forest"), teamSlug("Nottingham Forest"));
+  // L'apostrophe sépare les jetons : la clé canonique de « Nott'm Forest »
+  // donnait « nott-m-forest » et ne rejoignait pas l'alias « nottm forest ».
+  // Ce cas était contourné en aval par `scripts/lib/source-matching.ts`, qui
+  // mappait déjà « nott m forest » et « not forest » vers « nottm forest ».
+  // La table d'alias de `teams.ts` le couvre désormais à la source : les trois
+  // libellés partagent le même slug, ce qui évite une équipe dupliquée sans
+  // historique (§12). `relaxedTeamKey` reste en place comme second filet.
+  assert.equal(teamSlug("Nott'm Forest"), teamSlug("Nottingham Forest"));
+  assert.equal(teamSlug("Not. Forest"), teamSlug("Nottingham Forest"));
   assert.equal(relaxedTeamKey("Nott'm Forest"), relaxedTeamKey("Nottingham Forest"));
   assert.equal(relaxedTeamKey("Nott'm Forest"), "nottingham forest");
   assert.equal(normalizeTeamName("Atlético Madrid"), normalizeTeamName("Atletico Madrid"));
@@ -262,4 +269,100 @@ test("§13 — un logo existant n'est jamais effacé par un passage sans logo", 
   const sideload = extractSideload([withLogo, withoutLogo]);
   const arsenal = sideload.teams.find((t) => t.providerId === "home-1");
   assert.equal(arsenal?.logo, "https://live-football-api.com/teams/home-1.png", "le logo connu est conservé");
+});
+
+/* -------------------------------------------------------------------------- */
+/* Garde-fou à l'ingestion — règle d'unicité et rapprochement inter-fournisseurs */
+/* -------------------------------------------------------------------------- */
+
+test("garde-fou — deux écritures du même club donnent la même clé canonique", () => {
+  // C'est le mécanisme exact qui a produit les doublons the-sports-db / lfa :
+  // chaque fournisseur avait créé sa propre ligne d'équipe, donc ses propres
+  // identifiants, donc des clés de secours différentes.
+  const un = canonicalMatchKeys({
+    competition: "code:E0",
+    homeTeamName: "Ipswich Town",
+    awayTeamName: "Fulham",
+    dayKey: "2026-10-10",
+  });
+  const autre = canonicalMatchKeys({
+    competition: "code:E0",
+    homeTeamName: "Ipswich",
+    awayTeamName: "Fulham FC",
+    dayKey: "2026-10-10",
+  });
+  assert.ok(un.length > 0, "des clés doivent être produites");
+  assert.deepEqual(
+    un.filter((k) => k.includes("2026-10-10")),
+    autre.filter((k) => k.includes("2026-10-10")),
+    "le même club écrit différemment doit produire la même clé",
+  );
+});
+
+test("garde-fou — la clé canonique tolère un décalage de fuseau d'un jour", () => {
+  const cle = canonicalMatchKeys({
+    competition: "code:SP1",
+    homeTeamName: "Real Madrid",
+    awayTeamName: "Barcelona",
+    dayKey: "2026-10-25",
+  });
+  assert.ok(cle.some((k) => k.endsWith("|2026-10-24")), "jour précédent couvert");
+  assert.ok(cle.some((k) => k.endsWith("|2026-10-25")), "jour même couvert");
+  assert.ok(cle.some((k) => k.endsWith("|2026-10-26")), "jour suivant couvert");
+});
+
+test("garde-fou — une date illisible ne produit aucune clé (pas de faux doublon)", () => {
+  assert.deepEqual(
+    canonicalMatchKeys({ competition: "code:E0", homeTeamName: "Arsenal", awayTeamName: "Chelsea", dayKey: "3 octobre" }),
+    [],
+  );
+});
+
+test("garde-fou — deux clubs distincts ne partagent jamais une clé canonique", () => {
+  const real = canonicalMatchKeys({ competition: "code:SP1", homeTeamName: "Real Madrid", awayTeamName: "Sevilla", dayKey: "2026-10-18" });
+  const atletico = canonicalMatchKeys({ competition: "code:SP1", homeTeamName: "Atlético Madrid", awayTeamName: "Sevilla", dayKey: "2026-10-18" });
+  assert.equal(real.some((k) => atletico.includes(k)), false, "Real et Atlético doivent rester distinguables");
+});
+
+test("garde-fou — le niveau canonique rattrape un doublon inter-fournisseurs, et le signale", () => {
+  const cle = canonicalMatchKeys({
+    competition: "code:E0",
+    homeTeamName: "Ipswich Town",
+    awayTeamName: "Fulham",
+    dayKey: "2026-10-10",
+  });
+  const decision = decideMatch({
+    providerKey: "lfa:4fi88wq0dav2nku2er9hno104",
+    existingByProviderKey: false,
+    fallbackKeys: ["code:E0|h-lfa|a-lfa|2026-10-10"],
+    existingFallbackKeys: new Set(["code:E0|h-tsdb|a-tsdb|2026-10-10"]),
+    canonicalKeys: cle,
+    existingCanonicalKeys: new Set(cle),
+  });
+  assert.equal(decision.action, "update", "la rencontre existe déjà : ne pas en créer une seconde");
+  assert.equal(decision.reason, "CLE_CANONIQUE");
+  assert.equal(decision.approximate, true, "un rapprochement par nom reste approximatif et doit être visible");
+});
+
+test("garde-fou — sans clés canoniques, decideMatch conserve son comportement antérieur", () => {
+  const decision = decideMatch({
+    providerKey: "lfa:inconnu",
+    existingByProviderKey: false,
+    fallbackKeys: ["k1"],
+    existingFallbackKeys: new Set(),
+  });
+  assert.equal(decision.action, "create");
+  assert.equal(decision.reason, "NOUVELLE_RENCONTRE");
+  assert.equal(decision.approximate, false);
+});
+
+test("garde-fou — la clé d'unicité sépare l'instant et l'affiche", () => {
+  const base = { competition: "code:SP1", homeTeamId: "h", awayTeamId: "a" };
+  const k1 = fixtureUniquenessKey({ ...base, utcDate: new Date("2026-10-25T20:00:00Z") });
+  const k2 = fixtureUniquenessKey({ ...base, utcDate: new Date("2026-10-25T20:00:00Z") });
+  const k3 = fixtureUniquenessKey({ ...base, utcDate: new Date("2027-04-04T09:00:00Z") });
+  const k4 = fixtureUniquenessKey({ ...base, homeTeamId: "a", awayTeamId: "h", utcDate: new Date("2026-10-25T20:00:00Z") });
+  assert.equal(k1, k2, "la même affiche au même instant donne la même clé");
+  assert.notEqual(k1, k3, "un instant différent donne une clé différente");
+  assert.notEqual(k1, k4, "l'ordre domicile/extérieur fait partie de l'identité de la rencontre");
 });

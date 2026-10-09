@@ -40,7 +40,7 @@ async function main() {
   const strengths = await prisma.teamStrengthScore.count().catch(() => -1);
   // Les données premium contextuelles (blessures, compos, managers, stades)
   // ne sont PAS dans le schéma Prisma : elles vivent dans stats-cache/*.ndjson.
-  let cacheFiles: { file: string; lines: number }[] = [];
+  const cacheFiles: { file: string; lines: number }[] = [];
   for (const dir of ["stats-cache"]) {
     try {
       for (const f of fs.readdirSync(dir)) {
